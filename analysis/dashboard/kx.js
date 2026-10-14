@@ -738,7 +738,7 @@ document.getElementById('quick-body').addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-goto]'); if (!b) return;
   showTab(b.dataset.goto); root.querySelector('.kx-tabbar').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus();
 });
-const qsvg = (box, w, h) => { const s = d3.create('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img'); box.append(s.node()); return s; };
+const qsvg = (box, w, h) => { const s = d3.create('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('width', w).attr('height', h).attr('role', 'img'); box.append(s.node()); return s; };
 const qlegend = (box, pairs) => { const l = el('div', 'kx-qlegend'); pairs.forEach(([color, label]) => { const sp = el('span'); const i = el('i'); i.style.background = color; sp.append(i, label); l.append(sp); }); box.append(l); };
 const QUICK_CHARTS = {
   // two stacked bars: all decisions, split into approved and not approved, prior vs recent
@@ -774,24 +774,24 @@ const QUICK_CHARTS = {
     const d2 = el('div'); d2.style.flex = '1 1 280px'; box.append(d2);
     const keep = ['Fraud signal', 'Execution error', 'Selfie / liveness', 'No document type, no reason code', 'Face match'];
     const bars = keep.map((k) => br.find((r) => r.driver === k)).filter(Boolean).map((r) => ({ name: r.driver === 'No document type, no reason code' ? 'No document type (Mexico)' : r.driver, v: +r.effect_pp, driver: r.driver }));
-    const W = 420, rowH = 30, L = 170, H = bars.length * rowH + 26;
+    const W = 400, rowH = 30, L = 150, H = bars.length * rowH + 26;
     const s2 = qsvg(d2, W, H).attr('aria-label', 'Change in the pass rate by cause, in points');
-    const ext = d3.max(bars, (b) => Math.abs(b.v));
-    const x = d3.scaleLinear([-ext, ext], [L, W - 8]);
+    const neg = d3.max(bars, (b) => Math.max(0, -b.v)), pos = d3.max(bars, (b) => Math.max(0, b.v));
+    const x = d3.scaleLinear([-neg, pos], [L, W - 70]);
     s2.append('text').attr('x', L).attr('y', 12).attr('class', 'kx-qmuted').text('Change in the pass rate, points');
     s2.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 18).attr('y2', H - 6).style('stroke', 'var(--cds-chart-axis)');
     bars.forEach((b, i) => {
       const y = 22 + i * rowH;
       s2.append('text').attr('x', L - 8).attr('y', y + 14).attr('text-anchor', 'end').text(b.name);
       s2.append('rect').attr('x', Math.min(x(0), x(b.v))).attr('y', y).attr('width', Math.abs(x(b.v) - x(0))).attr('height', 20).attr('rx', 3).style('fill', b.v < 0 ? driverColor(b.driver) : 'var(--color-ok)');
-      s2.append('text').attr('x', b.v < 0 ? x(b.v) - 6 : x(b.v) + 6).attr('y', y + 14).attr('text-anchor', b.v < 0 ? 'end' : 'start').style('font-weight', 600).text(FMT.pp2(b.v));
+      s2.append('text').attr('x', (b.v < 0 ? x(0) : x(b.v)) + 6).attr('y', y + 14).style('font-weight', 600).text(FMT.pp2(b.v));
     });
   },
   // the daily line with incident days shaded, and both period averages
   days(box) {
     const daily = rowsOf('daily'); if (!daily) return;
     const rows = daily.filter((r) => r.country === 'ALL').map((r) => ({ date: new Date(r.date), rate: +r.approval_rate, inc: r.incident_day === '1' }));
-    const W = 640, H = 170, L = 40, R = 8, T = 10, B = 22;
+    const W = 400, H = 150, L = 40, R = 8, T = 10, B = 22;
     const d1 = el('div'); d1.style.flex = '1 1 100%'; box.append(d1);
     const svg = qsvg(d1, W, H).attr('aria-label', 'Daily pass rate with incident days shaded');
     const x = d3.scaleUtc(d3.extent(rows, (r) => r.date), [L, W - R]), y = d3.scaleLinear([0.5, 1], [H - B, T]);
@@ -810,7 +810,7 @@ const QUICK_CHARTS = {
     const tot = rowsOf('scenario_totals'); if (!tot) return;
     const g = (n) => tot.find((r) => r.scenario === n);
     const lo = +g('Conservative').steady_pp, mid = +g('Central').steady_pp, hi = +g('Optimistic').steady_pp;
-    const W = 640, H = 74, L = 16, R = 16;
+    const W = 400, H = 74, L = 24, R = 24;
     const d1 = el('div'); d1.style.flex = '1 1 100%'; box.append(d1);
     const svg = qsvg(d1, W, H).attr('aria-label', 'Range of recoverable pass-rate points');
     const x = d3.scaleLinear([0, Math.ceil(hi) + 1], [L, W - R]);
