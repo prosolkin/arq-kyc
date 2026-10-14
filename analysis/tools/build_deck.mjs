@@ -75,7 +75,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   text(s, MX, 4.0, 11, 0.9, [{ text: 'What the 2023 extracts show, what remains a hypothesis, and what to do first.' }], { size: 18, color: 'DCEAE9' });
   text(s, MX, 5.6, 12, 1.1, [
     { text: `Data: KYC_summary and KYC_details extracts, ${int(K('total_users'))} recorded decisions, Jul 25 – Sep 22, 2023 (prior period Jul 25 – Aug 23; recent period Aug 24 – Sep 22).`, after: 4 },
-    { text: 'Vendor research dated Oct 13, 2026. Internal: contains fraud-control and compliance findings.' }], { size: 12, color: 'BFD6D5' });
+    { text: 'Vendor research dated Oct 13, 2026. Case-study submission; it contains fraud-control and compliance findings from the extract.' }], { size: 12, color: 'BFD6D5' });
 }
 {
   const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order an executive needs: what is measurable, what changed, the arithmetic, what is still hypothesis, what to do first, what is needed, and how success is verified.' });

@@ -29,6 +29,8 @@ analysis/tools/build_deck.mjs  slide spec -> .pptx (pptxgenjs) and an HTML rende
 analysis/build_notes.py      methodology note (markdown)
 analysis/build_report.py     deck PDF + note -> report PDF
 analysis/build_site.sh       encrypted copy of the dashboard for GitHub Pages (docs/)
+analysis/site/password_template.html  the password page: the deck's title slide, animated
+analysis/build_site_template.py       fills that page's headline, chart and figures from analysis/out
 analysis/build_all.sh        runs all of the above
 ```
 
