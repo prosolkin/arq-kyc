@@ -1,0 +1,995 @@
+<style>
+  .kx { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 80rem; margin-inline: auto; }
+  .kx [hidden] { display: none !important; }
+  .kx p { margin: 0; }
+  .kx .kx-n { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kx-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .kx-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.2); margin: 0; text-wrap: balance; line-height: 1.15; }
+  .kx-lede { font-size: var(--cds-font-size-body); line-height: 1.6; max-width: 72ch; }
+  .kx-scope { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.5; max-width: 90ch; }
+  .kx-caveat { border: 1px solid color-mix(in srgb, var(--color-warn) 55%, var(--color-border-line)); background: color-mix(in srgb, var(--color-warn) 8%, var(--color-panel)); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-body); line-height: 1.55; max-width: 90ch; }
+  .kx-caveat b { font-weight: 600; }
+  .kx-caveat-sm { font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); }
+
+  .kx-tabs { display: flex; gap: var(--cds-gap-xs); overflow-x: auto; border-bottom: 1px solid var(--color-border-line); scrollbar-width: thin; }
+  .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; margin-bottom: -1px; }
+  .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
+  .kx-page { display: flex; flex-direction: column; gap: var(--cds-gap-xl); }
+
+  .kx-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+  .kx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .kx-tile { gap: var(--cds-gap-xs); }
+  .kx-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.25); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .kx-mid { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .kx-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+  .kx-bad { color: var(--color-bad); }
+  .kx-good { color: var(--color-ok); }
+
+  .kx-section { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .kx-section > h2, .kx-page > h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-heading) * 1.4); margin: 0; text-wrap: balance; }
+  .kx-intro { font-size: var(--cds-font-size-body); line-height: 1.6; max-width: 76ch; }
+  .kx-card h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); text-wrap: balance; }
+  .kx-card h4 { margin: 0; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .kx-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+  .kx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+  .kx-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: var(--cds-gap-md); }
+  .kx-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--cds-gap-md); }
+  .kx-cardhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-sm); }
+  .kx-list { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: var(--cds-gap-xs); line-height: 1.55; }
+  .kx-answer { font-size: var(--cds-font-size-body); gap: var(--cds-gap-sm); }
+  .kx-answer li::marker { font-weight: 600; }
+  .kx-answer b.kx-q { font-weight: 600; }
+
+  .kx-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: 14px; padding: 2px; gap: 2px; }
+  .kx-seg button { font: inherit; font-size: var(--cds-font-size-caption); border: 0; background: transparent; color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-radius: 12px; cursor: pointer; }
+  .kx-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
+  .kx-seg button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 1px; }
+  .kx-scope-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-lens { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .kx-lens p { font-size: var(--cds-font-size-body); line-height: 1.6; max-width: 76ch; }
+  .kx-link { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  .kx-link:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+
+  .kx-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-legend span { display: inline-flex; align-items: center; gap: var(--cds-gap-xs); }
+  .kx-sw { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 3px; flex: none; }
+  .kx-sw-line { width: 1rem; height: 0; border-top: 2px solid; border-radius: 0; }
+  .kx-sw-dash { width: 1rem; height: 0; border-top: 2px dashed; border-radius: 0; }
+  .kx-sw-badge { width: 0.9rem; height: 0.9rem; border-radius: 50%; border: 1.5px solid var(--cds-chart-status-critical); }
+
+  .kx-chart { position: relative; min-height: 18rem; }
+  .kx-chart-md { position: relative; min-height: 9rem; }
+  .kx-chart-sm { position: relative; min-height: 4.5rem; }
+  .kx-chart svg, .kx-chart-sm svg, .kx-chart-md svg { display: block; overflow: visible; }
+  .kx-chart text, .kx-chart-sm text, .kx-chart-md text { fill: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .kx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; display: flex; flex-direction: column; gap: 2px; }
+  .kx-tip-h { color: var(--cds-text-secondary); }
+  .kx-tip-row { display: flex; align-items: center; gap: var(--cds-gap-xs); }
+  .kx-tip-row b { margin-left: auto; padding-left: var(--cds-gap-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kx-failed { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); position: absolute; inset: 0; }
+  .kx-failed::before { content: ""; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); }
+  details.kx-data > summary { cursor: pointer; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  details.kx-data > summary:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+  details.kx-data .kx-tablewrap { max-height: 18rem; margin-top: var(--cds-gap-xs); }
+
+  .kx-inc p { font-size: var(--cds-font-size-body); line-height: 1.55; }
+  .kx-inc-top { display: flex; align-items: center; gap: var(--cds-gap-sm); }
+  .kx-badge { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1.5px solid var(--cds-chart-status-critical); color: var(--cds-chart-status-critical); font-size: var(--cds-font-size-caption); font-weight: 600; flex: none; }
+  .kx-chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  .kx-chip { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 10px; padding: 0 var(--cds-pad-sm); line-height: 1.6; max-width: 100%; overflow-wrap: anywhere; }
+  .kx-inc .kx-big { font-size: var(--cds-font-size-title); }
+  .kx-kv { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+  .kx-kv dt { color: var(--color-fg-muted); }
+  .kx-kv dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  #value-results dd { max-width: 26ch; }
+  @media (max-width: 30rem) {
+    #value-results { grid-template-columns: minmax(0, 1fr); }
+    #value-results dd { max-width: none; text-align: left; margin-bottom: var(--cds-gap-xs); }
+  }
+
+  .kx-bars { display: flex; flex-direction: column; gap: var(--cds-gap-xs); position: relative; min-height: 6rem; }
+  .kx-bar-row { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) auto; align-items: center; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+  .kx-bar-row .kx-bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kx-bar-track { height: 0.75rem; background: color-mix(in srgb, var(--color-border-line) 45%, transparent); border-radius: 4px; overflow: hidden; display: flex; }
+  .kx-bar-fill { height: 100%; }
+  .kx-bar-row b { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .kx-bar-group { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: var(--cds-gap-xs); }
+
+  .kx-tablebar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; justify-content: space-between; }
+  .kx-search { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); min-width: 0; width: min(100%, 16rem); }
+  .kx-tablewrap { overflow: auto; max-height: 28rem; }
+  .kx-tablewrap-free { overflow-x: auto; }
+  table.kx-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .kx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; z-index: 1; vertical-align: bottom; }
+  .kx-table th.kx-num, .kx-table td.kx-num { text-align: right; }
+  .kx-table th button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .kx-table th button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+  .kx-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; line-height: 1.45; }
+  .kx-table tr:last-child td { border-bottom: 0; }
+  .kx-table a { color: inherit; }
+  .kx-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; word-break: break-word; }
+  .kx-wide { min-width: 16rem; }
+  .kx-h { display: inline-block; border-radius: 999px; padding: 0 var(--cds-pad-sm); border: 1px solid currentColor; white-space: nowrap; font-size: var(--cds-font-size-caption); }
+  .kx-h-Available, .kx-h-Pass, .kx-h-Fetched, .kx-h-High { color: var(--color-ok); }
+  .kx-h-Unavailable, .kx-h-Limitation { color: var(--color-bad); }
+  .kx-h-Note, .kx-h-Medium, .kx-h-Unknown, .kx-h-Pressrelease, .kx-h-Fetchedagent { color: var(--color-warn); }
+  .kx-h-Low { color: var(--color-fg-muted); }
+  .kx-cond { font-size: var(--cds-font-size-caption); color: var(--color-warn); }
+
+  .kx-flow { display: flex; flex-direction: column; gap: var(--cds-gap-sm); position: relative; min-height: 6rem; }
+  .kx-lane { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+  .kx-lane-name { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kx-lane-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--cds-gap-xs); }
+  .kx-step { flex: 1 1 10rem; min-width: 0; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); display: flex; flex-direction: column; gap: 4px; background: var(--color-bg); }
+  .kx-step-q { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-step-hot { border-color: var(--cds-chart-status-critical); }
+  .kx-arrow { align-self: center; color: var(--color-fg-muted); flex: none; }
+
+  .kx-phase { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .kx-phase > h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .kx-action { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+  .kx-action > summary { list-style: none; cursor: pointer; padding: var(--cds-pad-sm) var(--cds-pad-md); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cds-gap-sm); align-items: start; }
+  .kx-action > summary::-webkit-details-marker { display: none; }
+  .kx-action > summary:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
+  .kx-action > summary b { font-weight: var(--cds-font-weight-medium); }
+  .kx-action-meta { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); align-items: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 4px; }
+  .kx-action-body { padding: 0 var(--cds-pad-md) var(--cds-pad-md); }
+  .kx-action-body dl { margin: 0; display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: 6px var(--cds-gap-md); font-size: var(--cds-font-size-caption); line-height: 1.5; }
+  .kx-action-body dt { color: var(--color-fg-muted); }
+  .kx-action-body dd { margin: 0; }
+  .kx-expander { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); white-space: nowrap; }
+  details[open] > summary .kx-expander::after { content: " ▴"; }
+  details:not([open]) > summary .kx-expander::after { content: " ▾"; }
+
+  .kx-layer { display: grid; grid-template-columns: minmax(0, 8rem) minmax(0, 1fr); gap: var(--cds-gap-sm); align-items: stretch; }
+  .kx-layer-name { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: 0.06em; padding-top: var(--cds-pad-sm); }
+  .kx-boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-xs); }
+  .kx-box { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-bg); display: flex; flex-direction: column; gap: 4px; }
+  .kx-box b { font-weight: var(--cds-font-weight-medium); }
+  .kx-box span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+  .kx-down { text-align: center; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  table.kx-raci th { text-align: center; white-space: normal; min-width: 4.5rem; line-height: 1.25; }
+  table.kx-raci th:first-child, table.kx-raci td:first-child { text-align: left; min-width: 12rem; }
+  table.kx-raci td { text-align: center; vertical-align: middle; }
+  .kx-r { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 4px; font-weight: 600; font-size: var(--cds-font-size-caption); }
+  .kx-r-A { background: var(--color-fg); color: var(--color-bg); }
+  .kx-r-R { border: 1.5px solid var(--color-fg); color: var(--color-fg); }
+  .kx-r-C { border: 1px solid var(--color-border-line); color: var(--color-fg-muted); }
+  .kx-r-I { color: var(--color-fg-muted); }
+  .kx-dept ul { margin: 0; padding-left: 1.1rem; font-size: var(--cds-font-size-caption); line-height: 1.5; display: flex; flex-direction: column; gap: 2px; }
+  .kx-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--cds-gap-md); position: relative; }
+  .kx-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--cds-font-size-caption); }
+  .kx-field label { color: var(--color-fg); font-size: var(--cds-font-size-body); }
+  .kx-field input { font: inherit; font-size: var(--cds-font-size-body); padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); width: 100%; box-sizing: border-box; font-variant-numeric: tabular-nums; }
+  .kx-field input:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 1px; }
+  .kx-field input[aria-invalid="true"] { border-color: var(--color-bad); }
+  .kx-field .kx-err { color: var(--color-bad); }
+  .kx-btn { font: inherit; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); background: transparent; color: var(--color-fg); border-radius: 999px; padding: var(--cds-pad-xs) var(--cds-pad-sm); cursor: pointer; align-self: flex-start; }
+  .kx-btn:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 1px; }
+  .kx-preset-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-sm); }
+  .kx-status { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); }
+  .kx-status b { color: var(--color-fg); }
+  .kx-field .kx-range { color: var(--color-fg-muted); }
+  .kx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .kx-derive summary { cursor: pointer; }
+  .kx-derive p { margin: var(--cds-gap-xs) 0 0; max-width: 60ch; }
+  .kx-faq { display: flex; flex-direction: column; }
+  .kx-faq details { border-top: 1px solid var(--color-border-line); padding: var(--cds-pad-sm) 0; }
+  .kx-faq summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+  .kx-faq details p { margin-top: var(--cds-gap-xs); line-height: 1.6; max-width: 76ch; }
+  .kx-gloss { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: var(--cds-gap-xs) var(--cds-gap-md); margin: 0; line-height: 1.5; }
+  .kx-gloss dt { font-weight: var(--cds-font-weight-medium); }
+  .kx-gloss dd { margin: 0; color: var(--color-fg-muted); }
+
+  @media (max-width: 40rem) {
+    .kx-hide-narrow { display: none; }
+    .kx-layer { grid-template-columns: minmax(0, 1fr); }
+    .kx-gloss { grid-template-columns: minmax(0, 1fr); }
+    .kx-lane-row { flex-direction: column; }
+    .kx-arrow { transform: rotate(90deg); }
+    .kx-action-body dl { grid-template-columns: minmax(0, 1fr); }
+    .kx-bar-row { grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) auto; }
+  }
+  .kx.kx-print-all .kx-page[hidden], .kx.kx-print-all .kx-lens[hidden] { display: flex !important; }
+  .kx.kx-print-all .kx-tabs { display: none; }
+  .kx.kx-print-all .kx-tablewrap { max-height: none; overflow: visible; }
+  @media print {
+    .kx-tabs, .kx-seg, .kx-search, .kx-btn, .kx-tip, .kx-scope-note { display: none !important; }
+    .kx .kx-page[hidden], .kx .kx-lens[hidden] { display: flex !important; }
+    .kx-page + .kx-page { break-before: page; }
+    .kx-card, .kx-action, .kx-step, tr { break-inside: avoid; }
+    .kx-tablewrap, .kx-tablewrap-free { max-height: none !important; overflow: visible !important; }
+    table.kx-table { font-size: 9pt; }
+  }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="kx">
+  <header class="kx-head" id="top">
+    <h1 class="kx-title">KYC approval-rate diagnosis</h1>
+    <p class="kx-lede">
+      Approval among recorded KYC decisions fell from
+      <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_a" data-fmt="pct">—</b>
+      in the prior period to
+      <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_b" data-fmt="pct">—</b>
+      in the recent period
+      (<b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=delta_pp" data-fmt="pp" data-good="up">—</b>),
+      or <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</b> approvals.
+    </p>
+    <p class="kx-caveat"><b>What this measures.</b> Approval among the decisions recorded in the two extracts. It is not the start-to-finish completion rate the brief describes: the extracts have no KYC starts, attempts, abandonment or times of day, and don't say whether a record is a first, latest or final attempt. Completion becomes measurable once the Phase 0 events exist.</p>
+    <p class="kx-scope">
+      <span data-fill data-source="kpis" data-field="value" data-where="metric=total_users" data-fmt="int">—</span> recorded decisions, one per user.
+      Prior period: Jul 25 – Aug 23, 2023. Recent period: Aug 24 – Sep 22, 2023. Country means document issuing country. Checks by Jumio.
+      Vendor research dated <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>. Case-study submission: aggregated 2023 extract, no personal data.
+    </p>
+  </header>
+
+  <nav class="kx-tabs" role="tablist" aria-label="Pages">
+    <button type="button" role="tab" id="tab-summary" aria-controls="summary" data-tab="summary">Summary</button>
+    <button type="button" role="tab" id="tab-measurement" aria-controls="measurement" data-tab="measurement">Measurement</button>
+    <button type="button" role="tab" id="tab-drivers" aria-controls="drivers" data-tab="drivers">Drivers</button>
+    <button type="button" role="tab" id="tab-incidents" aria-controls="incidents" data-tab="incidents">Incidents</button>
+    <button type="button" role="tab" id="tab-hypotheses" aria-controls="hypotheses" data-tab="hypotheses">Hypotheses &amp; tests</button>
+    <button type="button" role="tab" id="tab-plan" aria-controls="plan" data-tab="plan">Plan &amp; value</button>
+    <button type="button" role="tab" id="tab-operating" aria-controls="operating" data-tab="operating">Operating model</button>
+    <button type="button" role="tab" id="tab-design" aria-controls="design" data-tab="design">Target design</button>
+    <button type="button" role="tab" id="tab-vendor" aria-controls="vendor" data-tab="vendor">Vendor research</button>
+    <button type="button" role="tab" id="tab-reference" aria-controls="reference" data-tab="reference">Reference</button>
+  </nav>
+
+  <!-- Summary -->
+  <section class="kx-page" id="summary" role="tabpanel" aria-labelledby="tab-summary">
+    <div class="kx-card" id="answer">
+      <h3>The answer</h3>
+      <ol class="kx-list kx-answer">
+        <li><b class="kx-q">What is measurable.</b> Approval among recorded decisions, by day, document country and the check that failed. Not measurable from these extracts: starts, completion, abandonment, retries, review outcomes and time to completion.</li>
+        <li><b class="kx-q">What changed.</b> Approval fell from
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_a" data-fmt="pct">—</b> to
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_b" data-fmt="pct">—</b>.
+          Approvals fell by <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="abs">—</b>:
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=volume_effect" data-fmt="abs">—</b> because there were fewer decisions and
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="abs">—</b> because of the lower rate.
+          Mexican documents went from <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_approval_a" data-fmt="pct">—</b> to
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_approval_b" data-fmt="pct">—</b>, Argentine from
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=arg_approval_a" data-fmt="pct">—</b> to
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=arg_approval_b" data-fmt="pct">—</b>.</li>
+        <li><b class="kx-q">What explains it arithmetically.</b> More fraud signals
+          (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Fraud signal" data-fmt="pp2">—</b>),
+          execution errors (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Execution error" data-fmt="pp2">—</b>),
+          selfie and liveness failures (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Selfie / liveness" data-fmt="pp2">—</b>) and
+          decisions with no document type or reason code (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=No document type, no reason code" data-fmt="pp2">—</b>).
+          Face match improved (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Face match" data-fmt="pp2">—</b>) but remains a large existing loss.</li>
+        <li><b class="kx-q">What is still a hypothesis.</b> About
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_base" data-fmt="int">—</b>
+          unsuccessful decisions (range <span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_low" data-fmt="int">—</span>–<span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_high" data-fmt="int">—</span>)
+          sit above normal levels in four short date windows, but their causes are not established. The fraud signals are not adjudicated. The execution errors could be the vendor's or ARQ's integration. The liveness spike matches incidents on the vendor's status page, but impact on ARQ is unconfirmed. Mexico's rising "no document type" share has several possible causes.</li>
+        <li><b class="kx-q">What should happen first.</b> Instrument the funnel; hold and retry execution errors instead of rejecting; alert per reason code; reconcile the control findings; adjudicate fraud samples; diagnose Mexico's missing document types with the vendor. This is Phase 0, weeks 0–2.</li>
+        <li><b class="kx-q">What is needed.</b> An event schema with privacy sign-off; vendor case access and incident reports; Risk and Compliance time for adjudication and reconciliation; engineering time for one medium and several small items. Effort sizes are assumptions to confirm with the teams.</li>
+        <li><b class="kx-q">How success is verified.</b> Every action has acceptance criteria. Experiments measure eventual approval per person within 7 days of first start, which needs the new events. Recovery scenarios for recurring causes range from
+          <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Conservative" data-fmt="pp">—</b> to
+          <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Optimistic" data-fmt="pp">—</b>
+          (central <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Central" data-fmt="pp">—</b>).
+          They rest on stated assumptions and are not forecasts. If the control findings are confirmed, fixing them could lower approval by up to
+          <b class="kx-n" data-fill data-source="scenario_totals" data-field="control_gap_all_pp" data-where="scenario=Central" data-fmt="pp_abs">—</b>.</li>
+      </ol>
+    </div>
+    <div class="kx-card" id="open-questions-card" data-source="open_questions">
+      <h3>To confirm with the team before acting</h3>
+      <p class="kx-note">Four answers that would change the findings above, in the order they matter. Each says what changes with the answer.</p>
+      <ol class="kx-list kx-answer" id="open-questions-summary"></ol>
+      <p><button type="button" class="kx-link" data-goto="reference">Full detail on the Reference tab</button></p>
+    </div>
+
+    <div class="kx-tiles" id="headline">
+      <div class="kx-card kx-tile">
+        <span class="kx-label">Approval rate, recent period</span>
+        <span class="kx-big" data-fill data-source="kpis" data-field="value" data-where="metric=approval_b" data-fmt="pct">—</span>
+        <span class="kx-sub"><b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=delta_pp" data-fmt="pp" data-good="up">—</b> vs prior period</span>
+      </div>
+      <div class="kx-card kx-tile">
+        <span class="kx-label">Approved decisions, recent period</span>
+        <span class="kx-big" data-fill data-source="kpis" data-field="value" data-where="metric=approved_b" data-fmt="int">—</span>
+        <span class="kx-sub"><b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</b> vs prior period, from lower volume and a lower rate</span>
+      </div>
+      <div class="kx-card kx-tile">
+        <span class="kx-label">Not approved, recent period</span>
+        <span class="kx-big" data-fill data-source="kpis" data-field="value" data-where="metric=unsuccessful_b" data-fmt="int">—</span>
+        <span class="kx-sub">Includes <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=warning_b" data-fmt="int">—</b> unresolved warnings, which are not confirmed rejections</span>
+      </div>
+      <div class="kx-card kx-tile">
+        <span class="kx-label">Above-baseline failures in four date windows</span>
+        <span class="kx-big" data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_base" data-fmt="int">—</span>
+        <span class="kx-sub"><b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_share_unsuccessful" data-fmt="pct">—</b> of recent unsuccessful decisions; causes unconfirmed</span>
+      </div>
+      <div class="kx-card kx-tile">
+        <span class="kx-label">Mexican documents, recent period</span>
+        <span class="kx-big" data-fill data-source="kpis" data-field="value" data-where="metric=mex_approval_b" data-fmt="pct">—</span>
+        <span class="kx-sub">Argentine documents <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=arg_approval_b" data-fmt="pct">—</b></span>
+      </div>
+    </div>
+
+    <div class="kx-grid" id="trend">
+      <div class="kx-card" id="trend-card">
+        <div class="kx-cardhead">
+          <h3>Daily approval rate among recorded decisions</h3>
+          <div class="kx-seg" role="group" aria-label="Document country for this chart, the weekly mix and the reasons table">
+            <button type="button" data-country="ALL">All</button>
+            <button type="button" data-country="MEX">Mexico</button>
+            <button type="button" data-country="ARG">Argentina</button>
+          </div>
+        </div>
+        <p class="kx-scope-note">The country filter applies to this chart and to the weekly mix and reasons table on Drivers.</p>
+        <div class="kx-legend">
+          <span><i class="kx-sw kx-sw-line" style="border-color: var(--kx-c0)"></i>Approval rate</span>
+          <span><i class="kx-sw kx-sw-dash" style="border-color: var(--cds-chart-muted)"></i>Excluding selected incident-window failures (descriptive only)</span>
+          <span><i class="kx-sw kx-sw-badge"></i>Incident window</span>
+        </div>
+        <div class="kx-chart dash-skeleton" id="trend-chart" data-source="daily incidents kpis" role="img" aria-label="Daily approval rate; the data table below has the values"></div>
+        <details class="kx-data"><summary>Show the daily data as a table</summary><div class="kx-tablewrap" id="trend-table"></div></details>
+      </div>
+      <div class="kx-card" id="bridge-card">
+        <h3>What moved the approval rate between the periods</h3>
+        <p class="kx-note">Change in each primary reason's share of all decisions. Bars to the left lowered approval. Red is the part above baseline inside incident windows (base estimate).</p>
+        <div class="kx-legend">
+          <span><i class="kx-sw" style="background: var(--cds-chart-status-critical)"></i>Above baseline in incident windows</span>
+          <span><i class="kx-sw" style="background: var(--kx-c0)"></i>Everything else</span>
+        </div>
+        <div class="kx-chart dash-skeleton" id="bridge-chart" data-source="bridge" role="img" aria-label="Contribution of each reason to the change; the table below has the values"></div>
+        <details class="kx-data"><summary>Show as a table</summary><div class="kx-tablewrap" id="bridge-table"></div></details>
+      </div>
+    </div>
+
+    <div class="kx-card" id="lenses">
+      <div class="kx-cardhead">
+        <h3>What this means for each audience</h3>
+        <div class="kx-seg" role="group" aria-label="Audience">
+          <button type="button" data-lens="leadership">Leadership</button>
+          <button type="button" data-lens="product">Product &amp; engineering</button>
+          <button type="button" data-lens="risk">Risk &amp; compliance</button>
+          <button type="button" data-lens="ops">Ops &amp; support</button>
+          <button type="button" data-lens="finance">Finance &amp; investors</button>
+        </div>
+      </div>
+      <div class="kx-lens" data-lens-panel="leadership">
+        <p>Approve Phase 0 now: instrumentation, hold-and-retry for execution errors, alerting, control reconciliation and two investigations. Phase 1 experiments depend on what Phase 0 finds. The orchestration layer, registry checks and a second vendor are multi-quarter platform work, not quick fixes.</p>
+        <p><button type="button" class="kx-link" data-goto="plan">Open Plan &amp; value</button></p>
+      </div>
+      <div class="kx-lens" data-lens-panel="product" hidden>
+        <p><b class="kx-n" data-fill data-source="incidents" data-field="observed" data-where="id=exec_errors" data-fmt="int">—</b>
+          recent decisions were rejected with a TECHNICAL_ERROR at usability. Liveness ran and passed in all of them; document checks and face match did not run. The extract doesn't show whether the fault was the vendor's or in ARQ's integration. Mexico's "no document type" outcomes need a diagnosis with the vendor before a fix is chosen.</p>
+        <p><button type="button" class="kx-link" data-goto="hypotheses">Open Hypotheses &amp; tests</button></p>
+      </div>
+      <div class="kx-lens" data-lens-panel="risk" hidden>
+        <p>Fraud-signal decisions rose from
+          <b class="kx-n" data-fill data-source="bridge" data-field="n_a" data-where="driver=Fraud signal" data-fmt="int">—</b> to
+          <b class="kx-n" data-fill data-source="bridge" data-field="n_b" data-where="driver=Fraud signal" data-fmt="int">—</b>,
+          mostly in two clusters, and none is adjudicated. Separately, the extract shows
+          <b class="kx-n" data-fill data-source="compliance" data-field="n" data-where="id=minors" data-fmt="int">—</b>
+          approvals with birth year 2006 or later and
+          <b class="kx-n" data-fill data-source="compliance" data-field="n" data-where="id=no_screening" data-fmt="int">—</b>
+          with no screening result. These are extract findings to reconcile, not confirmed control failures.</p>
+        <p><button type="button" class="kx-link" data-goto="reference">Open the control findings</button></p>
+      </div>
+      <div class="kx-lens" data-lens-panel="ops" hidden>
+        <p><b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=warning_b" data-fmt="int">—</b>
+          recent decisions ended in an unresolved WARNING; what happened afterwards is not in the extract. A review pilot for face-match warnings needs capacity, a service level and quality sampling before launch.</p>
+        <p><button type="button" class="kx-link" data-goto="drivers">Open Drivers</button></p>
+      </div>
+      <div class="kx-lens" data-lens-panel="finance" hidden>
+        <p>The approved count fell by
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="abs">—</b>,
+          of which <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="abs">—</b>
+          is due to the lower rate. Money values need inputs the data doesn't contain: activation after approval, value per customer, paid-channel share and vendor billing per decision. The Plan tab's value model fills them with market-based presets (Low, Mid, High and Cautious, each sourced) and shows break-even conditions. The presets are not ARQ figures, so they are not used as a headline.</p>
+        <p><button type="button" class="kx-link" data-goto="plan">Open the value model</button></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Measurement -->
+  <section class="kx-page" id="measurement" role="tabpanel" aria-labelledby="tab-measurement" hidden>
+    <h2>What can and can't be measured</h2>
+    <p class="kx-intro">The brief asks about people who start and finish KYC. The extracts hold one recorded decision per user, so this analysis measures approval among those decisions. The definitions below are proposals for the KPI registry; unavailable metrics list the events that would make them measurable.</p>
+    <div class="kx-card" id="metrics-card">
+      <h3>Metric definitions</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="metrics-table" data-source="metrics" data-row-key="id">
+          <thead><tr>
+            <th data-field="name">Metric</th>
+            <th data-field="status">Status</th>
+            <th data-field="definition">Definition</th>
+            <th data-field="window" class="kx-hide-narrow">Window</th>
+            <th class="kx-num" data-field="value_a">Prior</th>
+            <th class="kx-num" data-field="value_b">Recent</th>
+            <th data-field="gap" class="kx-hide-narrow">Gap or caveat</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="kx-grid">
+      <div class="kx-card" id="treatment-card">
+        <h3>How outcomes and values are treated</h3>
+        <dl class="kx-gloss">
+          <dt>PASSED, APPROVED</dt><dd>Approved (the final outcome in KYC_summary).</dd>
+          <dt>REJECTED</dt><dd>Rejected.</dd>
+          <dt>WARNING</dt><dd>Unresolved: not approved, not a confirmed rejection. Its later review outcome is not in the extract.</dd>
+          <dt>Unsuccessful</dt><dd>Rejected plus warning, i.e. not approved.</dd>
+          <dt>Label "OK"</dt><dd>Eight approved records carry this label in the details file; the summary outcome is used.</dd>
+          <dt>"PASSES"</dt><dd>Three capability values; read as PASSED.</dd>
+          <dt>Blank screening</dt><dd>"Not recorded". Not proof that screening never ran.</dd>
+          <dt>NOT_EXECUTED</dt><dd>The check did not run: PRECONDITION_NOT_FULFILLED (an earlier check failed) or TECHNICAL_ERROR (execution error).</dd>
+          <dt>Capability results</dt><dd>Kept separate from the final outcome. Each unsuccessful decision gets one primary reason, in check order, so reasons add up.</dd>
+        </dl>
+      </div>
+      <div class="kx-card" id="unknowns-card">
+        <h3>What the extracts can't establish</h3>
+        <ul class="kx-list">
+          <li>Whether each record is a first, latest or final attempt, and which event its date marks.</li>
+          <li>Starts, abandonment, retries, review outcomes, account enablement and time to completion.</li>
+          <li>Time of day: all timestamps are midnight UTC, so outages can't be matched to records.</li>
+          <li>Whether recent cohorts are mature: late approvals after review would not appear.</li>
+          <li>ARQ's current flow: whether vendor decisions reach users directly, whether retries or a review queue exist, whether uploads are allowed, and the architecture.</li>
+          <li>Whether documented vendor incidents affected ARQ's transactions.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="kx-card" id="validation-card">
+      <h3>Data validation</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="validation-table" data-source="validation" data-row-key="id">
+          <thead><tr><th data-field="check">Check</th><th data-field="result">Result</th><th data-field="status">Status</th><th data-field="note" class="kx-hide-narrow">Treatment</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="kx-card" id="events-card">
+      <h3>Events needed to measure the requested funnel (Phase 0)</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="events-table" data-source="events" data-row-key="event">
+          <thead><tr><th data-field="event">Event</th><th data-field="when">When</th><th data-field="fields">Fields</th><th data-field="enables" class="kx-hide-narrow">Enables</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drivers -->
+  <section class="kx-page" id="drivers" role="tabpanel" aria-labelledby="tab-drivers" hidden>
+    <h2>Why decisions were not approved</h2>
+    <p class="kx-intro">
+      <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=decline_a" data-fmt="pct">—</b> of prior-period decisions and
+      <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=decline_b" data-fmt="pct">—</b> of recent ones were not approved
+      (<span data-fill data-source="kpis" data-field="value" data-where="metric=unsuccessful_a" data-fmt="int">—</span> and
+      <span data-fill data-source="kpis" data-field="value" data-where="metric=unsuccessful_b" data-fmt="int">—</span> decisions).
+      Each is grouped by its primary reason, then by who could act on it. The groups describe what the vendor reported, not adjudicated causes.
+    </p>
+    <div class="kx-card" id="decline-card">
+      <h3>Not-approved share by class, prior vs recent</h3>
+      <div class="kx-legend" id="decline-legend"></div>
+      <div class="kx-chart-md dash-skeleton" id="decline-chart" data-source="declines kpis" role="img" aria-label="Stacked bars of the not-approved share by class; the table below has the values"></div>
+      <details class="kx-data"><summary>Show as a table</summary><div class="kx-tablewrap" id="decline-table"></div></details>
+    </div>
+    <div class="kx-grid-4" id="decline-classes" data-source="declines"></div>
+    <p class="kx-caveat kx-caveat-sm"><b>Multiple failures.</b>
+      <span data-fill data-source="kpis" data-field="value" data-where="metric=multi_fail_b" data-fmt="int">—</span>
+      recent unsuccessful decisions had two or more failing or warning checks. A single primary reason prevents double counting; it doesn't mean fixing that one reason would get the person approved.</p>
+    <section class="kx-section" id="mexico">
+      <h2>Mexico: what "no document type" breaks down into</h2>
+      <p class="kx-intro">
+        No document type was returned for
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_nodoc_a" data-fmt="pct">—</b>
+        of Mexican-document decisions in the prior period and
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_nodoc_b" data-fmt="pct">—</b>
+        in the recent one. Argentine documents have
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=arg_usability_rejects" data-fmt="int">—</b>
+        usability rejections or warnings in the extract, against
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_usability_rejects" data-fmt="int">—</b>
+        for Mexican ones. A missing type is a symptom with several possible causes; the split shows which outcomes grew.
+      </p>
+      <div class="kx-grid">
+        <div class="kx-card">
+          <h3>Mexican decisions with no document type, by outcome</h3>
+          <p class="kx-note">Share of all Mexican-document decisions, prior period (lighter) and recent period (darker).</p>
+          <div class="kx-bars dash-skeleton" id="mex-bars" data-source="mex_no_doctype"></div>
+        </div>
+        <div class="kx-card">
+          <h3>Weekly share with no document type, Mexico</h3>
+          <div class="kx-chart dash-skeleton" id="unc-chart" data-source="docs_weekly" role="img" aria-label="Weekly share of Mexican-document decisions with no document type"></div>
+        </div>
+      </div>
+      <div class="kx-card" id="docs-card">
+        <h3>Mexican-document decisions by document type returned</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="docs-table" data-source="docs" data-row-key="id">
+            <thead><tr>
+              <th data-field="label">Document type</th>
+              <th class="kx-num" data-field="share_a">Share, prior</th>
+              <th class="kx-num" data-field="share_b">Share, recent</th>
+              <th class="kx-num" data-field="approval_rate_a">Approval, prior</th>
+              <th class="kx-num" data-field="approval_rate_b">Approval, recent</th>
+              <th class="kx-num kx-hide-narrow" data-field="n">Decisions</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <div class="kx-card" id="face-card">
+      <h3>Face match: a large existing loss that improved</h3>
+      <p class="kx-intro">Face-match failures were
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=face_a" data-fmt="pct2">—</b>
+        of prior-period decisions and
+        <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=face_b" data-fmt="pct2">—</b>
+        of recent ones, so they did not cause the drop. They are still worth working on: see hypothesis H6 and the review pilot.</p>
+    </div>
+    <div class="kx-card" id="process-card">
+      <h3>The checks, block by block</h3>
+      <p class="kx-note">"Checked" counts decisions where the check ran. "Declined here" counts unsuccessful decisions whose primary reason is this check. Red outlines mark the three largest.</p>
+      <div class="kx-flow" id="process" data-source="process_steps"></div>
+    </div>
+    <section class="kx-section">
+      <h2>Failure mix by week</h2>
+      <div class="kx-card" id="mix-card">
+        <div class="kx-cardhead">
+          <h3>Share of decisions not approved, by primary reason</h3>
+          <div class="kx-seg" role="group" aria-label="Document country for this chart, the reasons table and the Summary chart">
+            <button type="button" data-country="ALL">All</button>
+            <button type="button" data-country="MEX">Mexico</button>
+            <button type="button" data-country="ARG">Argentina</button>
+          </div>
+        </div>
+        <p class="kx-scope-note">The country filter applies to this chart, the reasons table below and the daily chart on Summary. Weeks start on Monday; the first and last are partial.</p>
+        <div class="kx-chart dash-skeleton" id="mix-chart" data-source="weekly_drivers" role="img" aria-label="Weekly stacked bars by reason; the reasons table below has the values"></div>
+        <div class="kx-legend" id="mix-legend"></div>
+      </div>
+      <div class="kx-card" id="reasons-card">
+        <div class="kx-tablebar">
+          <h3>Every primary reason, prior vs recent</h3>
+          <input class="kx-search" id="reasons-search" type="search" placeholder="Search reasons" aria-label="Search reasons">
+        </div>
+        <div class="kx-tablewrap">
+          <table class="kx-table" id="reasons-table" data-source="reasons" data-row-key="id">
+            <thead><tr>
+              <th data-field="reason"><button type="button" data-sort="reason">Reason</button></th>
+              <th data-field="step" class="kx-hide-narrow"><button type="button" data-sort="step">Check</button></th>
+              <th data-field="driver" class="kx-hide-narrow"><button type="button" data-sort="driver">Group</button></th>
+              <th class="kx-num" data-field="n_a"><button type="button" data-sort="n_a">Prior</button></th>
+              <th class="kx-num" data-field="n_b"><button type="button" data-sort="n_b">Recent</button></th>
+              <th class="kx-num" data-field="change_pp"><button type="button" data-sort="change_pp">Change in share</button></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <div class="kx-grid">
+      <div class="kx-card" id="age-card">
+        <h3>Extracted birth year, by document country</h3>
+        <p class="kx-caveat kx-caveat-sm"><b>Not a profile of all applicants.</b>
+          <span data-fill data-source="kpis" data-field="value" data-where="metric=yob_blank_rejected" data-fmt="int">—</span> of the
+          <span data-fill data-source="kpis" data-field="value" data-where="metric=yob_blank" data-fmt="int">—</span> records with no birth year were rejected, so known ages over-represent people whose document was read.</p>
+        <div class="kx-legend"><span><i class="kx-sw" style="background: var(--kx-c0)"></i>Mexican documents</span><span><i class="kx-sw" style="background: var(--kx-c1)"></i>Argentine documents</span></div>
+        <div class="kx-chart dash-skeleton" id="age-chart" data-source="profile" role="img" aria-label="Age band shares by document country"></div>
+      </div>
+      <div class="kx-card" id="docmix-card">
+        <h3>Document types returned, whole extract</h3>
+        <div class="kx-bars dash-skeleton" id="docmix" data-source="docs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Incidents -->
+  <section class="kx-page" id="incidents" role="tabpanel" aria-labelledby="tab-incidents" hidden>
+    <h2>Four date windows with unusual failures</h2>
+    <p class="kx-intro">Each window is a date range, a country scope and a failure signature. "Above baseline" is the observed count minus what the prior-period rate of that signature predicts for the window's volume. Other failures on those days are not attributed. The data has dates only, so individual records can't be matched to intraday outages.</p>
+    <div class="kx-card" id="incident-table-card">
+      <h3>Counts and denominators</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="incident-table" data-source="incidents" data-row-key="id">
+          <thead><tr>
+            <th data-field="title">Window</th>
+            <th data-field="type" class="kx-hide-narrow">Type</th>
+            <th class="kx-num" data-field="observed">Observed</th>
+            <th class="kx-num" data-field="expected">Expected</th>
+            <th class="kx-num" data-field="excess">Above baseline</th>
+            <th class="kx-num" data-field="share_of_decisions_b">Of recent decisions</th>
+            <th class="kx-num" data-field="share_of_unsuccessful_b">Of recent unsuccessful</th>
+            <th class="kx-num" data-field="contribution_pp">Approval points</th>
+            <th class="kx-num kx-hide-narrow" data-field="ordinary_unsuccessful">Other unsuccessful in window</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="kx-note">Total above baseline: <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_base" data-fmt="int">—</b>
+        (<b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_contribution_pp" data-fmt="pp">—</b> of approval).
+        For comparison, removing the <span data-fill data-source="kpis" data-field="value" data-where="metric=selected_incident" data-fmt="int">—</span> matching failures from the recent period gives
+        <span data-fill data-source="kpis" data-field="value" data-where="metric=approval_excl_selected" data-fmt="pct">—</span>. That is a descriptive rate after excluding selected records, not an estimate of performance without incidents.</p>
+    </div>
+    <div class="kx-grid-4" id="incident-cards" data-source="incidents daily vendor_evidence"></div>
+    <div class="kx-grid">
+      <div class="kx-card" id="sensitivity-card">
+        <h3>Sensitivity of the attribution</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="sensitivity-table" data-source="incident_sensitivity" data-row-key="id">
+            <thead><tr><th data-field="incident">Window</th><th data-field="label">Variant</th><th class="kx-num" data-field="observed">Observed</th><th class="kx-num" data-field="attributed">Attributed</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="kx-note">Range across the four baseline-based variants:
+          <span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_low" data-fmt="int">—</span>–<span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_high" data-fmt="int">—</span>.</p>
+      </div>
+      <div class="kx-card" id="evidence-card">
+        <h3>Vendor status-page evidence</h3>
+        <p class="kx-note">From the vendor's public status history, read on the research date. A documented incident is not confirmation of impact on ARQ: its data centre, product tier and transaction times are unknown.</p>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="evidence-table" data-source="vendor_evidence" data-row-key="id">
+            <thead><tr><th data-field="date">Date</th><th data-field="window_utc">Window (UTC)</th><th data-field="description">What it says</th><th data-field="verification" class="kx-hide-narrow">Read</th><th data-field="arq_impact">ARQ impact</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hypotheses & tests -->
+  <section class="kx-page" id="hypotheses" role="tabpanel" aria-labelledby="tab-hypotheses" hidden>
+    <h2>Leading hypotheses and how to test them</h2>
+    <p class="kx-intro">Each hypothesis lists the evidence for it, credible alternatives, what is missing, the next step, and the decision that step enables.</p>
+    <div class="kx-grid" id="hyp-cards" data-source="hypotheses"></div>
+    <section class="kx-section">
+      <h2>Experiment and validation designs</h2>
+      <p class="kx-intro">Two optimisation experiments, one remediation of a confirmed failure, and one capacity-limited pilot. Sample sizes use the stated stand-in baselines and must be recomputed once the Phase 0 events give start-based rates. Assignment is per person, so repeated attempts are not counted as independent users.</p>
+      <div class="kx-grid" id="exp-cards" data-source="experiments"></div>
+    </section>
+  </section>
+
+  <!-- Plan & value -->
+  <section class="kx-page" id="plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
+    <h2>Plan</h2>
+    <p class="kx-intro">Phase 0 measures and stabilises, and later phases depend on what it finds. Effort sizes: S ≤ 2 engineer-weeks, M = 2–6 engineer-weeks plus design, L = several teams for a quarter or more. Every size is an assumption to confirm with the teams. Open an action to see its evidence, population, acceptance criteria, rollout and guardrails.</p>
+    <div id="roadmap" class="kx-section" data-source="actions phases"></div>
+    <section class="kx-section" id="scenarios">
+      <h2>Recovery scenarios</h2>
+      <div class="kx-cardhead">
+        <p class="kx-intro">Recovered approvals = observed population × eligibility × reach × return × remediation × subsequent approval. The observed population comes from the extract; every other factor is an assumption. Populations don't overlap. Incident-type benefits occur only when a comparable incident happens.</p>
+        <div class="kx-seg" role="group" aria-label="Scenario for the tables and value model on this tab">
+          <button type="button" data-scenario="Conservative">Conservative</button>
+          <button type="button" data-scenario="Central">Central</button>
+          <button type="button" data-scenario="Optimistic">Optimistic</button>
+        </div>
+      </div>
+      <p class="kx-scope-note">The scenario picker applies to the totals, the table and the value model on this tab.</p>
+      <div class="kx-tiles" id="scenario-tiles" data-source="scenario_totals"></div>
+      <div class="kx-card">
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="scenario-table" data-source="scenarios" data-row-key="id">
+            <thead><tr>
+              <th data-field="population">Population</th>
+              <th data-field="cadence" class="kx-hide-narrow">When</th>
+              <th class="kx-num" data-field="observed_n">Observed</th>
+              <th class="kx-num" data-field="eligibility">Eligible</th>
+              <th class="kx-num" data-field="reach">Reach</th>
+              <th class="kx-num" data-field="return_rate">Return</th>
+              <th class="kx-num" data-field="remediation">Fixed</th>
+              <th class="kx-num" data-field="subsequent_approval">Then approved</th>
+              <th class="kx-num" data-field="recovered">Recovered</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="kx-note">"Eligible" for the selfie populations is the observed share with no other failing check. "Then approved" uses the prior-period approval rate for the same countries, because checks that didn't run could still fail; a reviewer's approval counts as final. A target set from these scenarios is a goal, not a prediction.</p>
+      </div>
+    </section>
+    <section class="kx-section" id="value">
+      <h2>Value model</h2>
+      <p class="kx-intro">The data contains approvals, not money. The inputs start from a market-based preset built from published vendor prices, salaries and fintech benchmarks. None of them is an ARQ figure: switch presets, or type ARQ's own values. A result appears only when every input it needs is valid.</p>
+      <div class="kx-grid">
+        <div class="kx-card">
+          <h3>Observed quantities</h3>
+          <dl class="kx-kv">
+            <dt>Change in approved count, prior to recent</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</dd>
+            <dt>Of which from the lower rate (counterfactual at the prior rate)</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="signed">—</dd>
+            <dt>Of which from fewer decisions</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=volume_effect" data-fmt="signed">—</dd>
+            <dt>Recoverable approvals per 30 days, active scenario</dt><dd id="value-recoverable">—</dd>
+            <dt>Per comparable incident, active scenario</dt><dd id="value-incident">—</dd>
+          </dl>
+          <p class="kx-note">An approval is not an activated customer, and a decline is wasted paid acquisition only if the applicant came from a paid channel.</p>
+        </div>
+        <div class="kx-card">
+          <h3>Inputs</h3>
+          <div class="kx-preset-bar">
+            <div class="kx-seg" role="group" aria-label="Market-based preset for the inputs">
+              <button type="button" data-preset="Low" aria-pressed="false">Low</button>
+              <button type="button" data-preset="Mid" aria-pressed="true">Mid</button>
+              <button type="button" data-preset="High" aria-pressed="false">High</button>
+              <button type="button" data-preset="Cautious" aria-pressed="false">Cautious</button>
+            </div>
+            <button type="button" class="kx-btn" id="value-clear">Clear inputs</button>
+          </div>
+          <p class="kx-status" id="value-preset-status" role="status"></p>
+          <div class="kx-inputs" id="value-inputs" data-source="value_inputs"></div>
+        </div>
+      </div>
+      <div class="kx-card" id="value-out">
+        <h3>Results</h3>
+        <p class="kx-status" id="value-results-status"></p>
+        <dl class="kx-kv" id="value-results"></dl>
+        <p class="kx-note">The first-year value of a cohort is earned over the following year, so it is not the revenue recognised in the next 12 months. Annualising assumes 30-day volumes repeat, which seasonality may contradict.</p>
+      </div>
+      <div class="kx-card">
+        <h3>Where the presets come from</h3>
+        <p class="kx-note">Low, Mid and High are the low, middle and high values of each input's published range, so a High preset raises costs as well as value. Cautious takes the end of each range that weakens the case: low value and activation, high build, run and review costs, and the smaller estimate of past waste. Open a basis to see its derivation. Sources were fetched on <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>; replace each preset with ARQ's own figure.</p>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="preset-table" data-source="value_inputs" data-row-key="id">
+            <caption class="kx-sr">Preset values per input, with their basis and sources</caption>
+            <thead><tr>
+              <th data-field="label">Input</th><th class="kx-num" data-field="low">Low</th><th class="kx-num" data-field="mid">Mid</th><th class="kx-num" data-field="high">High</th><th class="kx-hide-narrow" data-field="kind">Kind</th><th data-field="short">Basis</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3>Sources</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="value-sources-table" data-source="value_sources" data-row-key="id">
+            <caption class="kx-sr">Published sources behind the presets</caption>
+            <thead><tr>
+              <th data-field="id">ID</th><th data-field="publisher">Source</th><th data-field="figure">Figure used</th><th class="kx-hide-narrow" data-field="period">Period</th><th data-field="status">Status</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Operating model -->
+  <section class="kx-page" id="operating" role="tabpanel" aria-labelledby="tab-operating" hidden>
+    <h2>Running KYC metrics as an owned system</h2>
+    <p class="kx-intro">How this analysis would live in a company KPI platform: defined metrics with owners, approved versions, freshness and lineage; commitments with check-ins; and access by audience. The functions are role-based examples, not ARQ's organisation: no people, headcount or reporting lines are implied.</p>
+    <div class="kx-card" id="registry-card">
+      <h3>KPI registry entries</h3>
+      <div class="kx-tablewrap-free" id="registry" data-source="metrics departments"></div>
+      <p class="kx-note">The 2023 values are fixed analytical observations. Departmental KPIs apply the same definitions to live data each week, with targets agreed once Phase 0 gives a start-based baseline.</p>
+    </div>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Definition changes and history</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="versions-table" data-source="metric_versions" data-row-key="id">
+            <thead><tr><th data-field="version">Version</th><th data-field="change">Change</th><th data-field="reason" class="kx-hide-narrow">Why</th><th data-field="effective">Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="kx-card">
+        <h3>Ownership rules</h3>
+        <ul class="kx-list">
+          <li>Each metric has one accountable owner and named contributors, effective-dated.</li>
+          <li>A definition change needs the owner and Data to approve it. The old version stays queryable, and charts mark the break.</li>
+          <li>When ownership moves, past results stay attributed to the owner at the time; targets and commitments transfer explicitly.</li>
+          <li>Each metric shows its source, last refresh and the data-quality checks it passed.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="kx-card" id="raci-card">
+      <h3>Who does what</h3>
+      <p class="kx-note">A = accountable (one per action), R = responsible, C = consulted, I = informed.</p>
+      <div class="kx-tablewrap-free" id="raci" data-source="raci actions departments"></div>
+    </div>
+    <div class="kx-card" id="commitments-card">
+      <h3>Department commitments and check-ins (Phases 0–1)</h3>
+      <p class="kx-note">Example commitments derived from the roadmap. Each is checked at the weekly funnel review against its acceptance criterion.</p>
+      <div class="kx-tablewrap-free" id="commitments" data-source="actions departments"></div>
+    </div>
+    <div class="kx-grid-3" id="dept-cards" data-source="departments raci actions rituals metrics"></div>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Operating rhythm</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="rituals-table" data-source="rituals" data-row-key="id">
+            <thead><tr><th data-field="cadence">How often</th><th data-field="meeting">Meeting</th><th data-field="chair" class="kx-hide-narrow">Chair</th><th data-field="decides">Decides</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="kx-card">
+        <h3>When an alert fires</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="escalation-table" data-source="escalation" data-row-key="step">
+            <thead><tr><th data-field="within">When</th><th data-field="who">Who</th><th data-field="does">What they do</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Access by audience</h3>
+        <div class="kx-tablewrap-free">
+          <table class="kx-table" id="access-table" data-source="access" data-row-key="audience">
+            <thead><tr><th data-field="audience">Audience</th><th data-field="sees">Sees</th><th data-field="restriction">Restriction</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="kx-card">
+        <h3>Internal adoption plan</h3>
+        <dl class="kx-gloss" id="adoption" data-source="adoption"></dl>
+      </div>
+    </div>
+    <div class="kx-card" id="alerts-card">
+      <h3>Proposed alert rules, replayed on the extract</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="alerts-table" data-source="alerts" data-row-key="id">
+          <thead><tr><th data-field="metric">Metric</th><th data-field="owner" class="kx-hide-narrow">Owner</th><th class="kx-num" data-field="normal">Normal day</th><th data-field="rule">Alert when</th><th class="kx-num" data-field="days_prior">Days firing, prior</th><th class="kx-num" data-field="days_recent">Days firing, recent</th><th class="kx-num" data-field="first_recent">First recent</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="kx-note">Daily data only. Prior-period firings are false alarms by construction and are the basis for tuning.</p>
+    </div>
+  </section>
+
+  <!-- Target design -->
+  <section class="kx-page" id="design" role="tabpanel" aria-labelledby="tab-design" hidden>
+    <h2>Proposed target design</h2>
+    <p class="kx-caveat">A proposal for discussion with Engineering. ARQ's current architecture is not known from the extracts, and parts of this may already exist. Sequencing follows the roadmap: Phase 0 changes are small; the orchestration layer, registry checks and a second vendor are Phase 3, multi-quarter work.</p>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Requirements</h3>
+        <ul class="kx-list">
+          <li>Capture ID and selfie with quality checks on the phone.</li>
+          <li>Verify through one or more vendors, plus registries where available.</li>
+          <li>Decide with versioned per-country rules: approve, retake, review or reject, always with a reason code.</li>
+          <li>Never turn an execution error into a final rejection.</li>
+          <li>Emit the Phase 0 events; keep an audit trail of checks, rule versions and reviewers.</li>
+          <li>Protect identity data: encryption, access logging, and retention per local law, to confirm with Legal.</li>
+        </ul>
+      </div>
+      <div class="kx-card">
+        <h3>Scale</h3>
+        <p class="kx-intro">About <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=avg_daily" data-fmt="int">—</b> decisions on an average day in 2023 and
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=peak_daily" data-fmt="int">—</b> at most. Throughput is not the hard part. Staying correct when a vendor misbehaves, handling fraud bursts and protecting data are.</p>
+      </div>
+    </div>
+    <div class="kx-card">
+      <h3>Components</h3>
+      <div class="kx-flow">
+        <div class="kx-layer"><div class="kx-layer-name">Phone</div><div class="kx-boxes">
+          <div class="kx-box"><b>App capture flow</b><span>Document guidance. Capture mode depends on the current flow, which is a discovery question.</span></div>
+          <div class="kx-box"><b>Vendor SDK</b><span>Auto-capture, quality checks and classification (vendor SDK 4.9 and later, per its changelog).</span></div>
+        </div></div>
+        <div class="kx-down" aria-hidden="true">↓</div>
+        <div class="kx-layer"><div class="kx-layer-name">Edge</div><div class="kx-boxes">
+          <div class="kx-box"><b>Pre-checks</b><span>Velocity and device checks (Phase 1, if fraud is confirmed); age gate per policy.</span></div>
+        </div></div>
+        <div class="kx-down" aria-hidden="true">↓</div>
+        <div class="kx-layer"><div class="kx-layer-name">Core</div><div class="kx-boxes">
+          <div class="kx-box"><b>Orchestration and decisions</b><span>Session state, retries, rules and review routing (Phase 3). Phase 0 adds hold-and-retry within the current integration.</span></div>
+          <div class="kx-box"><b>Review queue</b><span>Pilot in Phase 2, with capacity and quality planning.</span></div>
+        </div></div>
+        <div class="kx-down" aria-hidden="true">↓ ↑</div>
+        <div class="kx-layer"><div class="kx-layer-name">Vendors</div><div class="kx-boxes">
+          <div class="kx-box"><b>Verification vendor</b><span>Primary vendor; a second for failover in Phase 3, which needs integration and commercial work.</span></div>
+          <div class="kx-box"><b>Registries</b><span>INE, CURP and RENAPER checks in Phase 3; prerequisites include direct contracts.</span></div>
+        </div></div>
+        <div class="kx-down" aria-hidden="true">↓ events</div>
+        <div class="kx-layer"><div class="kx-layer-name">Data</div><div class="kx-boxes">
+          <div class="kx-box"><b>Events and metrics</b><span>Phase 0 events, KPI registry and alerts.</span></div>
+          <div class="kx-box"><b>Identity data store</b><span>Images and personal data kept separate from analytics.</span></div>
+        </div></div>
+      </div>
+    </div>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Session states</h3>
+        <p class="kx-intro">Started → document captured → selfie captured → submitted → verifying → one of: approved; retake requested; held (execution error, retried); in review; rejected with a reason code.</p>
+      </div>
+      <div class="kx-card">
+        <h3>Build or buy</h3>
+        <ul class="kx-list">
+          <li><b>Buy</b> document forensics, liveness, face match, watchlists and registry access.</li>
+          <li><b>Build</b> the events, metrics, decision rules, retries and review routing that are specific to ARQ.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vendor research -->
+  <section class="kx-page" id="vendor" role="tabpanel" aria-labelledby="tab-vendor" hidden>
+    <h2>Vendor capabilities today, against the 2023 problems</h2>
+    <p class="kx-caveat">Desk research dated <b data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</b>, kept separate from the 2023 diagnosis. A documented capability shows availability, not effectiveness for ARQ. Prerequisites and ARQ's unknown configuration are listed where known.</p>
+    <div class="kx-card">
+      <h3>Capabilities</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="capability-table" data-source="vendor_capabilities" data-row-key="id">
+          <thead><tr>
+            <th data-field="capability">Capability</th>
+            <th data-field="problem" class="kx-hide-narrow">2023 problem</th>
+            <th data-field="documented">Documented</th>
+            <th data-field="prerequisites">Prerequisites</th>
+            <th data-field="inferred" class="kx-hide-narrow">Inferred benefit</th>
+            <th data-field="unverified" class="kx-hide-narrow">Not verified for ARQ</th>
+            <th data-field="verification">Source</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="kx-card">
+      <h3>Changes since 2023</h3>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="changes-table" data-source="vendor_changes" data-row-key="id">
+          <thead><tr><th data-field="when">When</th><th data-field="area">Area</th><th data-field="change">Change</th><th data-field="verification">Source</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference -->
+  <section class="kx-page" id="reference" role="tabpanel" aria-labelledby="tab-reference" hidden>
+    <div class="kx-card" id="open-questions-ref">
+      <h3>Open questions for ARQ</h3>
+      <p class="kx-note">What to confirm before acting on the findings. The analysis stands on the extract alone; these answers decide how far each conclusion carries.</p>
+      <div class="kx-tablewrap-free" id="open-questions-table" data-source="open_questions"></div>
+    </div>
+    <div class="kx-card" id="compliance-card">
+      <h3>Control findings in the extract</h3>
+      <p class="kx-caveat kx-caveat-sm">Extract findings that need reconciliation. An approval record is not an enabled account, and a blank field is not proof a check never happened. If an extracted birth year of 2006 or later is right, the person was under 18 in 2023; the applicable policy still needs confirming.</p>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="compliance-table" data-source="compliance" data-row-key="id">
+          <thead><tr><th data-field="finding">Finding</th><th class="kx-num" data-field="n">Records</th><th data-field="detail" class="kx-hide-narrow">Detail</th><th data-field="alternatives" class="kx-hide-narrow">Other explanations</th><th data-field="validation">How to validate</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="kx-card" id="risk-card">
+      <h3>Risk register</h3>
+      <p class="kx-note">Likelihood and impact are judgement; evidence counts come from the extract.</p>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="risk-table" data-source="risks" data-row-key="id">
+          <thead><tr><th data-field="risk">Risk</th><th data-field="likelihood">Likelihood</th><th data-field="impact">Impact</th><th data-field="owner" class="kx-hide-narrow">Owner</th><th data-field="mitigation" class="kx-hide-narrow">Mitigation</th><th class="kx-num" data-field="evidence_n">Evidence</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="kx-grid">
+      <div class="kx-card">
+        <h3>Questions people ask</h3>
+        <div class="kx-faq">
+          <details><summary>Is the start-to-finish completion rate falling?</summary><p>It can't be measured from these extracts. Approval among recorded decisions fell; completion needs start events and an observation window.</p></details>
+          <details><summary>Are genuine customers being turned away?</summary><p>Probably some, but the extract can't prove it. Execution-error rejections and liveness-spike failures are the strongest candidates; neither group's eligibility or outcome on retry is known.</p></details>
+          <details><summary>Did fraud go up?</summary><p>Fraud signals went up, mostly in two clusters. Signals are not adjudicated fraud; Phase 0 adjudicates a sample.</p></details>
+          <details><summary>Is the vendor at fault?</summary><p>The vendor's status page documents liveness incidents on Sep 1 and 6, 2023, on its US data centre. Whether ARQ was affected, and who caused the Sep 1–2 execution errors, is not established.</p></details>
+          <details><summary>How fast can it be fixed?</summary><p>Phase 0 takes about two weeks. Experiments follow in weeks 2–6, scaling in weeks 6–13, and platform work over the next two quarters.</p></details>
+          <details><summary>What data is in this dashboard?</summary><p>Aggregated counts and rates only. No user ids, birth dates, images or record-level fields.</p></details>
+        </div>
+      </div>
+      <div class="kx-card">
+        <h3>Glossary</h3>
+        <dl class="kx-gloss">
+          <dt>Approval rate</dt><dd>Approved ÷ recorded decisions, in the stated period.</dd>
+          <dt>Unsuccessful</dt><dd>Rejected or unresolved warning.</dd>
+          <dt>Primary reason</dt><dd>The first check, in vendor order, that explains an unsuccessful decision; execution errors come first.</dd>
+          <dt>Fraud signal</dt><dd>A manipulation or fake label from image checks. Not adjudicated fraud.</dd>
+          <dt>Execution error</dt><dd>A check returned NOT_EXECUTED with TECHNICAL_ERROR.</dd>
+          <dt>Above baseline</dt><dd>Observed minus the count expected at the prior-period rate.</dd>
+          <dt>pp</dt><dd>Percentage points.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="kx-card">
+      <h3>Method, in short</h3>
+      <ul class="kx-list">
+        <li>One script builds every number from the two raw extracts; the dashboard, the deck and the methodology note all read its output.</li>
+        <li>The prior and recent periods are the two 30-day halves of the extract.</li>
+        <li>The full methodology and validation note is delivered alongside this dashboard.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script src="kx.js"></script>

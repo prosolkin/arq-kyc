@@ -1,0 +1,54 @@
+metric,value,label,unit
+first_date,2023-07-25,First day in the extract,date
+split_date,2023-08-24,First day of the recent period,date
+last_a_date,2023-08-23,Last day of the prior period,date
+last_date,2023-09-22,Last day in the extract,date
+days_total,60,Days in the extract,int
+research_date,2026-10-13,Vendor research date,date
+total_users,52075,Recorded decisions,int
+n_a,26932,"Recorded decisions, prior period",int
+n_b,25143,"Recorded decisions, recent period",int
+approved_a,23887,"Approved, prior period",int
+approved_b,20942,"Approved, recent period",int
+approval_a,0.8869,"Approval rate, prior period",pct
+approval_b,0.8329,"Approval rate, recent period",pct
+delta_pp,-5.4,Change in approval rate,pp
+approved_change,-2945,Change in approved count,int
+volume_effect,-1587,Approved-count change from lower volume (at the prior rate),int
+rate_effect,-1358,Approved-count change from the lower rate,int
+unsuccessful_a,3045,"Not approved, prior period",int
+unsuccessful_b,4201,"Not approved, recent period",int
+decline_a,0.1131,"Not-approved share, prior period",pct
+decline_b,0.1671,"Not-approved share, recent period",pct
+warning_a,193,"Warnings, prior period",int
+warning_b,281,"Warnings, recent period",int
+rejected_b,3920,"Rejected, recent period",int
+mex_approval_a,0.8409,"Mexico approval rate, prior period",pct
+mex_approval_b,0.7885,"Mexico approval rate, recent period",pct
+arg_approval_a,0.9487,"Argentina approval rate, prior period",pct
+arg_approval_b,0.8913,"Argentina approval rate, recent period",pct
+mex_share_a,0.5726,"Mexican-document share of decisions, prior period",pct
+mex_share_b,0.5681,"Mexican-document share of decisions, recent period",pct
+selected_incident,1068,Unsuccessful decisions matching an incident signature in its window,int
+approval_excl_selected,0.8699,Recent approval rate after removing those records (descriptive only),pct
+incident_excess_base,1057,Incident failures above baseline (base estimate),int
+incident_excess_low,1055,"Incident failures above baseline, low end of sensitivity range",int
+incident_excess_high,1130,"Incident failures above baseline, high end of sensitivity range",int
+incident_all_matching,1068,Every matching failure in the windows (old method),int
+incident_share_unsuccessful,0.2516,Base incident estimate as a share of recent unsuccessful decisions,pct
+incident_contribution_pp,-4.2,Base incident estimate as approval-rate points,pp
+multi_fail_b,298,Recent unsuccessful decisions with two or more failing or warning checks,int
+liveness_incident_face,44,Liveness-spike cases that also had a face-match warning or rejection,int
+liveness_incident_n,174,Liveness-spike cases,int
+exec_liveness_passed,407,Execution-error cases with liveness passed,int
+exec_screening_passed,251,Execution-error cases with screening passed,int
+mex_nodoc_a,0.1133,"Mexican decisions with no document type, prior period",pct
+mex_nodoc_b,0.1424,"Mexican decisions with no document type, recent period",pct
+arg_usability_rejects,0,Argentine usability rejections or warnings,int
+mex_usability_rejects,1442,Mexican usability rejections or warnings,int
+face_a,0.0277,"Face-match share of decisions, prior period",pct
+face_b,0.0241,"Face-match share of decisions, recent period",pct
+yob_blank_rejected,3769,Records with no birth year that were rejected,int
+yob_blank,3789,Records with no birth year,int
+avg_daily,868,Average decisions per day,int
+peak_daily,1331,Most decisions in one day,int

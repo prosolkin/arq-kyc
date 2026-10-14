@@ -1,0 +1,21 @@
+id,incident,variant,label,observed,attributed,share_of_unsuccessful_b
+fraud_arg-base,fraud_arg,base,"Base: narrow signature, incident days, prior-period rate",376,373,0.0888
+fraud_arg-wide_window,fraud_arg,wide_window,Window widened by one day each side,384,378,0.0899
+fraud_arg-broad_signature,fraud_arg,broad_signature,Broader signature (whole check or group),376,372,0.0886
+fraud_arg-recent_baseline,fraud_arg,recent_baseline,Baseline from recent non-incident days,376,371,0.0883
+fraud_arg-all_matching,fraud_arg,all_matching,Every matching failure in the window (no baseline; old method),376,376,0.0895
+exec_errors-base,exec_errors,base,"Base: narrow signature, incident days, prior-period rate",407,407,0.0969
+exec_errors-wide_window,exec_errors,wide_window,Window widened by one day each side,407,407,0.0969
+exec_errors-broad_signature,exec_errors,broad_signature,Broader signature (whole check or group),454,454,0.108
+exec_errors-recent_baseline,exec_errors,recent_baseline,Baseline from recent non-incident days,407,407,0.0969
+exec_errors-all_matching,exec_errors,all_matching,Every matching failure in the window (no baseline; old method),407,407,0.0969
+liveness_spike-base,liveness_spike,base,"Base: narrow signature, incident days, prior-period rate",174,173,0.0413
+liveness_spike-wide_window,liveness_spike,wide_window,Window widened by one day each side,175,174,0.0414
+liveness_spike-broad_signature,liveness_spike,broad_signature,Broader signature (whole check or group),210,171,0.0406
+liveness_spike-recent_baseline,liveness_spike,recent_baseline,Baseline from recent non-incident days,174,174,0.0413
+liveness_spike-all_matching,liveness_spike,all_matching,Every matching failure in the window (no baseline; old method),174,174,0.0414
+fraud_mex-base,fraud_mex,base,"Base: narrow signature, incident days, prior-period rate",111,104,0.0248
+fraud_mex-wide_window,fraud_mex,wide_window,Window widened by one day each side,111,102,0.0243
+fraud_mex-broad_signature,fraud_mex,broad_signature,Broader signature (whole check or group),153,133,0.0317
+fraud_mex-recent_baseline,fraud_mex,recent_baseline,Baseline from recent non-incident days,111,103,0.0245
+fraud_mex-all_matching,fraud_mex,all_matching,Every matching failure in the window (no baseline; old method),111,111,0.0264

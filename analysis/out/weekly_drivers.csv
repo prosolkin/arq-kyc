@@ -1,0 +1,244 @@
+week,country,driver,n,total,share,days
+2023-07-24,ALL,Execution error,1,4816,0.00021,6
+2023-07-24,ALL,Fraud signal,12,4816,0.00249,6
+2023-07-24,ALL,"No document type, no reason code",182,4816,0.03779,6
+2023-07-24,ALL,Unsupported or incomplete document,90,4816,0.01869,6
+2023-07-24,ALL,Image quality,22,4816,0.00457,6
+2023-07-24,ALL,Screen or paper copy,12,4816,0.00249,6
+2023-07-24,ALL,Selfie / liveness,80,4816,0.01661,6
+2023-07-24,ALL,Face match,165,4816,0.03426,6
+2023-07-24,ALL,Other,0,4816,0.0,6
+2023-07-24,ARG,Execution error,0,1590,0.0,6
+2023-07-24,ARG,Fraud signal,8,1590,0.00503,6
+2023-07-24,ARG,"No document type, no reason code",0,1590,0.0,6
+2023-07-24,ARG,Unsupported or incomplete document,0,1590,0.0,6
+2023-07-24,ARG,Image quality,0,1590,0.0,6
+2023-07-24,ARG,Screen or paper copy,0,1590,0.0,6
+2023-07-24,ARG,Selfie / liveness,46,1590,0.02893,6
+2023-07-24,ARG,Face match,28,1590,0.01761,6
+2023-07-24,ARG,Other,0,1590,0.0,6
+2023-07-24,MEX,Execution error,1,3226,0.00031,6
+2023-07-24,MEX,Fraud signal,4,3226,0.00124,6
+2023-07-24,MEX,"No document type, no reason code",182,3226,0.05642,6
+2023-07-24,MEX,Unsupported or incomplete document,90,3226,0.0279,6
+2023-07-24,MEX,Image quality,22,3226,0.00682,6
+2023-07-24,MEX,Screen or paper copy,12,3226,0.00372,6
+2023-07-24,MEX,Selfie / liveness,34,3226,0.01054,6
+2023-07-24,MEX,Face match,137,3226,0.04247,6
+2023-07-24,MEX,Other,0,3226,0.0,6
+2023-07-31,ALL,Execution error,0,5863,0.0,7
+2023-07-31,ALL,Fraud signal,6,5863,0.00102,7
+2023-07-31,ALL,"No document type, no reason code",201,5863,0.03428,7
+2023-07-31,ALL,Unsupported or incomplete document,135,5863,0.02303,7
+2023-07-31,ALL,Image quality,61,5863,0.0104,7
+2023-07-31,ALL,Screen or paper copy,18,5863,0.00307,7
+2023-07-31,ALL,Selfie / liveness,74,5863,0.01262,7
+2023-07-31,ALL,Face match,153,5863,0.0261,7
+2023-07-31,ALL,Other,4,5863,0.00068,7
+2023-07-31,ARG,Execution error,0,1930,0.0,7
+2023-07-31,ARG,Fraud signal,5,1930,0.00259,7
+2023-07-31,ARG,"No document type, no reason code",0,1930,0.0,7
+2023-07-31,ARG,Unsupported or incomplete document,0,1930,0.0,7
+2023-07-31,ARG,Image quality,0,1930,0.0,7
+2023-07-31,ARG,Screen or paper copy,0,1930,0.0,7
+2023-07-31,ARG,Selfie / liveness,51,1930,0.02642,7
+2023-07-31,ARG,Face match,39,1930,0.02021,7
+2023-07-31,ARG,Other,1,1930,0.00052,7
+2023-07-31,MEX,Execution error,0,3933,0.0,7
+2023-07-31,MEX,Fraud signal,1,3933,0.00025,7
+2023-07-31,MEX,"No document type, no reason code",201,3933,0.05111,7
+2023-07-31,MEX,Unsupported or incomplete document,135,3933,0.03432,7
+2023-07-31,MEX,Image quality,61,3933,0.01551,7
+2023-07-31,MEX,Screen or paper copy,18,3933,0.00458,7
+2023-07-31,MEX,Selfie / liveness,23,3933,0.00585,7
+2023-07-31,MEX,Face match,114,3933,0.02899,7
+2023-07-31,MEX,Other,3,3933,0.00076,7
+2023-08-07,ALL,Execution error,0,5966,0.0,7
+2023-08-07,ALL,Fraud signal,36,5966,0.00603,7
+2023-08-07,ALL,"No document type, no reason code",195,5966,0.03269,7
+2023-08-07,ALL,Unsupported or incomplete document,124,5966,0.02078,7
+2023-08-07,ALL,Image quality,34,5966,0.0057,7
+2023-08-07,ALL,Screen or paper copy,18,5966,0.00302,7
+2023-08-07,ALL,Selfie / liveness,87,5966,0.01458,7
+2023-08-07,ALL,Face match,187,5966,0.03134,7
+2023-08-07,ALL,Other,6,5966,0.00101,7
+2023-08-07,ARG,Execution error,0,2490,0.0,7
+2023-08-07,ARG,Fraud signal,18,2490,0.00723,7
+2023-08-07,ARG,"No document type, no reason code",0,2490,0.0,7
+2023-08-07,ARG,Unsupported or incomplete document,0,2490,0.0,7
+2023-08-07,ARG,Image quality,0,2490,0.0,7
+2023-08-07,ARG,Screen or paper copy,1,2490,0.0004,7
+2023-08-07,ARG,Selfie / liveness,66,2490,0.02651,7
+2023-08-07,ARG,Face match,50,2490,0.02008,7
+2023-08-07,ARG,Other,3,2490,0.0012,7
+2023-08-07,MEX,Execution error,0,3476,0.0,7
+2023-08-07,MEX,Fraud signal,18,3476,0.00518,7
+2023-08-07,MEX,"No document type, no reason code",195,3476,0.0561,7
+2023-08-07,MEX,Unsupported or incomplete document,124,3476,0.03567,7
+2023-08-07,MEX,Image quality,34,3476,0.00978,7
+2023-08-07,MEX,Screen or paper copy,17,3476,0.00489,7
+2023-08-07,MEX,Selfie / liveness,21,3476,0.00604,7
+2023-08-07,MEX,Face match,137,3476,0.03941,7
+2023-08-07,MEX,Other,3,3476,0.00086,7
+2023-08-14,ALL,Execution error,0,7359,0.0,7
+2023-08-14,ALL,Fraud signal,19,7359,0.00258,7
+2023-08-14,ALL,"No document type, no reason code",254,7359,0.03452,7
+2023-08-14,ALL,Unsupported or incomplete document,133,7359,0.01807,7
+2023-08-14,ALL,Image quality,54,7359,0.00734,7
+2023-08-14,ALL,Screen or paper copy,27,7359,0.00367,7
+2023-08-14,ALL,Selfie / liveness,149,7359,0.02025,7
+2023-08-14,ALL,Face match,178,7359,0.02419,7
+2023-08-14,ALL,Other,11,7359,0.00149,7
+2023-08-14,ARG,Execution error,0,4144,0.0,7
+2023-08-14,ARG,Fraud signal,12,4144,0.0029,7
+2023-08-14,ARG,"No document type, no reason code",0,4144,0.0,7
+2023-08-14,ARG,Unsupported or incomplete document,0,4144,0.0,7
+2023-08-14,ARG,Image quality,0,4144,0.0,7
+2023-08-14,ARG,Screen or paper copy,10,4144,0.00241,7
+2023-08-14,ARG,Selfie / liveness,99,4144,0.02389,7
+2023-08-14,ARG,Face match,64,4144,0.01544,7
+2023-08-14,ARG,Other,5,4144,0.00121,7
+2023-08-14,MEX,Execution error,0,3215,0.0,7
+2023-08-14,MEX,Fraud signal,7,3215,0.00218,7
+2023-08-14,MEX,"No document type, no reason code",254,3215,0.079,7
+2023-08-14,MEX,Unsupported or incomplete document,133,3215,0.04137,7
+2023-08-14,MEX,Image quality,54,3215,0.0168,7
+2023-08-14,MEX,Screen or paper copy,17,3215,0.00529,7
+2023-08-14,MEX,Selfie / liveness,50,3215,0.01555,7
+2023-08-14,MEX,Face match,114,3215,0.03546,7
+2023-08-14,MEX,Other,6,3215,0.00187,7
+2023-08-21,ALL,Execution error,0,6417,0.0,7
+2023-08-21,ALL,Fraud signal,418,6417,0.06514,7
+2023-08-21,ALL,"No document type, no reason code",241,6417,0.03756,7
+2023-08-21,ALL,Unsupported or incomplete document,116,6417,0.01808,7
+2023-08-21,ALL,Image quality,39,6417,0.00608,7
+2023-08-21,ALL,Screen or paper copy,7,6417,0.00109,7
+2023-08-21,ALL,Selfie / liveness,127,6417,0.01979,7
+2023-08-21,ALL,Face match,118,6417,0.01839,7
+2023-08-21,ALL,Other,4,6417,0.00062,7
+2023-08-21,ARG,Execution error,0,2907,0.0,7
+2023-08-21,ARG,Fraud signal,397,2907,0.13657,7
+2023-08-21,ARG,"No document type, no reason code",0,2907,0.0,7
+2023-08-21,ARG,Unsupported or incomplete document,0,2907,0.0,7
+2023-08-21,ARG,Image quality,0,2907,0.0,7
+2023-08-21,ARG,Screen or paper copy,1,2907,0.00034,7
+2023-08-21,ARG,Selfie / liveness,89,2907,0.03062,7
+2023-08-21,ARG,Face match,40,2907,0.01376,7
+2023-08-21,ARG,Other,2,2907,0.00069,7
+2023-08-21,MEX,Execution error,0,3510,0.0,7
+2023-08-21,MEX,Fraud signal,21,3510,0.00598,7
+2023-08-21,MEX,"No document type, no reason code",241,3510,0.06866,7
+2023-08-21,MEX,Unsupported or incomplete document,116,3510,0.03305,7
+2023-08-21,MEX,Image quality,39,3510,0.01111,7
+2023-08-21,MEX,Screen or paper copy,6,3510,0.00171,7
+2023-08-21,MEX,Selfie / liveness,38,3510,0.01083,7
+2023-08-21,MEX,Face match,78,3510,0.02222,7
+2023-08-21,MEX,Other,2,3510,0.00057,7
+2023-08-28,ALL,Execution error,407,6185,0.0658,7
+2023-08-28,ALL,Fraud signal,33,6185,0.00534,7
+2023-08-28,ALL,"No document type, no reason code",290,6185,0.04689,7
+2023-08-28,ALL,Unsupported or incomplete document,137,6185,0.02215,7
+2023-08-28,ALL,Image quality,35,6185,0.00566,7
+2023-08-28,ALL,Screen or paper copy,26,6185,0.0042,7
+2023-08-28,ALL,Selfie / liveness,193,6185,0.0312,7
+2023-08-28,ALL,Face match,121,6185,0.01956,7
+2023-08-28,ALL,Other,8,6185,0.00129,7
+2023-08-28,ARG,Execution error,145,2439,0.05945,7
+2023-08-28,ARG,Fraud signal,17,2439,0.00697,7
+2023-08-28,ARG,"No document type, no reason code",0,2439,0.0,7
+2023-08-28,ARG,Unsupported or incomplete document,0,2439,0.0,7
+2023-08-28,ARG,Image quality,0,2439,0.0,7
+2023-08-28,ARG,Screen or paper copy,2,2439,0.00082,7
+2023-08-28,ARG,Selfie / liveness,82,2439,0.03362,7
+2023-08-28,ARG,Face match,34,2439,0.01394,7
+2023-08-28,ARG,Other,3,2439,0.00123,7
+2023-08-28,MEX,Execution error,262,3746,0.06994,7
+2023-08-28,MEX,Fraud signal,16,3746,0.00427,7
+2023-08-28,MEX,"No document type, no reason code",290,3746,0.07742,7
+2023-08-28,MEX,Unsupported or incomplete document,137,3746,0.03657,7
+2023-08-28,MEX,Image quality,35,3746,0.00934,7
+2023-08-28,MEX,Screen or paper copy,24,3746,0.00641,7
+2023-08-28,MEX,Selfie / liveness,111,3746,0.02963,7
+2023-08-28,MEX,Face match,87,3746,0.02322,7
+2023-08-28,MEX,Other,5,3746,0.00133,7
+2023-09-04,ALL,Execution error,0,5636,0.0,7
+2023-09-04,ALL,Fraud signal,8,5636,0.00142,7
+2023-09-04,ALL,"No document type, no reason code",209,5636,0.03708,7
+2023-09-04,ALL,Unsupported or incomplete document,121,5636,0.02147,7
+2023-09-04,ALL,Image quality,45,5636,0.00798,7
+2023-09-04,ALL,Screen or paper copy,46,5636,0.00816,7
+2023-09-04,ALL,Selfie / liveness,183,5636,0.03247,7
+2023-09-04,ALL,Face match,113,5636,0.02005,7
+2023-09-04,ALL,Other,5,5636,0.00089,7
+2023-09-04,ARG,Execution error,0,2353,0.0,7
+2023-09-04,ARG,Fraud signal,3,2353,0.00127,7
+2023-09-04,ARG,"No document type, no reason code",0,2353,0.0,7
+2023-09-04,ARG,Unsupported or incomplete document,0,2353,0.0,7
+2023-09-04,ARG,Image quality,0,2353,0.0,7
+2023-09-04,ARG,Screen or paper copy,17,2353,0.00722,7
+2023-09-04,ARG,Selfie / liveness,99,2353,0.04207,7
+2023-09-04,ARG,Face match,36,2353,0.0153,7
+2023-09-04,ARG,Other,2,2353,0.00085,7
+2023-09-04,MEX,Execution error,0,3283,0.0,7
+2023-09-04,MEX,Fraud signal,5,3283,0.00152,7
+2023-09-04,MEX,"No document type, no reason code",209,3283,0.06366,7
+2023-09-04,MEX,Unsupported or incomplete document,121,3283,0.03686,7
+2023-09-04,MEX,Image quality,45,3283,0.01371,7
+2023-09-04,MEX,Screen or paper copy,29,3283,0.00883,7
+2023-09-04,MEX,Selfie / liveness,84,3283,0.02559,7
+2023-09-04,MEX,Face match,77,3283,0.02345,7
+2023-09-04,MEX,Other,3,3283,0.00091,7
+2023-09-11,ALL,Execution error,0,5594,0.0,7
+2023-09-11,ALL,Fraud signal,96,5594,0.01716,7
+2023-09-11,ALL,"No document type, no reason code",223,5594,0.03986,7
+2023-09-11,ALL,Unsupported or incomplete document,110,5594,0.01966,7
+2023-09-11,ALL,Image quality,40,5594,0.00715,7
+2023-09-11,ALL,Screen or paper copy,46,5594,0.00822,7
+2023-09-11,ALL,Selfie / liveness,124,5594,0.02217,7
+2023-09-11,ALL,Face match,183,5594,0.03271,7
+2023-09-11,ALL,Other,9,5594,0.00161,7
+2023-09-11,ARG,Execution error,0,2694,0.0,7
+2023-09-11,ARG,Fraud signal,23,2694,0.00854,7
+2023-09-11,ARG,"No document type, no reason code",0,2694,0.0,7
+2023-09-11,ARG,Unsupported or incomplete document,0,2694,0.0,7
+2023-09-11,ARG,Image quality,0,2694,0.0,7
+2023-09-11,ARG,Screen or paper copy,9,2694,0.00334,7
+2023-09-11,ARG,Selfie / liveness,79,2694,0.02932,7
+2023-09-11,ARG,Face match,58,2694,0.02153,7
+2023-09-11,ARG,Other,2,2694,0.00074,7
+2023-09-11,MEX,Execution error,0,2900,0.0,7
+2023-09-11,MEX,Fraud signal,73,2900,0.02517,7
+2023-09-11,MEX,"No document type, no reason code",223,2900,0.0769,7
+2023-09-11,MEX,Unsupported or incomplete document,110,2900,0.03793,7
+2023-09-11,MEX,Image quality,40,2900,0.01379,7
+2023-09-11,MEX,Screen or paper copy,37,2900,0.01276,7
+2023-09-11,MEX,Selfie / liveness,45,2900,0.01552,7
+2023-09-11,MEX,Face match,125,2900,0.0431,7
+2023-09-11,MEX,Other,7,2900,0.00241,7
+2023-09-18,ALL,Execution error,0,4239,0.0,5
+2023-09-18,ALL,Fraud signal,58,4239,0.01368,5
+2023-09-18,ALL,"No document type, no reason code",184,4239,0.04341,5
+2023-09-18,ALL,Unsupported or incomplete document,98,4239,0.02312,5
+2023-09-18,ALL,Image quality,31,4239,0.00731,5
+2023-09-18,ALL,Screen or paper copy,36,4239,0.00849,5
+2023-09-18,ALL,Selfie / liveness,94,4239,0.02218,5
+2023-09-18,ALL,Face match,135,4239,0.03185,5
+2023-09-18,ALL,Other,1,4239,0.00024,5
+2023-09-18,ARG,Execution error,0,1822,0.0,5
+2023-09-18,ARG,Fraud signal,16,1822,0.00878,5
+2023-09-18,ARG,"No document type, no reason code",0,1822,0.0,5
+2023-09-18,ARG,Unsupported or incomplete document,0,1822,0.0,5
+2023-09-18,ARG,Image quality,0,1822,0.0,5
+2023-09-18,ARG,Screen or paper copy,5,1822,0.00274,5
+2023-09-18,ARG,Selfie / liveness,70,1822,0.03842,5
+2023-09-18,ARG,Face match,34,1822,0.01866,5
+2023-09-18,ARG,Other,0,1822,0.0,5
+2023-09-18,MEX,Execution error,0,2417,0.0,5
+2023-09-18,MEX,Fraud signal,42,2417,0.01738,5
+2023-09-18,MEX,"No document type, no reason code",184,2417,0.07613,5
+2023-09-18,MEX,Unsupported or incomplete document,98,2417,0.04055,5
+2023-09-18,MEX,Image quality,31,2417,0.01283,5
+2023-09-18,MEX,Screen or paper copy,31,2417,0.01283,5
+2023-09-18,MEX,Selfie / liveness,24,2417,0.00993,5
+2023-09-18,MEX,Face match,101,2417,0.04179,5
+2023-09-18,MEX,Other,1,2417,0.00041,5

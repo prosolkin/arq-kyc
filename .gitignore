@@ -1,0 +1,17 @@
+# Raw KYC extracts: ARQ's data, never committed. Place them at the repo root to reproduce the build.
+KYC_*.csv
+*.csv.bak
+
+# Tooling and scratch
+node_modules/
+analysis/tools/.deck-build/
+analysis/tools/.report-build/
+analysis/tools/.site-build/
+__pycache__/
+.DS_Store
+.claude/
+
+# Local drafts that are not part of the submission
+analysis/public/
+analysis/export/change-summary.md
+analysis/export/submission-email.md

@@ -1,0 +1,14 @@
+key,level,name,class,n_a,n_b,share_a,share_b,of_unsuccessful_a,of_unsuccessful_b
+group:Execution error,group,Execution error,Execution error,1,407,4e-05,0.01619,0.0003,0.0969
+group:Fraud signal,group,Fraud signal,Fraud signal (not adjudicated),88,598,0.00327,0.02378,0.0289,0.1423
+"group:No document type, no reason code",group,"No document type, no reason code",Unexplained or identity mismatch,945,1034,0.03509,0.04112,0.3103,0.2461
+group:Unsupported or incomplete document,group,Unsupported or incomplete document,Capture or document issue,528,536,0.0196,0.02132,0.1734,0.1276
+group:Image quality,group,Image quality,Capture or document issue,186,175,0.00691,0.00696,0.0611,0.0417
+group:Screen or paper copy,group,Screen or paper copy,Capture or document issue,78,158,0.0029,0.00628,0.0256,0.0376
+group:Selfie / liveness,group,Selfie / liveness,Capture or document issue,451,660,0.01675,0.02625,0.1481,0.1571
+group:Face match,group,Face match,Unexplained or identity mismatch,747,606,0.02774,0.0241,0.2453,0.1443
+group:Other,group,Other,Unexplained or identity mismatch,21,27,0.00078,0.00107,0.0069,0.0064
+class:Fraud signal (not adjudicated),class,Fraud signal (not adjudicated),Fraud signal (not adjudicated),88,598,0.00327,0.02378,0.0289,0.1423
+class:Execution error,class,Execution error,Execution error,1,407,4e-05,0.01619,0.0003,0.0969
+class:Capture or document issue,class,Capture or document issue,Capture or document issue,1243,1529,0.04615,0.06081,0.4082,0.364
+class:Unexplained or identity mismatch,class,Unexplained or identity mismatch,Unexplained or identity mismatch,1713,1667,0.0636,0.0663,0.5626,0.3968

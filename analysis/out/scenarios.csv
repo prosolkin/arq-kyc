@@ -1,0 +1,19 @@
+id,action,scenario,population,cadence,observed_n,no_other_failing_share,eligibility,reach,return_rate,remediation,subsequent_approval,recovered,recovered_pp
+tech_error_hold-Conservative,tech_error_hold,Conservative,Execution errors (Sep 1–2),Per comparable incident,407,1.0,1.0,0.9,0.5,0.8,0.791,116,
+tech_error_hold-Central,tech_error_hold,Central,Execution errors (Sep 1–2),Per comparable incident,407,1.0,1.0,1.0,0.75,0.9,0.879,242,
+tech_error_hold-Optimistic,tech_error_hold,Optimistic,Execution errors (Sep 1–2),Per comparable incident,407,1.0,1.0,1.0,1.0,0.98,0.879,351,
+liveness_retake_incident-Conservative,liveness_retake_incident,Conservative,Liveness quality failures on incident days,Per comparable incident,174,0.747,0.747,0.9,0.4,0.6,0.808,23,
+liveness_retake_incident-Central,liveness_retake_incident,Central,Liveness quality failures on incident days,Per comparable incident,174,0.747,0.747,1.0,0.6,0.75,0.898,53,
+liveness_retake_incident-Optimistic,liveness_retake_incident,Optimistic,Liveness quality failures on incident days,Per comparable incident,174,0.747,0.747,1.0,0.8,0.9,0.898,84,
+liveness_retake-Conservative,liveness_retake,Conservative,Other selfie / liveness failures,Every 30 days,486,0.656,0.656,0.9,0.4,0.3,0.813,28,0.11
+liveness_retake-Central,liveness_retake,Central,Other selfie / liveness failures,Every 30 days,486,0.656,0.656,1.0,0.6,0.45,0.903,78,0.31
+liveness_retake-Optimistic,liveness_retake,Optimistic,Other selfie / liveness failures,Every 30 days,486,0.656,0.656,1.0,0.8,0.6,0.903,138,0.55
+mex_doc_guidance-Conservative,mex_doc_guidance,Conservative,Mexico: no document type or unsupported / incomplete document,Every 30 days,1570,0.983,0.5,0.9,1.0,0.2,0.757,107,0.43
+mex_doc_guidance-Central,mex_doc_guidance,Central,Mexico: no document type or unsupported / incomplete document,Every 30 days,1570,0.983,0.7,1.0,1.0,0.35,0.841,323,1.29
+mex_doc_guidance-Optimistic,mex_doc_guidance,Optimistic,Mexico: no document type or unsupported / incomplete document,Every 30 days,1570,0.983,0.85,1.0,1.0,0.5,0.841,561,2.23
+capture_quality-Conservative,capture_quality,Conservative,Image quality and screen or paper copies,Every 30 days,333,0.919,0.7,0.9,1.0,0.3,0.766,48,0.19
+capture_quality-Central,capture_quality,Central,Image quality and screen or paper copies,Every 30 days,333,0.919,0.85,1.0,1.0,0.45,0.852,108,0.43
+capture_quality-Optimistic,capture_quality,Optimistic,Image quality and screen or paper copies,Every 30 days,333,0.919,0.95,1.0,1.0,0.6,0.852,162,0.64
+review_queue-Conservative,review_queue,Conservative,Face match: WARNING plus a share of NO_MATCH,Every 30 days,168,1.0,1.0,1.0,1.0,0.3,1.0,50,0.2
+review_queue-Central,review_queue,Central,Face match: WARNING plus a share of NO_MATCH,Every 30 days,278,1.0,1.0,1.0,1.0,0.45,1.0,125,0.5
+review_queue-Optimistic,review_queue,Optimistic,Face match: WARNING plus a share of NO_MATCH,Every 30 days,387,1.0,1.0,1.0,1.0,0.6,1.0,232,0.92

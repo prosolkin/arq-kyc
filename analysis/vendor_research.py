@@ -1,0 +1,121 @@
+"""Desk research on the KYC vendor (Jumio), carried out on 2026-10-13.
+
+Kept separate from the 2023 data analysis. Each row says how it was verified:
+  "Fetched"            primary source read on the research date
+  "Fetched (agent)"    primary source read by a research sub-task on the research date
+  "Press release"      vendor announcement, not product documentation
+  "Not re-verified"    reported in earlier research, not re-checked
+A documented vendor incident or capability is not evidence of impact on, or
+benefit for, ARQ: ARQ's data centre, product tier, integration and transaction
+times are unknown.
+"""
+
+STATUS = "https://monitor.jumio.com/incidents/"
+DOCS = "https://documentation.jumio.ai/docs/references"
+
+EVIDENCE = [
+    dict(id="sep1a", date="2023-09-01", window_utc="15:38–16:42", region="US data centre",
+         service="Identity Verification Processing",
+         description="Liveness returned 'Unable to see your face properly' for all ID verification transactions.",
+         source=STATUS + "jjhqkpymsxzx", verification="Fetched (agent)", matches="Liveness quality spike on Sep 1",
+         arq_impact="Not confirmed"),
+    dict(id="sep1b", date="2023-09-01", window_utc="18:07–22:44", region="US data centre",
+         service="Identity Verification Processing (and Authentication)",
+         description="Same liveness message. Liveness restored 20:59; Authentication restored for new users only; resolved 22:44.",
+         source=STATUS + "qxws7nkd8mnp", verification="Fetched", matches="Liveness quality spike on Sep 1",
+         arq_impact="Not confirmed"),
+    dict(id="sep6", date="2023-09-06", window_utc="10:00–17:22", region="US data centre",
+         service="Identity Verification Processing (and Authentication)",
+         description="Instability; workaround 11:25; liveness restored 16:21; resolved 17:22.",
+         source=STATUS + "jgp33lhgh3j9", verification="Fetched", matches="Liveness quality spike on Sep 6",
+         arq_impact="Not confirmed"),
+    dict(id="sep13", date="2023-09-13", window_utc="13:23–13:44", region="US data centre",
+         service="Identity Verification (V2 traffic; Jumio Go and Hybrid customers)",
+         description="Retry surge after a fix: V2 scans unavailable; Jumio Go customers may have seen extra 'unsupported document' rejections; Hybrid delays.",
+         source=STATUS + "m87t7jtwq747", verification="Fetched (agent)", matches="No distinct spike in the extract",
+         arq_impact="Not confirmed"),
+    dict(id="sep2_none", date="2023-09-01 / 09-02", window_utc="", region="All", service="",
+         description="No status entry mentions usability, TECHNICAL_ERROR or skipped document checks, and none is listed for Sep 2.",
+         source="https://monitor.jumio.com/history", verification="Fetched (agent)", matches="Execution errors on Sep 1–2 remain unattributed",
+         arq_impact="Unknown: vendor or integration"),
+    dict(id="fraud_none", date="2023-08-24, 09-14 to 09-19", window_utc="", region="All", service="",
+         description="No incidents listed for August 2023; only scheduled maintenance in Singapore during Sep 14–19.",
+         source="https://monitor.jumio.com/history", verification="Fetched (agent)", matches="Fraud-signal clusters have no vendor incident",
+         arq_impact="Not applicable"),
+]
+
+CAPABILITIES = [
+    dict(id="classification", capability="Classification", problem="No document type returned",
+         documented="A separate capability that returns the document type, including UNSUPPORTED.",
+         prerequisites="None stated.", source=DOCS + "/capabilities/classification", verification="Fetched (agent)",
+         inferred="An explicit type or UNSUPPORTED would make 'no document type' cases diagnosable.",
+         unverified="Whether ARQ's workflow already returns it."),
+    dict(id="usability", capability="Usability labels", problem="Missing mandatory data; automation level",
+         documented="UNSUPPORTED_DOCUMENT_TYPE is a WARNING; MISSING_MANDATORY_DATAPOINTS 'will only happen for Jumio Go transactions'; TECHNICAL_ERROR is NOT_EXECUTED.",
+         prerequisites="None stated.", source=DOCS + "/capabilities/usability", verification="Fetched",
+         inferred="Records with MISSING_MANDATORY_DATAPOINTS were probably Jumio Go (fully automated) transactions.",
+         unverified="Whether ARQ had manual review elsewhere in its own process."),
+    dict(id="liveness", capability="Liveness labels and tiers", problem="Liveness quality spike",
+         documented="BAD_QUALITY is a WARNING; FACE_NOT_FULLY_VISIBLE is REJECTED; Standard or Premium type.",
+         prerequisites="Premium 'requires additional configuration for your tenant'; technology depends on the product purchased.",
+         source=DOCS + "/capabilities/liveness", verification="Fetched",
+         inferred="A retake policy could key off the WARNING label. Premium targets spoofing, not vendor outages.",
+         unverified="Which tier and labels ARQ receives."),
+    dict(id="image_checks", capability="Image Checks labels", problem="Fraud-signal clusters",
+         documented="Field-level manipulation labels (photo, document number, birth date, name and others), DIGITAL_MANIPULATION and FAKE; REPEATED_FACE as a warning.",
+         prerequisites="Depends on Usability and Extraction.", source=DOCS + "/capabilities/image-checks", verification="Fetched (agent)",
+         inferred="More specific labels would help triage and adjudication.", unverified="Whether ARQ's workflow returns them."),
+    dict(id="ctr", capability="Cross Transaction Risk", problem="Fraud-signal clusters",
+         documented="Matches ID data, faces and image parts such as backgrounds across transactions; informational by default.",
+         prerequisites="Enabled by contacting Jumio Support. Press release of Apr 22, 2025 announced general availability.",
+         source=DOCS + "/capabilities/ctr", verification="Fetched (agent)",
+         inferred="Would show whether a burst shares faces or backgrounds (a ring) or not (possibly a model issue).",
+         unverified="Commercial terms; effect on ARQ's traffic."),
+    dict(id="retrieval", capability="Result retrieval and retries", problem="Execution errors",
+         documented="After a callback, retry retrieval from 40 seconds with growing intervals, at most 10 consecutive failures.",
+         prerequisites="None.", source="https://documentation.jumio.ai/docs/developer-resources/retrieval", verification="Fetched (agent)",
+         inferred="No documented automatic retry of verifications, so retrying is the customer's job.",
+         unverified="How ARQ handles TECHNICAL_ERROR today."),
+    dict(id="sdk", capability="Mobile SDK capture features", problem="No document type; capture quality",
+         documented="ML document and country classifier (4.9.0); unsupported-document check (4.11.0); virtual-camera injection detection (4.14.0); controls to limit manual capture (4.18.0).",
+         prerequisites="SDK upgrade; configuration details for 4.18.0 controls not documented; gallery upload not documented.",
+         source="https://github.com/Jumio/mobile-sdk-android", verification="Fetched (agent)",
+         inferred="Capture-time classification could catch some unsupported documents before submission.",
+         unverified="ARQ's current SDK version and capture flow."),
+    dict(id="ine", capability="Mexico INE registry checks", problem="INE fraud signals; face mismatch",
+         documented="INE Lista Nominal validates card fields. INE Data & Face Validation compares with INE records.",
+         prerequisites="Data & Face needs a direct contract with INE, onboarding with FIMPE, dedicated middleware, about 4–5 days setup plus 2 days certification per client.",
+         source=DOCS + "/riskSignals/govDatabaseCheck/mexicanINEDataFace", verification="Fetched (agent)",
+         inferred="Could confirm credentials flagged as manipulated.", unverified="Cost, coverage and effect."),
+    dict(id="curp", capability="Mexico CURP (RENAPO) check", problem="Identity confirmation",
+         documented="Validates an 18-character CURP for Mexico.", prerequisites="None stated beyond the CURP input.",
+         source=DOCS + "/riskSignals/govDatabaseCheck/mexicanCheckRenapo", verification="Fetched (agent)",
+         inferred="An additional identity signal.", unverified="Effect on approval."),
+    dict(id="renaper", capability="Argentina RENAPER data and biometric", problem="Fraud signals; face mismatch",
+         documented="Data check and biometric (selfie vs registry) check.",
+         prerequisites="PII fields need an updated data-processing agreement and are disabled by default; enabled by Jumio.",
+         source=DOCS + "/riskSignals/govDatabaseCheck/Argentina/biometricArgentina", verification="Fetched (agent)",
+         inferred="Independent check for DNI cases.", unverified="Cost and effect."),
+    dict(id="go_hybrid", capability="Jumio Go vs Hybrid", problem="Automation level",
+         documented="Not defined in current developer docs. A 2019 press release describes Go as fully automated and the hybrid product as AI plus human review.",
+         prerequisites="Product choice.", source="https://www.jumio.com/about/press-releases/jumio-go/", verification="Press release",
+         inferred="Hybrid review could resolve some warnings.", unverified="ARQ's product and cost."),
+    dict(id="rules", capability="Rules management", problem="Routing flags to review",
+         documented="Rules Editor datasheet: prebuilt rules that customers can adjust and extend.",
+         prerequisites="Copying and activating a custom ruleset: not verified.",
+         source="https://www.jumio.com/app/uploads/2024/10/jumio-rules-editor-datasheet.pdf", verification="Fetched (agent)",
+         inferred="Flags could route to review instead of auto-decline.", unverified="Activation process and fit."),
+]
+
+CHANGES = [
+    dict(id="2025-04-22", when="Apr 22, 2025", area="Fraud", change="Cross Transaction Risk announced as generally available.",
+         source="https://www.jumio.com/about/press-releases/data-to-fight-identity-fraud/", verification="Press release"),
+    dict(id="2025-06-18", when="Jun 18, 2025", area="Liveness", change="Liveness Premium (deepfake and injection detection) generally available.",
+         source="https://www.jumio.com/about/press-releases/jumio-launches-premium-liveness-detection-solution/", verification="Press release"),
+    dict(id="sdk", when="SDK 4.9–4.18", area="SDK", change="ML document classification, unsupported-document check, injection detection, manual-capture controls.",
+         source="https://github.com/Jumio/mobile-sdk-android", verification="Fetched (agent)"),
+    dict(id="status", when="Current", area="Status page", change="Vendor status history is published at monitor.jumio.com, by data centre, including 2023.",
+         source="https://monitor.jumio.com/history", verification="Fetched"),
+    dict(id="docs", when="Current", area="Documentation", change="Developer documentation moved to documentation.jumio.ai; pages carry no update dates.",
+         source="https://documentation.jumio.ai/", verification="Fetched"),
+]

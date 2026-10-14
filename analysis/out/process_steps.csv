@@ -1,0 +1,10 @@
+order,step,track,question,reached,passed,warning,rejected,not_executed,decided_here,top_reason,top_reason_n
+1,usability,Document,Is the ID photo usable?,51367,49647,787,933,708,2126,UNSUPPORTED_DOCUMENT_TYPE,509
+2,classification,Document,Was a document type returned?,49647,47449,0,2198,2428,1979,NO_DOCUMENT_TYPE,1979
+3,image_checks,Document,Any sign of manipulation?,48165,47220,0,945,3910,928,MANIPULATED_DOCUMENT,528
+4,extraction,Document,Were the fields read?,48165,48165,0,0,3910,0,,0
+5,data_checks,Document,Is the data consistent?,47220,47211,0,9,4855,9,MISMATCHING_DATAPOINTS,6
+6,liveness,Selfie,Is a live person present?,52074,50894,148,1032,1,834,LIVENESS_UNDETERMINED,642
+7,similarity,Selfie,Does the face match the ID?,49438,47926,408,1104,2637,1353,NO_MATCH,1007
+8,watchlist_screening,Screening,Any watchlist hit?,45468,45399,69,0,6607,0,,0
+9,decision,Decision,Final recorded outcome,52075,44829,474,6772,0,17,NO_FAILING_CHECK,17

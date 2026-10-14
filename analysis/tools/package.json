@@ -1,0 +1,10 @@
+{
+  "name": "kyc-analysis-tools",
+  "private": true,
+  "description": "Pinned build tools for the KYC submission: d3 (bundled into the offline dashboard) and pptxgenjs (deck).",
+  "dependencies": {
+    "d3": "7.9.0",
+    "pptxgenjs": "3.12.0",
+    "staticrypt": "3.5.4"
+  }
+}

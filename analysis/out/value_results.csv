@@ -1,0 +1,97 @@
+preset,scenario,id,label,unit,value
+Low,Conservative,activated,"Activated customers from recoverable approvals, per 30 days",int,89
+Low,Conservative,cohort_value,First-year value of one 30-day cohort,usd,1157.08
+Low,Conservative,annualised,"Same, if every 30 days repeats for a year",usd,14077.78
+Low,Conservative,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Low,Conservative,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Low,Conservative,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Low,Conservative,review_30d,Review cost per 30 days for the review-pilot population,usd,139.44
+Low,Conservative,breakeven,Break-even first-year value per activated customer,usd,28.57
+Low,Central,activated,"Activated customers from recoverable approvals, per 30 days",int,242
+Low,Central,cohort_value,First-year value of one 30-day cohort,usd,3148.44
+Low,Central,annualised,"Same, if every 30 days repeats for a year",usd,38306.07
+Low,Central,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Low,Central,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Low,Central,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Low,Central,review_30d,Review cost per 30 days for the review-pilot population,usd,230.74
+Low,Central,breakeven,Break-even first-year value per activated customer,usd,10.5
+Low,Optimistic,activated,"Activated customers from recoverable approvals, per 30 days",int,418
+Low,Optimistic,cohort_value,First-year value of one 30-day cohort,usd,5427.84
+Low,Optimistic,annualised,"Same, if every 30 days repeats for a year",usd,66038.7
+Low,Optimistic,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Low,Optimistic,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Low,Optimistic,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Low,Optimistic,review_30d,Review cost per 30 days for the review-pilot population,usd,321.21
+Low,Optimistic,breakeven,Break-even first-year value per activated customer,usd,6.09
+Mid,Conservative,activated,"Activated customers from recoverable approvals, per 30 days",int,131
+Mid,Conservative,cohort_value,First-year value of one 30-day cohort,usd,2754.76
+Mid,Conservative,annualised,"Same, if every 30 days repeats for a year",usd,33516.23
+Mid,Conservative,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,9326.22
+Mid,Conservative,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,759.24
+Mid,Conservative,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,30179.98
+Mid,Conservative,review_30d,Review cost per 30 days for the review-pilot population,usd,960.96
+Mid,Conservative,breakeven,Break-even first-year value per activated customer,usd,35.4
+Mid,Central,activated,"Activated customers from recoverable approvals, per 30 days",int,357
+Mid,Central,cohort_value,First-year value of one 30-day cohort,usd,7495.78
+Mid,Central,annualised,"Same, if every 30 days repeats for a year",usd,91198.68
+Mid,Central,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,9326.22
+Mid,Central,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,759.24
+Mid,Central,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,30179.98
+Mid,Central,review_30d,Review cost per 30 days for the review-pilot population,usd,1590.16
+Mid,Central,breakeven,Break-even first-year value per activated customer,usd,13.01
+Mid,Optimistic,activated,"Activated customers from recoverable approvals, per 30 days",int,615
+Mid,Optimistic,cohort_value,First-year value of one 30-day cohort,usd,12922.54
+Mid,Optimistic,annualised,"Same, if every 30 days repeats for a year",usd,157224.22
+Mid,Optimistic,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,9326.22
+Mid,Optimistic,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,759.24
+Mid,Optimistic,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,30179.98
+Mid,Optimistic,review_30d,Review cost per 30 days for the review-pilot population,usd,2213.64
+Mid,Optimistic,breakeven,Break-even first-year value per activated customer,usd,7.55
+High,Conservative,activated,"Activated customers from recoverable approvals, per 30 days",int,193
+High,Conservative,cohort_value,First-year value of one 30-day cohort,usd,10249.67
+High,Conservative,annualised,"Same, if every 30 days repeats for a year",usd,124704.32
+High,Conservative,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,18904.5
+High,Conservative,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,1539.0
+High,Conservative,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,62867.96
+High,Conservative,review_30d,Review cost per 30 days for the review-pilot population,usd,1812.72
+High,Conservative,breakeven,Break-even first-year value per activated customer,usd,56.59
+High,Central,activated,"Activated customers from recoverable approvals, per 30 days",int,526
+High,Central,cohort_value,First-year value of one 30-day cohort,usd,27889.66
+High,Central,annualised,"Same, if every 30 days repeats for a year",usd,339324.2
+High,Central,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,18904.5
+High,Central,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,1539.0
+High,Central,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,62867.96
+High,Central,review_30d,Review cost per 30 days for the review-pilot population,usd,2999.62
+High,Central,breakeven,Break-even first-year value per activated customer,usd,20.8
+High,Optimistic,activated,"Activated customers from recoverable approvals, per 30 days",int,907
+High,Optimistic,cohort_value,First-year value of one 30-day cohort,usd,48081.07
+High,Optimistic,annualised,"Same, if every 30 days repeats for a year",usd,584986.35
+High,Optimistic,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,18904.5
+High,Optimistic,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,1539.0
+High,Optimistic,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,62867.96
+High,Optimistic,review_30d,Review cost per 30 days for the review-pilot population,usd,4175.73
+High,Optimistic,breakeven,Break-even first-year value per activated customer,usd,12.06
+Cautious,Conservative,activated,"Activated customers from recoverable approvals, per 30 days",int,89
+Cautious,Conservative,cohort_value,First-year value of one 30-day cohort,usd,1157.08
+Cautious,Conservative,annualised,"Same, if every 30 days repeats for a year",usd,14077.78
+Cautious,Conservative,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Cautious,Conservative,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Cautious,Conservative,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Cautious,Conservative,review_30d,Review cost per 30 days for the review-pilot population,usd,1812.72
+Cautious,Conservative,breakeven,Break-even first-year value per activated customer,usd,122.95
+Cautious,Central,activated,"Activated customers from recoverable approvals, per 30 days",int,242
+Cautious,Central,cohort_value,First-year value of one 30-day cohort,usd,3148.44
+Cautious,Central,annualised,"Same, if every 30 days repeats for a year",usd,38306.07
+Cautious,Central,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Cautious,Central,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Cautious,Central,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Cautious,Central,review_30d,Review cost per 30 days for the review-pilot population,usd,2999.62
+Cautious,Central,breakeven,Break-even first-year value per activated customer,usd,45.19
+Cautious,Optimistic,activated,"Activated customers from recoverable approvals, per 30 days",int,418
+Cautious,Optimistic,cohort_value,First-year value of one 30-day cohort,usd,5427.84
+Cautious,Optimistic,annualised,"Same, if every 30 days repeats for a year",usd,66038.7
+Cautious,Optimistic,vendor_declined,Historical vendor spend on recent not-approved decisions,usd,6049.44
+Cautious,Optimistic,vendor_attack,Vendor spend avoidable on suspected extra attack traffic,usd,492.48
+Cautious,Optimistic,paid_declined,Historical paid acquisition spend on recent not-approved applicants,usd,10647.85
+Cautious,Optimistic,review_30d,Review cost per 30 days for the review-pilot population,usd,4175.73
+Cautious,Optimistic,breakeven,Break-even first-year value per activated customer,usd,26.21

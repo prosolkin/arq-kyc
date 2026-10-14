@@ -1,0 +1,7 @@
+topic,plan
+Users,"Product, Data, Risk, Compliance, Ops and Vendor leads who own KYC metrics or actions."
+Core workflows,Weekly funnel review; investigating an alert; approving a definition change; checking an action's status.
+Onboarding,30-minute walkthrough per team; each owner confirms their metric definitions and actions in the first week.
+Pilot,"Four weeks with the KYC funnel review only, then a feedback round before adding more metrics."
+Feedback,A comment thread per metric and a monthly five-question survey of owners.
+Success measures,Share of KYC actions with an owner and a current status; share of metrics with an approved definition; time from alert to acknowledged; decisions taken in the review that cite the platform. Page views are not a success measure.

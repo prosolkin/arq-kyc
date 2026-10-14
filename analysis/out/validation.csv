@@ -1,0 +1,15 @@
+id,check,result,status,note
+rows,Records in each extract,"52,075 summary / 52,075 details",Pass,Equal row counts.
+unique,Unique user_reference,"52,075 / 52,075",Pass,No duplicate users in either file.
+join,Join coverage on user_reference,"52,075 matched, 0 + 0 unmatched",Pass,Complete one-to-one join.
+dates,Date coverage,2023-07-25 to 2023-09-22: 60 of 60 calendar days,Pass,No missing days.
+time,Timestamp precision,"52,075 of 52,075 at midnight UTC",Limitation,"Dates only. Intraday outage windows cannot be matched to records, and the extract does not say which event the date marks (submission, decision or export)."
+decision,Final outcome categories (summary.decision_type),"PASSED 44,825, REJECTED 6,772, WARNING 474, APPROVED 4",Pass,"PASSED and APPROVED = approved; REJECTED = rejected; WARNING = unresolved (not approved, not a confirmed rejection)."
+label,decision_type vs details.decision_label,PASSED vs REJECTED: 1; PASSED vs OK: 8,Note,"summary.decision_type is treated as the outcome. The 8 'OK' labels are label-only; 1 record shows PASSED in the summary but REJECTED in details and is counted as approved, pending reconciliation."
+passes,Non-standard capability value 'PASSES',3 values,Note,Treated as PASSED.
+watchlist_blank,Blank watchlist_screening_decision,"6,606 blank, 1 NOT_EXECUTED",Note,Shown as 'not recorded'. Mostly on rejected records; a blank field does not prove screening never ran elsewhere.
+doc_blank,Blank data_type (no document type returned),"3,781 records",Note,"A symptom with several possible causes (unsupported document, capture, configuration, classification coverage)."
+yob,Birth year extracted,"48,286 present, 3,789 blank; range 1909–2022",Limitation,"3,769 of the 3,789 blanks are rejected records, so ages describe applicants whose document was read, not all applicants. Extreme years (e.g. 2022) suggest extraction errors."
+country,Country field,MEX / ARG only (data_issuing_country),Note,"This is the document's issuing country, not necessarily residence or account market."
+attempts,Attempts per user,1 record per user_reference,Limitation,"The extract does not say whether a record is the first, latest or final attempt; retries and later outcomes are not visible."
+raw_hash,Raw files unchanged,"summary 67e4190909b7…, details e0762f377a41…",Pass,"SHA-256 prefixes, recomputed on every build."

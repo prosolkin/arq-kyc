@@ -1,0 +1,7 @@
+id,metric,scope,owner,normal,rule,threshold,days_prior,days_recent,first_recent,fired_dates
+approval,Daily approval rate,ALL,Product · Onboarding,0.8865,prior median − 5 pp,0.8365,0,6,2023-08-24,2023-08-24 2023-09-01 2023-09-02 2023-09-06 2023-09-13 2023-09-21
+exec_error,Execution errors,ALL,Engineering · Onboarding platform,0.0,0.5% of decisions,0.005,0,2,2023-09-01,2023-09-01 2023-09-02
+fraud,Fraud signals,ALL,Risk & Fraud,0.0016,"3× prior median, at least 1.5%",0.015,0,6,2023-08-24,2023-08-24 2023-09-14 2023-09-15 2023-09-17 2023-09-18 2023-09-19
+liveness_quality,Liveness quality failures,ALL,Vendor management,0.0,0.5% of decisions,0.005,0,2,2023-09-01,2023-09-01 2023-09-06
+no_doctype_mex,"No document type, Mexico",MEX,Product · Onboarding,0.0597,prior median + 3 pp,0.0897,3,5,2023-08-24,2023-08-24 2023-08-29 2023-09-02 2023-09-13 2023-09-19
+face_match,Face-match failures,ALL,Operations · KYC review,0.0258,prior median + 2 pp,0.0458,2,1,2023-09-13,2023-09-13

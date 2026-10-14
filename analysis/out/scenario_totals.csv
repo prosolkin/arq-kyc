@@ -1,0 +1,4 @@
+scenario,steady_30d,steady_pp,approval_with_steady,per_incident,control_gap_n,control_gap_10,control_gap_50,control_gap_all,control_gap_all_pp
+Conservative,233,0.93,0.8422,139,580,-58,-290,-580,-2.31
+Central,634,2.52,0.8581,295,580,-58,-290,-580,-2.31
+Optimistic,1093,4.35,0.8764,435,580,-58,-290,-580,-2.31

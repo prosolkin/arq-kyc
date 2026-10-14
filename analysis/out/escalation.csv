@@ -1,0 +1,6 @@
+step,within,who,who_ids,does
+1,Within 15 minutes of an alert,Engineering · Onboarding platform,platform,"Acknowledge, check the vendor status page, and decide whether the fault is the vendor's or ours."
+2,Within 1 hour,"Vendor management, Product · Onboarding, Customer Support",vendors;product;cx,Open a vendor ticket; apply the hold-and-retry rule to affected codes; prepare a support message.
+3,"Within 4 hours, if unresolved","Leadership team, Growth & Marketing",leadership;growth,Decide on further measures. Pause paid acquisition only if the incident is severe and affects a material share of that traffic.
+4,"Same day, if controls are affected","Compliance, Legal & Privacy",compliance;legal,"Assess any screening, age or data-protection impact and what must be reported."
+5,Within 5 working days,"Data & Analytics, Finance",data;finance,Blameless review with impact figures; check contract terms before any SLA claim.

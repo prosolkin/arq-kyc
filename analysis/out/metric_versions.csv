@@ -1,0 +1,3 @@
+id,metric,version,change,reason,effective
+v1,approval_rate,1.0,Called 'pass rate'; presented as the KYC funnel pass rate.,First draft of this analysis.,Superseded
+v2,approval_rate,2.0,Renamed 'approval rate among recorded decisions'; completion and eventual approval defined separately and marked unavailable.,"Review: the extract has no starts, attempts or abandonment, so it cannot measure start-to-finish completion.",Current

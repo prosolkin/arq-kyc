@@ -1,0 +1,10 @@
+driver,class,n_a,n_b,share_a,share_b,effect_pp,incident_pp,rest_pp
+Fraud signal,Fraud signal (not adjudicated),88,598,0.00327,0.02378,-2.05,-1.9,-0.15
+Execution error,Execution error,1,407,4e-05,0.01619,-1.62,-1.62,0.0
+Selfie / liveness,Capture or document issue,451,660,0.01675,0.02625,-0.95,-0.69,-0.26
+"No document type, no reason code",Unexplained or identity mismatch,945,1034,0.03509,0.04112,-0.6,0.0,-0.6
+Screen or paper copy,Capture or document issue,78,158,0.0029,0.00628,-0.34,0.0,-0.34
+Unsupported or incomplete document,Capture or document issue,528,536,0.0196,0.02132,-0.17,0.0,-0.17
+Other,Unexplained or identity mismatch,21,27,0.00078,0.00107,-0.03,0.0,-0.03
+Image quality,Capture or document issue,186,175,0.00691,0.00696,-0.01,0.0,-0.01
+Face match,Unexplained or identity mismatch,747,606,0.02774,0.0241,0.36,0.0,0.36
