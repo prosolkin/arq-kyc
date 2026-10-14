@@ -11,8 +11,8 @@
   .kx-caveat b { font-weight: 600; }
   .kx-caveat-sm { font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); }
 
-  .kx-tabs { display: flex; gap: var(--cds-gap-xs); overflow-x: auto; border-bottom: 1px solid var(--color-border-line); scrollbar-width: thin; }
-  .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; margin-bottom: -1px; }
+  .kx-tabs { display: flex; gap: var(--cds-gap-xs); overflow-x: auto; overflow-y: hidden; box-shadow: inset 0 -1px 0 var(--color-border-line); scrollbar-width: thin; }
+  .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; flex: none; }
   .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
   .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
   .kx-page { display: flex; flex-direction: column; gap: var(--cds-gap-xl); }
