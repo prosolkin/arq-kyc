@@ -33,8 +33,8 @@ const CLASS_INFO = {
   'Capture or document issue': ['Unsupported or incomplete document, image quality, a copy instead of the card, or an unclear selfie. Possibly recoverable on retry; not proven.', 'Product, Mobile and Vendor management'],
   'Unexplained or identity mismatch': ['No document type and no reason code, face mismatch, or other. Some are impostors, some may be genuine people.', 'Operations, Product and Vendor management'],
 };
-const TABS = ['summary', 'measurement', 'drivers', 'incidents', 'hypotheses', 'plan', 'operating', 'design', 'vendor', 'reference'];
-const PLACE_TAB = { overview: 'summary', trend: 'summary', declines: 'drivers', customers: 'drivers', causes: 'incidents', mexico: 'drivers', mix: 'drivers', teams: 'operating', impact: 'plan', actions: 'plan', spotted: 'reference', method: 'reference' };
+const TABS = ['quick', 'summary', 'measurement', 'drivers', 'incidents', 'hypotheses', 'plan', 'operating', 'design', 'vendor', 'reference'];
+const PLACE_TAB = { tldr: 'quick', review: 'quick', overview: 'summary', trend: 'summary', declines: 'drivers', customers: 'drivers', causes: 'incidents', mexico: 'drivers', mix: 'drivers', teams: 'operating', impact: 'plan', actions: 'plan', spotted: 'reference', method: 'reference' };
 const HYP_LABEL = { h_exec: 'H1', h_liveness: 'H2', h_attack: 'H3', h_ine: 'H4', h_mex_docs: 'H5', h_face: 'H6' };
 const STEP_NAME = { usability: 'Usability', classification: 'Document type', image_checks: 'Image checks', extraction: 'Extraction', data_checks: 'Data checks', liveness: 'Liveness', similarity: 'Face match', watchlist_screening: 'Watchlist', decision: 'Final outcome' };
 const SIG_LABEL = { fraud: 'Fraud signals', exec_error: 'Execution errors', liveness_quality: 'Liveness quality failures' };
@@ -683,6 +683,45 @@ function drawPresetTables() {
   if (st && src) st.querySelectorAll('tbody tr').forEach((tr) => { const a = tr.children[1].querySelector('a'); const r = src.find((x) => x.id === tr.dataset.key); if (a && r) a.textContent = r.publisher + ': ' + r.title; });
 }
 
+/* ---------- Quick review (ASD-STE100) ---------- */
+function drawQuick() {
+  const box = document.getElementById('quick-body');
+  const rows = rowsOf('quick_review'); if (!box || !rows) return;
+  const items = rows.slice().sort((a, b) => +a.order - +b.order);
+  const sections = [];
+  items.forEach((r) => { let sec = sections.find((x) => x.id === r.section); if (!sec) { sec = { id: r.section, heading: r.heading, goto: r.goto, items: [] }; sections.push(sec); } sec.items.push(r); });
+  let step = 0;
+  box.replaceChildren(...sections.map((sec, i) => {
+    const card = el('article', 'kx-card' + (i === 0 ? ' kx-qhero' : ''));
+    card.append(el(i === 0 ? 'h2' : 'h3', null, sec.heading));
+    let list = null;
+    sec.items.forEach((r) => {
+      if (r.kind === 'li' || r.kind === 'step') {
+        const tag = r.kind === 'li' ? 'ul' : 'ol';
+        if (!list || list.tagName.toLowerCase() !== tag) { list = el(tag); if (tag === 'ol') list.start = step + 1; card.append(list); }
+        if (r.kind === 'step') step += 1;
+        list.append(el('li', null, r.text));
+        return;
+      }
+      list = null;
+      if (r.kind === 'caution') { const c = el('p', 'kx-caveat'); const [head, ...rest] = r.text.split(': '); c.append(el('b', null, head + ': '), document.createTextNode(rest.join(': '))); card.append(c); }
+      else card.append(el('p', r.kind === 'lead' ? 'kx-qlead' : null, r.text));
+    });
+    if (sec.goto) {
+      const tab = document.getElementById('tab-' + sec.goto);
+      const more = el('p', 'kx-more'); const b = el('button', 'kx-link', 'More detail: ' + (tab ? tab.textContent : sec.goto)); b.type = 'button'; b.dataset.goto = sec.goto;
+      more.append(b); card.append(more);
+    }
+    return card;
+  }));
+  const words = items.reduce((n, r) => n + r.text.split(/\s+/).length, 0);
+  const t = document.getElementById('quick-time'); if (t) t.textContent = String(Math.max(1, Math.round(words / 200)));
+}
+document.getElementById('quick-body').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-goto]'); if (!b) return;
+  showTab(b.dataset.goto); root.querySelector('.kx-tabs').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus();
+});
+
 /* ---------- Open questions ---------- */
 function drawOpenQuestions() {
   const q = rowsOf('open_questions'); if (!q) return;
@@ -774,7 +813,7 @@ function drawTables() {
 }
 
 /* ---------- tabs, lenses, controls ---------- */
-let activeTab = 'summary';
+let activeTab = 'quick';
 function showTab(id, opts = {}) {
   if (!TABS.includes(id)) return;
   activeTab = id;
@@ -817,7 +856,7 @@ function drawAll() {
   drawTrend(); drawBridge();
   drawDeclineChart(); drawDeclineCards(); drawMexBars(); drawUnclassified(); drawProcess(); drawMix(); drawReasons(); drawAge(); drawDocMix();
   (rowsOf('incidents') || []).forEach(drawSpark);
-  drawHypotheses(); drawExperiments(); drawOpenQuestions();
+  drawQuick(); drawHypotheses(); drawExperiments(); drawOpenQuestions();
   drawRoadmap(); drawScenarios(); drawValueInputs(); drawValueResults(); drawPresetTables();
   drawRegistry(); drawRaci(); drawCommitments(); drawDeptCards(); drawAdoption();
 }
@@ -855,7 +894,7 @@ let opened = false;
 dash.onData(() => {
   if (!opened) {
     opened = true;
-    showTab(tabFromHash() || 'summary', { link: false });
+    showTab(tabFromHash() || 'quick', { link: false });
     if (location.hash === '#print') printMode(true);
     return;
   }

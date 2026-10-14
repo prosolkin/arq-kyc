@@ -24,6 +24,7 @@
  "phases": "Roadmap phases.",
  "process_steps": "Capability-level counts per check.",
  "profile": "Decisions by extracted birth-year band (biased by missingness).",
+ "quick_review": "The whole story in ASD-STE100 Simplified Technical English, with STE rule checks.",
  "raci": "Responsibility assignments per action.",
  "reasons": "Every primary reason, prior vs recent period.",
  "risks": "Risk register.",

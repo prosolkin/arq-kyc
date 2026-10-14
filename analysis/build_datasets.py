@@ -22,6 +22,7 @@ import datetime as dt
 import hashlib
 import math
 import os
+import re
 import statistics
 from collections import Counter, defaultdict
 
@@ -733,7 +734,7 @@ def main():
          "Person (person_id), assigned at first kyc_started, sticky across attempts.",
          "Eventual approval within 7 days of first start.", "7 days per person plus 7 days to mature the last cohort.",
          "+2.0 pp on eventual approval.",
-         f"Using the recent submission-based Mexican approval rate ({rMEX_B:.1%}) as a stand-in baseline, about {n_mex:,} people per arm (95% confidence, 80% power). At about {mex_daily:,.0f} Mexican decisions a day that is roughly {math.ceil(2 * n_mex / mex_daily)} days at a 50/50 split. Recompute once start-based data exists.",
+         f"Using the recent submission-based Mexican approval rate ({round(rMEX_B, 4):.1%}) as a stand-in baseline, about {n_mex:,} people per arm (95% confidence, 80% power). At about {mex_daily:,.0f} Mexican decisions a day that is roughly {math.ceil(2 * n_mex / mex_daily)} days at a 50/50 split. Recompute once start-based data exists.",
          "Start-to-submit rate, time to decision, fraud-signal rate, support contacts.",
          "Start at 10% for 3 days to check events, then 50/50. Expand if the primary outcome improves by at least the minimum and guardrails hold. Roll back if start-to-submit falls more than 2 pp or fraud signals rise more than 0.5 pp."),
         ("exp_liveness", "liveness_retake", "Optimisation experiment",
@@ -910,6 +911,7 @@ def main():
     ]
     write("open_questions.csv", list(open_questions[0].keys()), open_questions)
 
+
     # ---------------- risk register (ratings are judgement; evidence counts are from the extract) ----------------
     risks = [
         ("exec_final", "Execution errors or vendor faults recorded as final rejections", "Medium", "High", "platform",
@@ -968,6 +970,93 @@ def main():
     comp = {c[0]: c[2] for c in compliance}
     write_actions(nB, cb, len(mex_doc), len(capture), len(face_warn), len(face_nomatch), exec_inc, live_inc, comp, caught,
                   sum(a["days_prior"] for a in alerts))
+    # ---------------- quick review: the whole story in ASD-STE100 Simplified Technical English ----------------
+    KP = {m: v for m, v, _l, _u in kpis}
+    BR = {b_["driver"]: b_["effect_pp"] for b_ in bridge}
+    TOT = {t["scenario"]: t for t in totals}
+    VR = {(r["preset"], r["scenario"], r["id"]): r["value"] for r in vres}
+    VI = {r["id"]: r for r in vrows}
+    INC = {i["id"]: i for i in incidents}
+    p1 = lambda v: f"{100 * v:.1f}%"
+    pts = lambda v: ("+" if v > 0 else "−") + f"{abs(v):.2f} points"
+    usd0 = lambda v: f"${int(v + 0.5):,}"
+    with open(os.path.join(OUT, "actions.csv"), newline="") as f:
+        acts = list(csv.DictReader(f))
+    assert {a["id"] for a in acts if a["phase"] == "0"} >= {"instrument_min", "tech_error_hold", "alerting", "compliance_reconcile", "investigate_fraud", "vendor_confirm"}
+    assert {a["id"] for a in acts if a["phase"] == "1"} == {"liveness_retake", "mex_doc_guidance", "fraud_precheck"}
+    mid_be, mid_v = VR[("Mid", "Central", "breakeven")], VI["value_per_activated"]["mid"]
+    cau_be, cau_v = VR[("Cautious", "Central", "breakeven")], VI["value_per_activated"][VI["value_per_activated"]["cautious"]]
+    assert mid_v >= mid_be and cau_v < cau_be, (mid_v, mid_be, cau_v, cau_be)
+    # (section, heading, goto tab, kind, text). kind: lead, p, li, step, caution
+    Q = [
+        ("result", "The result", "summary", "lead", f"In the last 30 days, the KYC approval rate decreased by {abs(KP['delta_pp']):.1f} percentage points, from {p1(KP['approval_a'])} to {p1(KP['approval_b'])}."),
+        ("result", "", "", "p", f"ARQ approved {abs(KP['approved_change']):,} fewer people than in the first 30 days."),
+        ("result", "", "", "p", f"Of these {abs(KP['approved_change']):,} approvals, {abs(KP['volume_effect']):,} are because of fewer decisions and {abs(KP['rate_effect']):,} are because of the lower rate."),
+        ("result", "", "", "p", f"Both countries show the decrease. Mexico decreased from {p1(KP['mex_approval_a'])} to {p1(KP['mex_approval_b'])}. Argentina decreased from {p1(KP['arg_approval_a'])} to {p1(KP['arg_approval_b'])}."),
+        ("data", "What the data can show", "measurement", "p", "The data has one decision record for each person, with a date."),
+        ("data", "", "", "p", "The data does not show when a person starts KYC. Because of this, we cannot measure the completion rate."),
+        ("data", "", "", "p", "This review uses the approval rate of recorded decisions. This rate is not the same as the completion rate."),
+        ("data", "", "", "caution", "CAUTION: Do not report the approval rate as the completion rate."),
+        ("causes", "Why the rate decreased", "drivers", "p", "Four causes give most of the decrease:"),
+        ("causes", "", "", "li", f"Fraud signals: {pts(BR['Fraud signal'])}. The vendor found more images that look altered or fake."),
+        ("causes", "", "", "li", f"Execution errors: {pts(BR['Execution error'])}. On Sep 1–2, some checks did not run, and the system rejected these people."),
+        ("causes", "", "", "li", f"Selfie and liveness failures: {pts(BR['Selfie / liveness'])}. The vendor status page shows liveness incidents on Sep 1 and Sep 6."),
+        ("causes", "", "", "li", f"Mexican documents with no document type: {pts(BR['No document type, no reason code'])}. The vendor did not identify these documents."),
+        ("causes", "", "", "p", f"Face match failures decreased ({pts(BR['Face match'])}). But face match is still a large cause of rejections."),
+        ("causes", "", "", "caution", "CAUTION: A fraud signal is not confirmed fraud. Do not call it fraud before an analyst examines it."),
+        ("incidents", "Short incidents", "incidents", "p", f"We found about {KP['incident_excess_base']:,} more failures than usual in four short date windows. The range is {KP['incident_excess_low']:,} to {KP['incident_excess_high']:,}."),
+        ("incidents", "", "", "li", "Aug 24, Argentina: more fraud signals and more traffic than usual."),
+        ("incidents", "", "", "li", "Sep 1–2: execution errors in both countries."),
+        ("incidents", "", "", "li", "Sep 1 and Sep 6: liveness failures."),
+        ("incidents", "", "", "li", "Sep 14–19, Mexico: more fraud signals, with usual traffic."),
+        ("incidents", "", "", "p", "The causes of these incidents are not confirmed. The vendor status page does not show an incident on Sep 2."),
+        ("first", "Do these steps first (weeks 0–2)", "plan", "step", "Record each KYC start, each step and each final decision."),
+        ("first", "", "", "step", "Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person."),
+        ("first", "", "", "step", "Set alerts for sudden increases in failures."),
+        ("first", "", "", "step", "Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6."),
+        ("first", "", "", "step", "Examine a sample of fraud signals. Find which signals are real fraud."),
+        ("first", "", "", "step", "Compare the control findings with the source systems. Correct the errors that you find."),
+        ("tests", "Then do these tests (weeks 2–6)", "hypotheses", "step", "Test one guided retake for unclear selfies."),
+        ("tests", "", "", "step", "In Mexico, show pictures of the accepted documents before the capture."),
+        ("tests", "", "", "step", "If the fraud is confirmed, add device checks before the vendor call."),
+        ("gain", "The possible gain", "plan", "p", f"If the tests work, ARQ can approve about {TOT['Central']['steady_30d']:,} more people each 30 days."),
+        ("gain", "", "", "p", f"The range is {TOT['Conservative']['steady_30d']:,} to {TOT['Optimistic']['steady_30d']:,} people. This is {TOT['Conservative']['steady_pp']:.1f} to {TOT['Optimistic']['steady_pp']:.1f} points of approval rate."),
+        ("gain", "", "", "p", "These numbers come from scenarios. They are not forecasts."),
+        ("money", "Money", "plan", "p", "The value model uses market data. It does not use ARQ data."),
+        ("money", "", "", "p", f"With middle market values, the first-year value is {usd0(mid_v)} for each active customer. The cost is {usd0(mid_be)} for each active customer."),
+        ("money", "", "", "p", f"With cautious values, the value is {usd0(cau_v)} and the cost is {usd0(cau_be)}. The cost is more than the value in the first year."),
+        ("money", "", "", "caution", "CAUTION: Replace the market values with ARQ values before you make a decision."),
+        ("questions", "Questions for ARQ", "reference", "li", "Does each row show the first attempt, the last attempt or the final decision?"),
+        ("questions", "", "", "li", "Does ARQ have records of people who started KYC but did not send their documents?"),
+        ("questions", "", "", "li", "What does the app do after a TECHNICAL_ERROR or a liveness failure?"),
+        ("questions", "", "", "li", "Which vendor product and which data centre does ARQ use?"),
+        ("questions", "", "", "p", "The answers can change the results of this review."),
+    ]
+
+    # STE checks that a script can do: sentence length (20 words for steps, 25 for descriptive text),
+    # no contractions, no progressive or perfect tenses, no -ing verb forms, at most 6 sentences per item.
+    ING_OK = {"during", "thing", "something", "nothing", "string"}
+    def ste_sentences(t):
+        return [x for x in re.split(r"(?<=[.?!:])\s+(?=[A-Z])", t.strip()) if x]
+    ste_max = 0
+    for sec, _h, _g, kind, t in Q:
+        sents = ste_sentences(t)
+        assert len(sents) <= 6, t
+        for s_ in sents:
+            words = [w_ for w_ in re.split(r"\s+", s_) if re.search(r"[A-Za-z0-9]", w_)]
+            limit = 20 if kind in ("step", "caution") else 25
+            assert len(words) <= limit, (len(words), s_)
+            ste_max = max(ste_max, len(words))
+            assert not re.search(r"\b\w+'(t|re|ve|ll|d|s)\b|n't\b", s_), ("contraction", s_)
+            assert not re.search(r"\b(is|are|was|were|be|been)\s+\w+ing\b", s_), ("progressive", s_)
+            assert not re.search(r"\b(has|have|had)\s+(\w+ed|been|done|made|found|shown)\b", s_), ("perfect tense", s_)
+            for w_ in re.findall(r"[A-Za-z]+ing\b", s_):
+                assert w_.lower() in ING_OK, ("-ing form", w_, s_)
+    quick = [dict(order=i_ + 1, section=sec, heading=h, goto=g, kind=kind, text=t) for i_, (sec, h, g, kind, t) in enumerate(Q)]
+    write("quick_review.csv", list(quick[0].keys()), quick)
+    n_words = sum(len(re.split(r"\s+", r["text"])) for r in quick)
+    print(f"quick review: {len(quick)} items, {n_words} words, longest sentence {ste_max} words")
+
     write_org()
     write_vendor()
 
@@ -1234,6 +1323,7 @@ MANIFEST = {
     "compliance": "Control findings in the extract, with validation steps.",
     "hypotheses": "Leading hypotheses with evidence, alternatives and next steps.",
     "open_questions": "Questions to confirm with ARQ before acting, with what each answer changes.",
+    "quick_review": "The whole story in ASD-STE100 Simplified Technical English, with STE rule checks.",
     "scenarios": "Recovery scenarios per population: observed counts and assumed factors.",
     "scenario_totals": "Scenario totals and possible control-gap reversals.",
     "experiments": "Experiment and validation designs.",
