@@ -1,0 +1,5 @@
+id,order,name,note
+Fix,1,Fix and measure,"Obvious fixes and the instruments to see them work. Cheap, start now."
+Test,2,Test the fixes,Hypotheses that are quick to try as experiments.
+Learn,3,Learn why,Investigations and research that run beside the fixes.
+Build,4,Build later,Platform work that needs a quarter or more.

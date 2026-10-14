@@ -33,8 +33,9 @@ const CLASS_INFO = {
   'Capture or document issue': ['Unsupported or incomplete document, image quality, a copy instead of the card, or an unclear selfie. Possibly recoverable on retry; not proven.', 'Product, Mobile and Vendor management'],
   'Unexplained or identity mismatch': ['No document type and no reason code, face mismatch, or other. Some are impostors, some may be genuine people.', 'Operations, Product and Vendor management'],
 };
-const TABS = ['quick', 'summary', 'measurement', 'drivers', 'incidents', 'hypotheses', 'plan', 'operating', 'design', 'vendor', 'reference'];
-const PLACE_TAB = { tldr: 'quick', review: 'quick', overview: 'summary', trend: 'summary', declines: 'drivers', customers: 'drivers', causes: 'incidents', mexico: 'drivers', mix: 'drivers', teams: 'operating', impact: 'plan', actions: 'plan', spotted: 'reference', method: 'reference' };
+const TABS = ['quick', 'drivers', 'plan', 'gain', 'summary', 'measurement', 'incidents', 'hypotheses', 'operating', 'design', 'vendor', 'reference'];
+const DETAIL_TABS = new Set(['summary', 'measurement', 'incidents', 'hypotheses', 'operating', 'design', 'vendor', 'reference']);
+const PLACE_TAB = { tldr: 'quick', review: 'quick', scenarios: 'gain', value: 'gain', roadmap: 'plan', tracks: 'plan', overview: 'summary', trend: 'summary', declines: 'drivers', customers: 'drivers', causes: 'incidents', mexico: 'drivers', mix: 'drivers', teams: 'operating', impact: 'gain', actions: 'plan', spotted: 'reference', method: 'reference' };
 const HYP_LABEL = { h_exec: 'H1', h_liveness: 'H2', h_attack: 'H3', h_ine: 'H4', h_mex_docs: 'H5', h_face: 'H6' };
 const STEP_NAME = { usability: 'Usability', classification: 'Document type', image_checks: 'Image checks', extraction: 'Extraction', data_checks: 'Data checks', liveness: 'Liveness', similarity: 'Face match', watchlist_screening: 'Watchlist', decision: 'Final outcome' };
 const SIG_LABEL = { fraud: 'Fraud signals', exec_error: 'Execution errors', liveness_quality: 'Liveness quality failures' };
@@ -162,8 +163,12 @@ function drawTrend() {
   plainTable(tbl, [{ label: 'Date' }, { label: 'Decisions', num: true }, { label: 'Approval rate', num: true }, { label: 'Selected incident failures', num: true }],
     rows.map((r) => [FMT.dateyear(r.day), FMT.int(r.n), FMT.pct(r.rate), r.sel ? FMT.int(r.sel) : '—']));
   if (!visible(box)) return;
-  const priorAvg = kv(c === 'ALL' ? 'approval_a' : c.toLowerCase() + '_approval_a');
+  const exclDays = !!document.getElementById('trend-excl-days')?.checked;
   const splitDate = new Date(pick(rowsOf('kpis'), 'metric=split_date').value);
+  const incDay = new Set(rowsOf('daily').filter((r) => r.incident_day === '1').map((r) => r.date));
+  const kept = exclDays ? rows.filter((r) => !incDay.has(r.day)) : rows;
+  const avg = (rs) => d3.sum(rs, (r) => r.n * r.rate) / d3.sum(rs, (r) => r.n);
+  const priorAvg = avg(kept.filter((r) => r.date < splitDate)), recentAvg = avg(kept.filter((r) => r.date >= splitDate));
   const incidents = rowsOf('incidents').filter((i) => i.country === 'ALL' || c === 'ALL' || i.country === c);
   const H = 300;
   const { svg, w } = freshSvg(box, H);
@@ -174,8 +179,11 @@ function drawTrend() {
   const y = d3.scaleLinear([lo, 1], [H - m.b, m.t]);
   svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).tickValues(yTicks).tickFormat(FMT.pct0).tickSize(-(w - m.l - m.r))).call(styleAxis).call((g) => g.select('.domain').remove());
   svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor((w - m.l - m.r) / 80))).tickFormat(d3.utcFormat('%b %-d')).tickSizeOuter(0)).call(styleAxis).call((g) => g.selectAll('.tick line').remove());
+  if (exclDays) rows.filter((r) => incDay.has(r.day)).forEach((r) => svg.append('rect').attr('x', x(r.date) - (w - m.l - m.r) / rows.length / 2).attr('y', m.t - 4).attr('width', (w - m.l - m.r) / rows.length).attr('height', H - m.t - m.b + 4).style('fill', 'var(--cds-chart-muted)').attr('fill-opacity', 0.25));
   svg.append('line').attr('x1', x(rows[0].date)).attr('x2', x(splitDate)).attr('y1', y(priorAvg)).attr('y2', y(priorAvg)).style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
   svg.append('text').attr('x', x(rows[0].date) + 2).attr('y', y(priorAvg) + 14).text('Prior-period rate ' + FMT.pct(priorAvg));
+  svg.append('line').attr('x1', x(splitDate)).attr('x2', x(rows[rows.length - 1].date)).attr('y1', y(recentAvg)).attr('y2', y(recentAvg)).style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('text').attr('x', x(rows[rows.length - 1].date) - 2).attr('y', y(recentAvg) + 14).attr('text-anchor', 'end').text((exclDays ? 'Recent rate without incident days ' : 'Recent-period rate ') + FMT.pct(recentAvg));
   svg.append('line').attr('x1', x(splitDate)).attr('x2', x(splitDate)).attr('y1', m.t - 6).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '2 3');
   svg.append('text').attr('x', x(splitDate) + 4).attr('y', H - m.b - 6).text('Recent period');
   const placed = [];
@@ -192,7 +200,7 @@ function drawTrend() {
   });
   const line = (k) => d3.line().x((r) => x(r.date)).y((r) => y(r[k]));
   svg.append('path').datum(rows).style('fill', 'none').style('stroke', 'var(--cds-chart-muted)').attr('stroke-width', 2).attr('stroke-dasharray', '5 4').attr('d', line('excl'));
-  svg.append('path').datum(rows).style('fill', 'none').style('stroke', colors()[0]).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', line('rate'));
+  svg.append('path').datum(kept).style('fill', 'none').style('stroke', colors()[0]).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', exclDays ? line('rate').defined((r) => !incDay.has(r.day)) : line('rate'));
   const dot = svg.append('circle').attr('r', 4).style('fill', colors()[0]).attr('visibility', 'hidden');
   const rule = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)').attr('visibility', 'hidden');
   const tip = tipFor(box);
@@ -684,28 +692,36 @@ function drawPresetTables() {
 }
 
 /* ---------- Quick review (ASD-STE100) ---------- */
+const TRACK_KINDS = { t_fix: ['1', 'Fix and measure'], t_test: ['2', 'Test the fixes'], t_learn: ['3', 'Learn why'], t_vendor: ['4', 'Decide on the vendor'] };
 function drawQuick() {
   const box = document.getElementById('quick-body');
   const rows = rowsOf('quick_review'); if (!box || !rows) return;
   const items = rows.slice().sort((a, b) => +a.order - +b.order);
   const sections = [];
   items.forEach((r) => { let sec = sections.find((x) => x.id === r.section); if (!sec) { sec = { id: r.section, heading: r.heading, goto: r.goto, items: [] }; sections.push(sec); } sec.items.push(r); });
-  let step = 0;
+  const charts = [];
   box.replaceChildren(...sections.map((sec, i) => {
     const card = el('article', 'kx-card' + (i === 0 ? ' kx-qhero' : ''));
     card.append(el(i === 0 ? 'h2' : 'h3', null, sec.heading));
-    let list = null;
+    let list = null, tracks = null;
     sec.items.forEach((r) => {
+      if (r.kind === 'chart') { const c = el('div', 'kx-qchart'); c.dataset.chart = r.text; card.append(c); charts.push(c); list = null; return; }
+      if (r.kind in TRACK_KINDS) {
+        if (!tracks) { tracks = el('div', 'kx-tracks'); card.append(tracks); }
+        let t = tracks.querySelector('[data-track="' + r.kind + '"]');
+        if (!t) { t = el('div', 'kx-track'); t.dataset.track = r.kind; const h = el('h4'); h.append(el('span', null, TRACK_KINDS[r.kind][0]), document.createTextNode(TRACK_KINDS[r.kind][1])); t.append(h, el('ol')); tracks.append(t); }
+        t.querySelector('ol').append(el('li', null, r.text));
+        list = null; return;
+      }
       if (r.kind === 'li' || r.kind === 'step') {
         const tag = r.kind === 'li' ? 'ul' : 'ol';
-        if (!list || list.tagName.toLowerCase() !== tag) { list = el(tag); if (tag === 'ol') list.start = step + 1; card.append(list); }
-        if (r.kind === 'step') step += 1;
+        if (!list || list.tagName.toLowerCase() !== tag) { list = el(tag); card.append(list); }
         list.append(el('li', null, r.text));
         return;
       }
       list = null;
       if (r.kind === 'caution') { const c = el('p', 'kx-caveat'); const [head, ...rest] = r.text.split(': '); c.append(el('b', null, head + ': '), document.createTextNode(rest.join(': '))); card.append(c); }
-      else card.append(el('p', r.kind === 'lead' ? 'kx-qlead' : null, r.text));
+      else card.append(el('p', r.kind === 'lead' ? 'kx-qlead' : r.kind === 'term' ? 'kx-qterm' : null, r.text));
     });
     if (sec.goto) {
       const tab = document.getElementById('tab-' + sec.goto);
@@ -714,12 +730,127 @@ function drawQuick() {
     }
     return card;
   }));
-  const words = items.reduce((n, r) => n + r.text.split(/\s+/).length, 0);
+  const words = items.reduce((n, r) => n + (r.kind === 'chart' ? 0 : r.text.split(/\s+/).length), 0);
   const t = document.getElementById('quick-time'); if (t) t.textContent = String(Math.max(1, Math.round(words / 200)));
+  if (visible(box)) charts.forEach((c) => QUICK_CHARTS[c.dataset.chart]?.(c));
 }
 document.getElementById('quick-body').addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-goto]'); if (!b) return;
-  showTab(b.dataset.goto); root.querySelector('.kx-tabs').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus();
+  showTab(b.dataset.goto); root.querySelector('.kx-tabbar').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus();
+});
+const qsvg = (box, w, h) => { const s = d3.create('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img'); box.append(s.node()); return s; };
+const qlegend = (box, pairs) => { const l = el('div', 'kx-qlegend'); pairs.forEach(([color, label]) => { const sp = el('span'); const i = el('i'); i.style.background = color; sp.append(i, label); l.append(sp); }); box.append(l); };
+const QUICK_CHARTS = {
+  // two stacked bars: all decisions, split into approved and not approved, prior vs recent
+  funnel(box) {
+    const K = (m) => kv(m);
+    const W = 640, rowH = 34, H = 2 * rowH + 30, L = 118, R = 128;
+    const svg = qsvg(box, W, H).attr('aria-label', 'Decisions per period, approved and not approved');
+    const maxN = Math.max(K('n_a'), K('n_b'));
+    const x = d3.scaleLinear([0, maxN], [L, W - R]);
+    [['Prior 30 days', K('n_a'), K('approved_a'), K('approval_a')], ['Recent 30 days', K('n_b'), K('approved_b'), K('approval_b')]].forEach(([label, n, ap, rate], i) => {
+      const y = 8 + i * rowH;
+      svg.append('text').attr('x', L - 10).attr('y', y + 18).attr('text-anchor', 'end').text(label);
+      svg.append('rect').attr('x', x(0)).attr('y', y).attr('width', x(ap) - x(0)).attr('height', 24).attr('rx', 3).style('fill', colors()[0]);
+      svg.append('rect').attr('x', x(ap)).attr('y', y).attr('width', x(n) - x(ap)).attr('height', 24).attr('rx', 3).style('fill', 'var(--cds-chart-status-critical)').attr('fill-opacity', 0.75);
+      svg.append('text').attr('x', x(0) + 8).attr('y', y + 17).style('fill', 'var(--color-bg)').style('font-weight', 600).text(FMT.pct(rate) + ' approved (' + FMT.int(ap) + ')');
+      svg.append('text').attr('x', x(n) + 6).attr('y', y + 17).attr('class', 'kx-qmuted').text(FMT.int(n - ap) + ' not approved');
+    });
+    svg.append('text').attr('x', L).attr('y', H - 4).attr('class', 'kx-qmuted').text('Bar length = recorded decisions (' + FMT.int(K('n_a')) + ' then ' + FMT.int(K('n_b')) + '). Starts are not in the data.');
+  },
+  // donut of not-approved decisions by class (recent) + bars of the change in rate by cause
+  causes(box) {
+    const dec = rowsOf('declines'), br = rowsOf('bridge'); if (!dec || !br) return;
+    const classes = dec.filter((r) => r.level === 'class').map((r) => ({ name: r.name, v: +r.of_unsuccessful_b, n: +r.n_b }));
+    const d1 = el('div'); d1.style.flex = '0 0 190px'; box.append(d1);
+    const svg = qsvg(d1, 190, 190).attr('aria-label', 'Not-approved decisions by class, recent period');
+    const arc = d3.arc().innerRadius(52).outerRadius(90), pie = d3.pie().value((d) => d.v).sort(null);
+    const g = svg.append('g').attr('transform', 'translate(95,95)');
+    g.selectAll('path').data(pie(classes)).join('path').attr('d', arc).style('fill', (d) => classColor(d.data.name)).append('title').text((d) => d.data.name + ': ' + FMT.pct0(d.data.v) + ' (' + FMT.int(d.data.n) + ')');
+    g.selectAll('text').data(pie(classes)).join('text').attr('transform', (d) => `translate(${arc.centroid(d)})`).attr('text-anchor', 'middle').attr('dy', '0.35em').style('fill', 'var(--color-bg)').style('font-weight', 600).text((d) => FMT.pct0(d.data.v));
+    svg.append('text').attr('x', 95).attr('y', 91).attr('text-anchor', 'middle').style('font-weight', 600).text(FMT.int(kv('unsuccessful_b')));
+    svg.append('text').attr('x', 95).attr('y', 107).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text('not approved');
+    qlegend(d1, classes.map((c) => [classColor(c.name), c.name]));
+    const d2 = el('div'); d2.style.flex = '1 1 280px'; box.append(d2);
+    const keep = ['Fraud signal', 'Execution error', 'Selfie / liveness', 'No document type, no reason code', 'Face match'];
+    const bars = keep.map((k) => br.find((r) => r.driver === k)).filter(Boolean).map((r) => ({ name: r.driver === 'No document type, no reason code' ? 'No document type (Mexico)' : r.driver, v: +r.effect_pp, driver: r.driver }));
+    const W = 420, rowH = 30, L = 170, H = bars.length * rowH + 26;
+    const s2 = qsvg(d2, W, H).attr('aria-label', 'Change in the pass rate by cause, in points');
+    const ext = d3.max(bars, (b) => Math.abs(b.v));
+    const x = d3.scaleLinear([-ext, ext], [L, W - 8]);
+    s2.append('text').attr('x', L).attr('y', 12).attr('class', 'kx-qmuted').text('Change in the pass rate, points');
+    s2.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 18).attr('y2', H - 6).style('stroke', 'var(--cds-chart-axis)');
+    bars.forEach((b, i) => {
+      const y = 22 + i * rowH;
+      s2.append('text').attr('x', L - 8).attr('y', y + 14).attr('text-anchor', 'end').text(b.name);
+      s2.append('rect').attr('x', Math.min(x(0), x(b.v))).attr('y', y).attr('width', Math.abs(x(b.v) - x(0))).attr('height', 20).attr('rx', 3).style('fill', b.v < 0 ? driverColor(b.driver) : 'var(--color-ok)');
+      s2.append('text').attr('x', b.v < 0 ? x(b.v) - 6 : x(b.v) + 6).attr('y', y + 14).attr('text-anchor', b.v < 0 ? 'end' : 'start').style('font-weight', 600).text(FMT.pp2(b.v));
+    });
+  },
+  // the daily line with incident days shaded, and both period averages
+  days(box) {
+    const daily = rowsOf('daily'); if (!daily) return;
+    const rows = daily.filter((r) => r.country === 'ALL').map((r) => ({ date: new Date(r.date), rate: +r.approval_rate, inc: r.incident_day === '1' }));
+    const W = 640, H = 170, L = 40, R = 8, T = 10, B = 22;
+    const d1 = el('div'); d1.style.flex = '1 1 100%'; box.append(d1);
+    const svg = qsvg(d1, W, H).attr('aria-label', 'Daily pass rate with incident days shaded');
+    const x = d3.scaleUtc(d3.extent(rows, (r) => r.date), [L, W - R]), y = d3.scaleLinear([0.5, 1], [H - B, T]);
+    const bw = (W - L - R) / rows.length;
+    rows.filter((r) => r.inc).forEach((r) => svg.append('rect').attr('x', x(r.date) - bw / 2).attr('y', T).attr('width', bw).attr('height', H - T - B).style('fill', 'var(--cds-chart-status-critical)').attr('fill-opacity', 0.18));
+    [0.6, 0.8, 1].forEach((v) => { svg.append('line').attr('x1', L).attr('x2', W - R).attr('y1', y(v)).attr('y2', y(v)).style('stroke', 'var(--cds-chart-grid)'); svg.append('text').attr('x', L - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').attr('class', 'kx-qmuted').text(FMT.pct0(v)); });
+    const split = new Date(pick(rowsOf('kpis'), 'metric=split_date').value);
+    [[rows[0].date, split, kv('approval_a')], [split, rows[rows.length - 1].date, kv('approval_b')]].forEach(([a, b, v]) => svg.append('line').attr('x1', x(a)).attr('x2', x(b)).attr('y1', y(v)).attr('y2', y(v)).style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3'));
+    svg.append('path').datum(rows).style('fill', 'none').style('stroke', colors()[0]).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('d', d3.line().x((r) => x(r.date)).y((r) => y(r.rate)));
+    svg.append('text').attr('x', L).attr('y', H - 6).attr('class', 'kx-qmuted').text(FMT.date(rows[0].date));
+    svg.append('text').attr('x', W - R).attr('y', H - 6).attr('text-anchor', 'end').attr('class', 'kx-qmuted').text(FMT.date(rows[rows.length - 1].date));
+    qlegend(d1, [[colors()[0], 'Daily pass rate'], ['var(--cds-chart-status-critical)', 'Incident window day'], ['var(--cds-chart-reference)', 'Period averages ' + FMT.pct(kv('approval_a')) + ' and ' + FMT.pct(kv('approval_b'))]]);
+  },
+  // the range of recoverable points, conservative to optimistic, with the central case marked
+  gain(box) {
+    const tot = rowsOf('scenario_totals'); if (!tot) return;
+    const g = (n) => tot.find((r) => r.scenario === n);
+    const lo = +g('Conservative').steady_pp, mid = +g('Central').steady_pp, hi = +g('Optimistic').steady_pp;
+    const W = 640, H = 74, L = 16, R = 16;
+    const d1 = el('div'); d1.style.flex = '1 1 100%'; box.append(d1);
+    const svg = qsvg(d1, W, H).attr('aria-label', 'Range of recoverable pass-rate points');
+    const x = d3.scaleLinear([0, Math.ceil(hi) + 1], [L, W - R]);
+    svg.append('line').attr('x1', L).attr('x2', W - R).attr('y1', 40).attr('y2', 40).style('stroke', 'var(--cds-chart-axis)');
+    x.ticks(6).forEach((t) => { svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', 40).attr('y2', 45).style('stroke', 'var(--cds-chart-axis)'); svg.append('text').attr('x', x(t)).attr('y', 60).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text('+' + t); });
+    svg.append('rect').attr('x', x(lo)).attr('y', 26).attr('width', x(hi) - x(lo)).attr('height', 14).attr('rx', 7).style('fill', colors()[0]).attr('fill-opacity', 0.35);
+    svg.append('circle').attr('cx', x(mid)).attr('cy', 33).attr('r', 8).style('fill', colors()[0]);
+    svg.append('text').attr('x', x(lo)).attr('y', 18).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text(FMT.pp(lo));
+    svg.append('text').attr('x', x(hi)).attr('y', 18).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text(FMT.pp(hi));
+    svg.append('text').attr('x', x(mid)).attr('y', 18).attr('text-anchor', 'middle').style('font-weight', 600).text('Central ' + FMT.pp(mid));
+    svg.append('text').attr('x', W - R).attr('y', 72).attr('text-anchor', 'end').attr('class', 'kx-qmuted').text('Pass-rate points recoverable per 30 days, on recurring causes');
+  },
+};
+
+/* ---------- What to do: tracks × phases ---------- */
+function drawTracks() {
+  const box = document.getElementById('tracks');
+  const acts = rowsOf('actions'), phases = rowsOf('phases'), tracks = rowsOf('tracks'); if (!box || !acts || !phases || !tracks) return;
+  box.replaceChildren();
+  const grid = el('div', 'kx-lanes');
+  grid.append(el('div', 'kx-lane-h', ''));
+  phases.forEach((p) => grid.append(el('div', 'kx-lane-h', p.label.replace(/^Phase (\d) · /, 'P$1 · '))));
+  tracks.slice().sort((a, b) => +a.order - +b.order).forEach((t) => {
+    const th = el('div', 'kx-lane-t'); th.append(document.createTextNode(t.name), el('small', null, t.note)); grid.append(th);
+    phases.forEach((p) => {
+      const cell = el('div', 'kx-lane-c');
+      acts.filter((a) => a.track === t.id && a.phase === p.phase).sort((a, b) => +a.order - +b.order).forEach((a) => {
+        const b = el('button', 'kx-lane-chip' + (a.conditional ? ' kx-lane-cond' : ''), a.title); b.type = 'button'; b.dataset.action = a.id;
+        b.title = (a.conditional ? 'Conditional. ' : '') + a.owner + ' · effort ' + a.effort.split(' ')[0];
+        cell.append(b);
+      });
+      grid.append(cell);
+    });
+  });
+  box.append(grid);
+}
+document.getElementById('tracks').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-action]'); if (!b) return;
+  const d = document.querySelector('#roadmap details[data-id="' + b.dataset.action + '"]'); if (!d) return;
+  d.open = true; d.scrollIntoView({ block: 'center' }); d.querySelector('summary').focus({ preventScroll: true });
 });
 
 /* ---------- Open questions ---------- */
@@ -814,23 +945,27 @@ function drawTables() {
 
 /* ---------- tabs, lenses, controls ---------- */
 let activeTab = 'quick';
+const detailsRow = document.getElementById('details-row'), detailsToggle = document.getElementById('details-toggle');
+function setDetails(open) { detailsRow.hidden = !open; detailsToggle.setAttribute('aria-expanded', String(open)); detailsToggle.textContent = open ? 'Details ▴' : 'Details ▾'; }
+detailsToggle.addEventListener('click', () => setDetails(detailsRow.hidden));
 function showTab(id, opts = {}) {
   if (!TABS.includes(id)) return;
   activeTab = id;
+  if (DETAIL_TABS.has(id) && detailsRow.hidden) setDetails(true);
   TABS.forEach((t) => { document.getElementById(t).hidden = t !== id; const b = document.getElementById('tab-' + t); b.setAttribute('aria-selected', String(t === id)); b.tabIndex = t === id ? 0 : -1; });
   if (opts.link !== false) dash.setLink(id);
   drawAll();
 }
 root.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
-root.querySelector('.kx-tabs').addEventListener('keydown', (ev) => {
+root.querySelectorAll('.kx-tabs').forEach((nav) => nav.addEventListener('keydown', (ev) => {
   const keys = { ArrowRight: 1, ArrowLeft: -1, Home: 'first', End: 'last' };
   if (!(ev.key in keys)) return;
   ev.preventDefault();
   const i = TABS.indexOf(activeTab);
   const next = keys[ev.key] === 'first' ? TABS[0] : keys[ev.key] === 'last' ? TABS[TABS.length - 1] : TABS[(i + keys[ev.key] + TABS.length) % TABS.length];
   showTab(next); document.getElementById('tab-' + next).focus();
-});
-root.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => { showTab(b.dataset.goto); root.querySelector('.kx-tabs').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus(); }));
+}));
+root.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => { showTab(b.dataset.goto); root.querySelector('.kx-tabbar').scrollIntoView({ block: 'start' }); document.getElementById('tab-' + b.dataset.goto).focus(); }));
 let lens = 'leadership';
 root.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { lens = b.dataset.lens; drawLens(); }));
 function drawLens() {
@@ -840,6 +975,7 @@ function drawLens() {
 root.querySelectorAll('[data-country]').forEach((b) => b.addEventListener('click', () => dash.setParams({ country: b.dataset.country })));
 root.querySelectorAll('[data-scenario]').forEach((b) => b.addEventListener('click', () => dash.setParams({ scenario: b.dataset.scenario })));
 document.getElementById('reasons-search').addEventListener('input', () => drawReasons());
+document.getElementById('trend-excl-days').addEventListener('change', () => drawTrend());
 document.querySelectorAll('#reasons-table th button').forEach((b) => b.addEventListener('click', () => {
   const k = b.dataset.sort;
   if (reasonSort.key === k) reasonSort.dir *= -1; else { reasonSort.key = k; reasonSort.dir = ['reason', 'step', 'driver'].includes(k) ? 1 : -1; }
@@ -857,7 +993,7 @@ function drawAll() {
   drawDeclineChart(); drawDeclineCards(); drawMexBars(); drawUnclassified(); drawProcess(); drawMix(); drawReasons(); drawAge(); drawDocMix();
   (rowsOf('incidents') || []).forEach(drawSpark);
   drawQuick(); drawHypotheses(); drawExperiments(); drawOpenQuestions();
-  drawRoadmap(); drawScenarios(); drawValueInputs(); drawValueResults(); drawPresetTables();
+  drawTracks(); drawRoadmap(); drawScenarios(); drawValueInputs(); drawValueResults(); drawPresetTables();
   drawRegistry(); drawRaci(); drawCommitments(); drawDeptCards(); drawAdoption();
 }
 

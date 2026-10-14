@@ -15,6 +15,42 @@
   .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; flex: none; }
   .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
   .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
+  .kx-tabbar { display: flex; align-items: stretch; gap: var(--cds-gap-xs); }
+  .kx-tabbar .kx-tabs { flex: 1 1 auto; min-width: 0; }
+  .kx-details-toggle { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; box-shadow: inset 0 -1px 0 var(--color-border-line); }
+  .kx-details-toggle[aria-expanded="true"] { color: var(--color-fg); }
+  .kx-details-toggle:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
+  .kx-tabs-details { background: color-mix(in srgb, var(--color-panel) 70%, transparent); border-radius: 0 0 var(--cds-radius) var(--cds-radius); }
+  .kx-tabs-details button { font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); }
+  .kx-tabq { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border-left: 3px solid var(--color-fg); padding-left: var(--cds-pad-sm); }
+  .kx-check { display: inline-flex; align-items: center; gap: 6px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); cursor: pointer; }
+  .kx-check input { accent-color: var(--color-fg); margin: 0; }
+  .kx-quick .kx-qchart { margin: 0 0 var(--cds-gap-xs); display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .kx-quick .kx-qchart > div { min-width: 0; }
+  .kx-quick .kx-qchart svg { display: block; width: 100%; height: auto; overflow: visible; font-size: 12px; }
+  .kx-quick .kx-qchart text { fill: var(--color-fg); }
+  .kx-quick .kx-qchart .kx-qmuted { fill: var(--color-fg-muted); }
+  .kx-qlegend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-qlegend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  .kx-quick .kx-qterm { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-xs); }
+  .kx-tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-sm); }
+  .kx-track { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm); display: flex; flex-direction: column; gap: 6px; }
+  .kx-track h4 { margin: 0; font-size: var(--cds-font-size-body); display: flex; align-items: center; gap: 8px; }
+  .kx-track h4 span { flex: none; width: 1.5rem; height: 1.5rem; border-radius: 50%; text-align: center; line-height: 1.5rem; color: var(--color-bg); background: var(--color-fg); font-size: var(--cds-font-size-caption); }
+  .kx-track ol { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
+  .kx-lanes { display: grid; grid-template-columns: 9rem repeat(4, minmax(10rem, 1fr)); gap: 4px; font-size: var(--cds-font-size-caption); min-width: 50rem; }
+  .kx-lane-h { font-weight: 600; color: var(--color-fg-muted); padding: 4px 6px; }
+  .kx-lane-t { font-weight: 600; padding: 6px; border-right: 1px solid var(--color-border-line); }
+  .kx-lane-t small { display: block; font-weight: 400; color: var(--color-fg-muted); line-height: 1.4; margin-top: 2px; }
+  .kx-lane-c { background: var(--color-bg); border-radius: var(--cds-radius); padding: 4px; display: flex; flex-direction: column; gap: 4px; min-height: 2rem; }
+  .kx-lane-chip { font: inherit; text-align: left; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 6px; padding: 4px 6px; cursor: pointer; color: var(--color-fg); line-height: 1.35; }
+  .kx-lane-chip:hover { border-color: var(--color-fg-muted); }
+  .kx-lane-chip.kx-lane-cond { border-style: dashed; }
+  .kx-lane-chip:focus-visible { outline: 2px solid var(--color-fg-muted); }
+  @media (max-width: 520px) {
+    .kx-quick .kx-qchart[data-chart="funnel"] svg, .kx-quick .kx-qchart[data-chart="days"] svg, .kx-quick .kx-qchart[data-chart="gain"] svg { font-size: 19px; }
+    .kx-quick .kx-qchart[data-chart="causes"] svg[aria-label^="Change"] { font-size: 16px; }
+  }
   .kx-ste { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; max-width: 90ch; }
   .kx-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); align-items: stretch; }
   .kx-quick .kx-qhero { grid-column: 1 / -1; }
@@ -202,10 +238,10 @@
     .kx-bar-row { grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) auto; }
   }
   .kx.kx-print-all .kx-page[hidden], .kx.kx-print-all .kx-lens[hidden] { display: flex !important; }
-  .kx.kx-print-all .kx-tabs { display: none; }
+  .kx.kx-print-all .kx-tabs, .kx.kx-print-all .kx-tabbar, .kx.kx-print-all .kx-check { display: none; }
   .kx.kx-print-all .kx-tablewrap { max-height: none; overflow: visible; }
   @media print {
-    .kx-tabs, .kx-seg, .kx-search, .kx-btn, .kx-tip, .kx-scope-note { display: none !important; }
+    .kx-tabs, .kx-tabbar, .kx-check, .kx-seg, .kx-search, .kx-btn, .kx-tip, .kx-scope-note { display: none !important; }
     .kx .kx-page[hidden], .kx .kx-lens[hidden] { display: flex !important; }
     .kx-page + .kx-page { break-before: page; }
     .kx-card, .kx-action, .kx-step, tr { break-inside: avoid; }
@@ -218,9 +254,9 @@
 
 <div class="kx">
   <header class="kx-head" id="top">
-    <h1 class="kx-title">KYC approval-rate diagnosis</h1>
+    <h1 class="kx-title">KYC pass rate: why it fell and what to do</h1>
     <p class="kx-lede">
-      Approval among recorded KYC decisions fell from
+      The KYC pass rate (approval among recorded decisions) fell from
       <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_a" data-fmt="pct">—</b>
       in the prior period to
       <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_b" data-fmt="pct">—</b>
@@ -236,14 +272,20 @@
     </p>
   </header>
 
-  <nav class="kx-tabs" role="tablist" aria-label="Pages">
-    <button type="button" role="tab" id="tab-quick" aria-controls="quick" data-tab="quick">Quick review</button>
-    <button type="button" role="tab" id="tab-summary" aria-controls="summary" data-tab="summary">Summary</button>
+  <div class="kx-tabbar">
+    <nav class="kx-tabs" role="tablist" aria-label="Pages">
+      <button type="button" role="tab" id="tab-quick" aria-controls="quick" data-tab="quick">Quick review</button>
+      <button type="button" role="tab" id="tab-drivers" aria-controls="drivers" data-tab="drivers">Why it fell</button>
+      <button type="button" role="tab" id="tab-plan" aria-controls="plan" data-tab="plan">What to do</button>
+      <button type="button" role="tab" id="tab-gain" aria-controls="gain" data-tab="gain">What we gain</button>
+    </nav>
+    <button type="button" class="kx-details-toggle" id="details-toggle" aria-expanded="false" aria-controls="details-row">Details ▾</button>
+  </div>
+  <nav class="kx-tabs kx-tabs-details" id="details-row" role="tablist" aria-label="Detail pages" hidden>
+    <button type="button" role="tab" id="tab-summary" aria-controls="summary" data-tab="summary">Full summary</button>
     <button type="button" role="tab" id="tab-measurement" aria-controls="measurement" data-tab="measurement">Measurement</button>
-    <button type="button" role="tab" id="tab-drivers" aria-controls="drivers" data-tab="drivers">Drivers</button>
     <button type="button" role="tab" id="tab-incidents" aria-controls="incidents" data-tab="incidents">Incidents</button>
     <button type="button" role="tab" id="tab-hypotheses" aria-controls="hypotheses" data-tab="hypotheses">Hypotheses &amp; tests</button>
-    <button type="button" role="tab" id="tab-plan" aria-controls="plan" data-tab="plan">Plan &amp; value</button>
     <button type="button" role="tab" id="tab-operating" aria-controls="operating" data-tab="operating">Operating model</button>
     <button type="button" role="tab" id="tab-design" aria-controls="design" data-tab="design">Target design</button>
     <button type="button" role="tab" id="tab-vendor" aria-controls="vendor" data-tab="vendor">Vendor research</button>
@@ -252,12 +294,14 @@
 
   <!-- Quick review -->
   <section class="kx-page" id="quick" role="tabpanel" aria-labelledby="tab-quick">
+    <p class="kx-tabq">This tab answers: what happened, why, what to do and what we gain, in five minutes.</p>
     <p class="kx-ste">The whole story on one page, in ASD-STE100 Simplified Technical English: short sentences, one topic in each sentence, active voice. Reading time: about <span id="quick-time">3</span> minutes.</p>
     <div class="kx-quick" id="quick-body" data-source="quick_review"></div>
   </section>
 
   <!-- Summary -->
   <section class="kx-page" id="summary" role="tabpanel" aria-labelledby="tab-summary" hidden>
+    <p class="kx-tabq">This tab answers: the seven questions an executive asks, with the figures.</p>
     <div class="kx-card" id="answer">
       <h3>The answer</h3>
       <ol class="kx-list kx-answer">
@@ -338,6 +382,7 @@
           </div>
         </div>
         <p class="kx-scope-note">The country filter applies to this chart and to the weekly mix and reasons table on Drivers.</p>
+        <label class="kx-check"><input type="checkbox" id="trend-excl-days"> Without incident days (the <span data-fill data-source="kpis" data-field="value" data-where="metric=incident_days_n" data-fmt="int">—</span> days hold <span data-fill data-source="kpis" data-field="value" data-where="metric=share_recent_on_incident_days" data-fmt="pct0">—</span> of recent decisions)</label>
         <div class="kx-legend">
           <span><i class="kx-sw kx-sw-line" style="border-color: var(--kx-c0)"></i>Approval rate</span>
           <span><i class="kx-sw kx-sw-dash" style="border-color: var(--cds-chart-muted)"></i>Excluding selected incident-window failures (descriptive only)</span>
@@ -371,7 +416,7 @@
       </div>
       <div class="kx-lens" data-lens-panel="leadership">
         <p>Approve Phase 0 now: instrumentation, hold-and-retry for execution errors, alerting, control reconciliation and two investigations. Phase 1 experiments depend on what Phase 0 finds. The orchestration layer, registry checks and a second vendor are multi-quarter platform work, not quick fixes.</p>
-        <p><button type="button" class="kx-link" data-goto="plan">Open Plan &amp; value</button></p>
+        <p><button type="button" class="kx-link" data-goto="plan">Open What to do</button></p>
       </div>
       <div class="kx-lens" data-lens-panel="product" hidden>
         <p><b class="kx-n" data-fill data-source="incidents" data-field="observed" data-where="id=exec_errors" data-fmt="int">—</b>
@@ -398,14 +443,15 @@
         <p>The approved count fell by
           <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="abs">—</b>,
           of which <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="abs">—</b>
-          is due to the lower rate. Money values need inputs the data doesn't contain: activation after approval, value per customer, paid-channel share and vendor billing per decision. The Plan tab's value model fills them with market-based presets (Low, Mid, High and Cautious, each sourced) and shows break-even conditions. The presets are not ARQ figures, so they are not used as a headline.</p>
-        <p><button type="button" class="kx-link" data-goto="plan">Open the value model</button></p>
+          is due to the lower rate. Money values need inputs the data doesn't contain: activation after approval, value per customer, paid-channel share and vendor billing per decision. The What-we-gain tab's value model fills them with market-based presets (Low, Mid, High and Cautious, each sourced) and shows break-even conditions. The presets are not ARQ figures, so they are not used as a headline.</p>
+        <p><button type="button" class="kx-link" data-goto="gain">Open the value model</button></p>
       </div>
     </div>
   </section>
 
   <!-- Measurement -->
   <section class="kx-page" id="measurement" role="tabpanel" aria-labelledby="tab-measurement" hidden>
+    <p class="kx-tabq">This tab answers: what the extracts can and cannot measure, and how the data was checked.</p>
     <h2>What can and can't be measured</h2>
     <p class="kx-intro">The brief asks about people who start and finish KYC. The extracts hold one recorded decision per user, so this analysis measures approval among those decisions. The definitions below are proposals for the KPI registry; unavailable metrics list the events that would make them measurable.</p>
     <div class="kx-card" id="metrics-card">
@@ -474,6 +520,7 @@
 
   <!-- Drivers -->
   <section class="kx-page" id="drivers" role="tabpanel" aria-labelledby="tab-drivers" hidden>
+    <p class="kx-tabq">This tab answers: why the pass rate fell, by cause, country and week.</p>
     <h2>Why decisions were not approved</h2>
     <p class="kx-intro">
       <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=decline_a" data-fmt="pct">—</b> of prior-period decisions and
@@ -599,6 +646,7 @@
 
   <!-- Incidents -->
   <section class="kx-page" id="incidents" role="tabpanel" aria-labelledby="tab-incidents" hidden>
+    <p class="kx-tabq">This tab answers: what the four short failure spikes were, how much they explain, and what the vendor's status page shows.</p>
     <h2>Four date windows with unusual failures</h2>
     <p class="kx-intro">Each window is a date range, a country scope and a failure signature. "Above baseline" is the observed count minus what the prior-period rate of that signature predicts for the window's volume. Other failures on those days are not attributed. The data has dates only, so individual records can't be matched to intraday outages.</p>
     <div class="kx-card" id="incident-table-card">
@@ -652,6 +700,7 @@
 
   <!-- Hypotheses & tests -->
   <section class="kx-page" id="hypotheses" role="tabpanel" aria-labelledby="tab-hypotheses" hidden>
+    <p class="kx-tabq">This tab answers: what we think the causes are, and the test that would settle each one.</p>
     <h2>Leading hypotheses and how to test them</h2>
     <p class="kx-intro">Each hypothesis lists the evidence for it, credible alternatives, what is missing, the next step, and the decision that step enables.</p>
     <div class="kx-grid" id="hyp-cards" data-source="hypotheses"></div>
@@ -664,9 +713,22 @@
 
   <!-- Plan & value -->
   <section class="kx-page" id="plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
+    <p class="kx-tabq">This tab answers: what to do, in which order, and who owns it.</p>
     <h2>Plan</h2>
     <p class="kx-intro">Phase 0 measures and stabilises, and later phases depend on what it finds. Effort sizes: S ≤ 2 engineer-weeks, M = 2–6 engineer-weeks plus design, L = several teams for a quarter or more. Every size is an assumption to confirm with the teams. Open an action to see its evidence, population, acceptance criteria, rollout and guardrails.</p>
+    <div class="kx-card" id="tracks-card">
+      <h3>The plan in four tracks</h3>
+      <p class="kx-note">Rows are the kind of work, columns are time. The obvious fixes and the instruments to see them work go first; experiments and research run beside them. Click an item to open its details below.</p>
+      <div class="kx-tablewrap-free"><div id="tracks" data-source="actions phases tracks"></div></div>
+      <p class="kx-note">What this could recover, and what it is worth: <button type="button" class="kx-link" data-goto="gain">What we gain</button>.</p>
+    </div>
+    <h3>Every action, with its owner, evidence and acceptance criteria</h3>
     <div id="roadmap" class="kx-section" data-source="actions phases"></div>
+  </section>
+
+  <!-- What we gain -->
+  <section class="kx-page" id="gain" role="tabpanel" aria-labelledby="tab-gain" hidden>
+    <p class="kx-tabq">This tab answers: how much the fixes could recover, and what that is worth.</p>
     <section class="kx-section" id="scenarios">
       <h2>Recovery scenarios</h2>
       <div class="kx-cardhead">
@@ -763,6 +825,7 @@
 
   <!-- Operating model -->
   <section class="kx-page" id="operating" role="tabpanel" aria-labelledby="tab-operating" hidden>
+    <p class="kx-tabq">This tab answers: how the pass rate would be owned and run as a company metric.</p>
     <h2>Running KYC metrics as an owned system</h2>
     <p class="kx-intro">How this analysis would live in a company KPI platform: defined metrics with owners, approved versions, freshness and lineage; commitments with check-ins; and access by audience. The functions are role-based examples, not ARQ's organisation: no people, headcount or reporting lines are implied.</p>
     <div class="kx-card" id="registry-card">
@@ -850,6 +913,7 @@
 
   <!-- Target design -->
   <section class="kx-page" id="design" role="tabpanel" aria-labelledby="tab-design" hidden>
+    <p class="kx-tabq">This tab answers: what a KYC flow built for retries, review and failover would look like.</p>
     <h2>Proposed target design</h2>
     <p class="kx-caveat">A proposal for discussion with Engineering. ARQ's current architecture is not known from the extracts, and parts of this may already exist. Sequencing follows the roadmap: Phase 0 changes are small; the orchestration layer, registry checks and a second vendor are Phase 3, multi-quarter work.</p>
     <div class="kx-grid">
@@ -915,6 +979,7 @@
 
   <!-- Vendor research -->
   <section class="kx-page" id="vendor" role="tabpanel" aria-labelledby="tab-vendor" hidden>
+    <p class="kx-tabq">This tab answers: what the vendor's status history and current product say about the 2023 problems.</p>
     <h2>Vendor capabilities today, against the 2023 problems</h2>
     <p class="kx-caveat">Desk research dated <b data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</b>, kept separate from the 2023 diagnosis. A documented capability shows availability, not effectiveness for ARQ. Prerequisites and ARQ's unknown configuration are listed where known.</p>
     <div class="kx-card">
@@ -947,6 +1012,7 @@
 
   <!-- Reference -->
   <section class="kx-page" id="reference" role="tabpanel" aria-labelledby="tab-reference" hidden>
+    <p class="kx-tabq">This tab answers: the control findings, risks, open questions, FAQ and glossary.</p>
     <div class="kx-card" id="open-questions-ref">
       <h3>Open questions for ARQ</h3>
       <p class="kx-note">What to confirm before acting on the findings. The analysis stands on the extract alone; these answers decide how far each conclusion carries.</p>

@@ -7,7 +7,7 @@ Why ARQ's KYC approval rate fell in August–September 2023, what is and isn't m
 | What | Where |
 |---|---|
 | Report (PDF): executive deck, evidence appendix, methodology and validation note | [`analysis/export/kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf) |
-| Quick review: the whole story on one page, in ASD-STE100 Simplified Technical English | first tab of the dashboard (`analysis/out/quick_review.csv`) |
+| Quick review: the whole story on one page with charts, in ASD-STE100 Simplified Technical English | first tab of the dashboard (`analysis/out/quick_review.csv`). Four main tabs (Quick review, Why it fell, What to do, What we gain); the rest sit under Details |
 | Interactive dashboard, offline, one file | [`analysis/export/kyc-dashboard.html`](analysis/export/kyc-dashboard.html); also served password-protected on GitHub Pages (password in the submission email) |
 | Deck as PowerPoint and PDF | [`kyc-approval-deck.pptx`](analysis/export/kyc-approval-deck.pptx), [`kyc-approval-deck.pdf`](analysis/export/kyc-approval-deck.pdf) |
 | Methodology and validation note | [`analysis/export/methodology-and-validation.md`](analysis/export/methodology-and-validation.md) |

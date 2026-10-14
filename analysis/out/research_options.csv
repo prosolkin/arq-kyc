@@ -1,0 +1,5 @@
+id,order,budget,method,answers,when,needs
+none,1,No budget,"Support tickets, app analytics, vendor case images",Which failures people complain about; what the vendor saw on the image,Week 1,Existing data; no consent needed beyond current terms
+low,2,Low,8–10 remote interviews; unmoderated capture tests on the real flow,Why people choose the wrong document or fail the selfie,Weeks 1–3,Consent; a researcher-week; small incentives
+medium,3,Medium,Session replay on the capture screens; a one-week diary study in Mexico,"Where people hesitate, retry or quit; what happens at home, not in a lab",Weeks 2–4,A replay tool with PII masking; privacy review
+high,4,High,Lab usability sessions with eye tracking on the capture screens,What people look at before a bad capture; whether the guidance is seen,Weeks 3–6,A lab or vendor; only if the cheaper rungs leave questions open

@@ -78,6 +78,8 @@ A window is a date range, a country scope and a failure signature. Attributed fa
 
 Total above baseline 1,057 (25.2% of recent unsuccessful decisions, −4.20 pp of approval). Sensitivity across a ±1-day window, a broader signature and a recent-period baseline: 1,055–1,130. The earlier method (every matching failure, no baseline) gives 1,068. Removing the 1,068 selected failures from the recent period gives 86.99%; that is a descriptive rate after excluding selected records, not a counterfactual.
 
+Without the 10 incident days, the recent rate is 87.2% against 88.7% before: −1.45 pp. Those days hold 37.8% of recent decisions, so they are kept in the headline; the dashboard shows both views.
+
 **Vendor evidence.** The vendor's public status history (monitor.jumio.com) was read on the research date. Source quality: primary vendor status page; some entries were read by a research sub-task and are marked as such.
 
 | Date | UTC | Entry | Read | ARQ impact |

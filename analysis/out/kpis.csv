@@ -31,6 +31,15 @@ mex_share_a,0.5726,"Mexican-document share of decisions, prior period",pct
 mex_share_b,0.5681,"Mexican-document share of decisions, recent period",pct
 selected_incident,1068,Unsuccessful decisions matching an incident signature in its window,int
 approval_excl_selected,0.8699,Recent approval rate after removing those records (descriptive only),pct
+approval_a_excl_days,0.8869,Prior-period approval rate without incident days,pct
+approval_b_excl_days,0.8724,Recent-period approval rate without incident days,pct
+delta_excl_days_pp,-1.45,Change in approval rate without incident days,pp
+share_recent_on_incident_days,0.3782,Share of recent decisions that fall on incident days,pct
+incident_days_n,10,Incident days in the recent period,int
+delta_rel,-0.0609,Relative change in the approval rate,pct
+approved_change_rel,-0.1233,Relative change in the approved count,pct
+volume_effect_share,0.5388,Share of the approved-count change from lower volume,pct
+rate_effect_share,0.4612,Share of the approved-count change from the lower rate,pct
 incident_excess_base,1057,Incident failures above baseline (base estimate),int
 incident_excess_low,1055,"Incident failures above baseline, low end of sensitivity range",int
 incident_excess_high,1130,"Incident failures above baseline, high end of sensitivity range",int

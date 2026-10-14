@@ -17,7 +17,7 @@ const SCRATCH = process.env.DECK_SCRATCH || path.join(ROOT, 'analysis', 'tools',
 
 const load = (n) => csvParse(fs.readFileSync(path.join(DATA, n + '.csv'), 'utf8'));
 const D = Object.fromEntries(['kpis', 'bridge', 'incidents', 'incident_sensitivity', 'daily', 'declines', 'metrics', 'validation', 'events', 'hypotheses',
-  'actions', 'phases', 'scenarios', 'scenario_totals', 'experiments', 'value_inputs', 'value_sources', 'value_results', 'open_questions', 'compliance', 'mex_no_doctype', 'docs', 'vendor_evidence',
+  'actions', 'phases', 'tracks', 'scenarios', 'scenario_totals', 'experiments', 'value_inputs', 'value_sources', 'value_results', 'open_questions', 'compliance', 'mex_no_doctype', 'docs', 'vendor_evidence',
   'vendor_capabilities', 'departments', 'adoption', 'alerts'].map((n) => [n, load(n)]));
 const K = (m) => { const r = D.kpis.find((x) => x.metric === m); if (!r) throw new Error('kpi ' + m); return Number(r.value); };
 const row = (t, k, v) => { const r = D[t].find((x) => x[k] === v); if (!r) throw new Error(`${t} ${k}=${v}`); return r; };
@@ -81,7 +81,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order an executive needs: what is measurable, what changed, the arithmetic, what is still hypothesis, what to do first, what is needed, and how success is verified.' });
   const items = [
     ['What is measurable', 'Approval among recorded decisions, by day, document country and failing check. Not measurable: starts, completion, abandonment, retries, review outcomes, time to completion.'],
-    ['What changed', `Approval ${pct(K('approval_a'))} → ${pct(K('approval_b'))} (${pp(K('delta_pp'))}). Approvals ${sint(K('approved_change'))}: ${sint(K('volume_effect'))} from fewer decisions, ${sint(K('rate_effect'))} from the lower rate.`],
+    ['What changed', `Pass rate ${pct(K('approval_a'))} → ${pct(K('approval_b'))} (${pp(K('delta_pp'))}, ${pct(Math.abs(K('delta_rel')))} relative). Approvals ${pct(Math.abs(K('approved_change_rel')))} fewer (${sint(K('approved_change'))}): ${pct(K('volume_effect_share'), 0)} of that from fewer decisions, ${pct(K('rate_effect_share'), 0)} from the lower rate.`],
     ['Arithmetic drivers', `Fraud signals ${pp(b('Fraud signal').effect, 2)}, execution errors ${pp(b('Execution error').effect, 2)}, selfie / liveness ${pp(b('Selfie / liveness').effect, 2)}, no document type ${pp(b('No document type, no reason code').effect, 2)}. Face match improved (${pp(b('Face match').effect, 2)}).`],
     ['Still hypotheses', `${int(K('incident_excess_base'))} failures (range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))}) sit above baseline in four date windows. Fraud signals are not adjudicated; the execution errors are unattributed; vendor incidents on Sep 1 and 6 are documented, but impact on ARQ is not.`],
     ['First (Phase 0, weeks 0–2)', 'Instrument the funnel; hold and retry execution errors; alert per reason code; reconcile control findings; adjudicate fraud samples; diagnose Mexican "no document type" with the vendor.'],
@@ -139,7 +139,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   text(s, cx + 0.5 + splitIdx * bw, top - 0.3, 2, 0.25, [{ text: 'Recent period →' }], { size: 10, color: C.ink });
   text(s, cx + 0.45, bot + 0.06, 1.2, 0.22, [{ text: 'Jul 25' }], { size: 9.5, color: C.faint });
   text(s, cx + cw - 1.2, bot + 0.06, 1.2, 0.22, [{ text: 'Sep 22' }], { size: 9.5, color: C.faint, align: 'right' });
-  note(s, [{ text: `Country is the document issuing country. Mix barely moved: Mexican documents were ${pct(K('mex_share_a'))} of decisions, then ${pct(K('mex_share_b'))}. Columns start at 40%.` }]);
+  note(s, [{ text: `Without the ${int(K('incident_days_n'))} incident days (red), the recent rate is ${pct(K('approval_b_excl_days'))}: ${pp(K('delta_excl_days_pp'), 2)}. Those days hold ${pct(K('share_recent_on_incident_days'), 0)} of recent decisions, so they stay in. Mexican documents were ${pct(K('mex_share_a'))} of decisions, then ${pct(K('mex_share_b'))}. Columns start at 40%.` }]);
 }
 {
   const s = slide('Executive narrative', 'Four reasons explain most of the change; face match improved but remains a large loss', { notes: 'Each unsuccessful decision gets one primary reason in check order, so effects add up to the total change. Red is the part above baseline inside the four date windows (base estimate).' });
@@ -186,7 +186,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     { text: 'Liveness incidents on the vendor’s US data centre: Sep 1 (15:38–16:42 and 18:07–22:44 UTC) and Sep 6 (10:00–17:22 UTC). No entry for Sep 2 or for the fraud-signal dates.', size: 12, after: 6 },
     { text: 'A documented vendor incident is not confirmation of impact on ARQ.', size: 12, color: C.muted },
   ], { size: 13 });
-  note(s, [{ text: `Sensitivity range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))} across window, signature and baseline variants. Removing the ${int(K('selected_incident'))} matching failures gives ${pct(K('approval_excl_selected'), 2)}: a descriptive rate, not performance without incidents.` }]);
+  note(s, [{ text: `Without the ${int(K('incident_days_n'))} incident days the rate still fell ${pp(K('delta_excl_days_pp'), 2)} (${pct(K('approval_a_excl_days'))} → ${pct(K('approval_b_excl_days'))}); they hold ${pct(K('share_recent_on_incident_days'), 0)} of recent decisions. Sensitivity range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))} across window, signature and baseline variants. Removing the ${int(K('selected_incident'))} matching failures gives ${pct(K('approval_excl_selected'), 2)}: a descriptive rate, not performance without incidents.` }]);
 }
 {
   const s = slide('Executive narrative', 'Six hypotheses, each with the step that would settle it', { notes: 'None of these is established. Each row names the evidence, the strongest alternative, and the investigation and the decision it enables.' });
@@ -203,6 +203,30 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   note(s, [{ text: `Evidence for each (from the data): H1 ${int(+row('incidents', 'id', 'exec_errors').observed)} TECHNICAL_ERROR rejections; H2 ${int(+row('incidents', 'id', 'liveness_spike').observed)} liveness quality failures on two days; H3 ${int(+row('incidents', 'id', 'fraud_arg').observed)} signals with doubled volume; H4 ${int(+row('incidents', 'id', 'fraud_mex').observed)} INE signals at normal volume; H5 no document type ${pct(K('mex_nodoc_a'))} → ${pct(K('mex_nodoc_b'))} of Mexican decisions; H6 face match ${pct(K('face_b'), 2)} of recent decisions.` }], 6.25);
 }
 {
+  const s = slide('Executive narrative', 'The plan in four tracks: fix and measure, test, learn, build', { notes: 'Rows are the kind of work, columns are time. Fixes and instruments go first because they are cheap and useful whatever the root cause; experiments test the obvious hypotheses; research runs beside them, from support tickets up to eye tracking if the cheaper rungs leave questions open; platform work comes later. Dashed items are conditional.' });
+  const tracks = D.tracks.slice().sort((a, b) => +a.order - +b.order), phases = D.phases;
+  const labelW = 2.3, gap = 0.08, colW = (W - 2 * MX - labelW - 3 * gap) / 4, lineH = 0.23;
+  let y = 1.45;
+  rect(s, MX, y, labelW, 0.38, C.teal, { radius: 0.05 });
+  text(s, MX + 0.12, y + 0.07, labelW - 0.24, 0.26, [{ text: 'Track' }], { size: 10.5, color: C.white });
+  phases.forEach((p, i) => { const x = MX + labelW + gap + i * (colW + gap); rect(s, x, y, colW, 0.38, i === 3 ? C.amberSoft : C.tealSoft, { radius: 0.05 }); text(s, x + 0.1, y + 0.07, colW - 0.2, 0.26, [{ text: p.label.replace('Phase ', 'P') }], { size: 10, color: i === 3 ? C.amber : C.teal }); });
+  y += 0.46;
+  tracks.forEach((t) => {
+    const cells = phases.map((p) => actions.filter((a) => a.track === t.id && a.phase === p.phase));
+    const rows = Math.max(1, ...cells.map((c) => c.length));
+    const h = 0.16 + rows * lineH;
+    rect(s, MX, y, labelW, h, C.panel, { radius: 0.05 });
+    text(s, MX + 0.12, y + 0.06, labelW - 0.24, h - 0.1, [{ text: t.name, bold: true, after: 2 }, { text: t.note, size: 9, color: C.muted }], { size: 11, color: C.teal });
+    cells.forEach((list, i) => {
+      const x = MX + labelW + gap + i * (colW + gap);
+      rect(s, x, y, colW, h, C.white, { line: C.line, radius: 0.05 });
+      if (list.length) text(s, x + 0.1, y + 0.06, colW - 0.2, h - 0.1, list.map((a, k) => ({ text: (a.conditional ? '◌ ' : '• ') + a.title, size: 9.5, color: a.conditional ? C.amber : C.ink, after: k < list.length - 1 ? 1 : 0 })), { size: 9.5 });
+    });
+    y += h + gap;
+  });
+  note(s, [{ text: '◌ = conditional on a Phase 0 finding. Owners, evidence, acceptance criteria and guardrails per action are in the dashboard (What to do). Effort sizes are assumptions.' }], Math.max(y + 0.05, 6.55));
+}
+{
   const s = slide('Executive narrative', 'Phase 0, weeks 0–2: measure and stabilise before optimising', { notes: 'Phase 0 is mostly measurement and investigation, plus one remediation (hold and retry) that is worth doing whatever the root cause.' });
   const p0 = actions.filter((a) => a.phase === '0');
   p0.forEach((a, i) => {
@@ -213,26 +237,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     text(s, x + 0.17, y + 0.78, w - 0.34, 0.3, [{ text: `${a.owner} · ${a.kind} · ${a.effort.split(' ')[0]}` }], { size: 10, color: C.muted });
     text(s, x + 0.17, y + 1.2, w - 0.34, 1.05, [{ text: 'Done when: ' + a.acceptance }], { size: 10.5 });
   });
-  note(s, [{ text: 'Effort sizes are assumptions (S ≤ 2 engineer-weeks, M = 2–6). Owners are role-based examples, not named people.' }]);
-}
-{
-  const s = slide('Executive narrative', 'Later phases depend on what Phase 0 finds; platform work is multi-quarter', { notes: 'Phase 1 tests the leading fixes; Phase 2 scales what works; Phase 3 is large platform and commercial work. Conditional items say what they depend on.' });
-  [1, 2, 3].forEach((ph, i) => {
-    const x = MX + i * 4.1, w = 3.9;
-    const label = D.phases.find((p) => p.phase === String(ph)).label;
-    rect(s, x, 1.5, w, 0.5, i === 2 ? C.amberSoft : C.tealSoft, { radius: 0.06 });
-    text(s, x + 0.15, 1.6, w - 0.3, 0.35, [{ text: label.replace('Phase ', 'P') }], { size: 12, color: i === 2 ? C.amber : C.teal });
-    const items = actions.filter((a) => a.phase === String(ph));
-    items.forEach((a, k) => {
-      const y = 2.15 + k * 1.45;
-      rect(s, x, y, w, 1.35, C.panel, { radius: 0.06 });
-      text(s, x + 0.15, y + 0.08, w - 0.3, 0.45, [{ text: a.title, bold: true }], { size: 11.5 });
-      text(s, x + 0.15, y + 0.52, w - 0.3, 0.22, [{ text: a.owner }], { size: 10, color: C.muted });
-      text(s, x + 0.15, y + 0.73, w - 0.3, 0.22, [{ text: `Effort ${a.effort.split(' ')[0]} · confidence ${a.confidence.split(' ')[0].toLowerCase()}` }], { size: 10, color: C.muted });
-      if (a.conditional) text(s, x + 0.15, y + 0.95, w - 0.3, 0.38, [{ text: 'If: ' + a.conditional }], { size: 10, color: C.amber });
-    });
-  });
-  note(s, [{ text: 'Timelines match the dashboard and FAQ: P0 weeks 0–2, P1 weeks 2–6, P2 weeks 6–13, P3 the following two quarters.' }]);
+  note(s, [{ text: 'Effort sizes are assumptions (S ≤ 2 engineer-weeks, M = 2–6). Owners are role-based examples, not named people. Later phases: P1 weeks 2–6, P2 weeks 6–13, P3 the following two quarters.' }]);
 }
 {
   const s = slide('Executive narrative', `Recovery scenarios: ${pp(+scen.Conservative.steady_pp)} to ${pp(+scen.Optimistic.steady_pp)} on recurring causes, not a forecast`, { notes: 'Each population is observed; every multiplier is an assumption. Populations do not overlap. Incident-type benefits occur only when a comparable incident recurs. Control-gap reversals are shown separately.' });
@@ -356,7 +361,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     r.label + ' (' + (r.unit === 'share' ? '%' : r.unit) + ')', inputFmt(r, r.low), inputFmt(r, r.mid), inputFmt(r, r.high), r.kind, r.short, r.sources.split(' ').join(', ')]));
   table(s, MX, 1.3, W - 2 * MX, [3.05, 0.85, 0.85, 0.85, 1.6, 3.6, 1.33], rows, { size: 11 });
   const src = D.value_sources.map((r) => r.id + ' ' + r.publisher).join(' · ');
-  note(s, [{ text: 'Sources: ' + src + '. Full figures, periods and links are in the dashboard (Plan & value).' }], 6.45);
+  note(s, [{ text: 'Sources: ' + src + '. Full figures, periods and links are in the dashboard (What we gain).' }], 6.45);
 }
 {
   const vr = D.value_results;

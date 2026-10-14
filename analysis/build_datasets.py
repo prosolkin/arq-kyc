@@ -347,8 +347,8 @@ def main():
             for s in ("fraud", "exec_error", "liveness_quality"):
                 c[s] += (not r["approved"]) and sig(r, s)
     dcols = ("n", "approved", "rejected", "warning", "selected", "fraud", "exec_error", "liveness_quality")
-    write("daily.csv", ["date", "country", *dcols, "approval_rate", "approval_excl_selected"],
-          [{"date": d, "country": sc, **{k: c[k] for k in dcols}, "approval_rate": rate(c["approved"], c["n"]),
+    write("daily.csv", ["date", "country", "incident_day", *dcols, "approval_rate", "approval_excl_selected"],
+          [{"date": d, "country": sc, "incident_day": int(d in INCIDENT_DAYS), **{k: c[k] for k in dcols}, "approval_rate": rate(c["approved"], c["n"]),
             "approval_excl_selected": rate(c["approved"], c["n"] - c["selected"])} for (d, sc), c in sorted(daily.items())])
 
     wk_total, wk = Counter(), Counter()
@@ -860,6 +860,15 @@ def main():
         ("mex_share_b", round(len(by(B, "MEX")) / nB, 4), "Mexican-document share of decisions, recent period", "pct"),
         ("selected_incident", len([r for r in B if id(r) in selected]), "Unsuccessful decisions matching an incident signature in its window", "int"),
         ("approval_excl_selected", round(apB / (nB - len([r for r in B if id(r) in selected])), 4), "Recent approval rate after removing those records (descriptive only)", "pct"),
+        ("approval_a_excl_days", round(approval([r for r in A if r["date"] not in INCIDENT_DAYS]), 4), "Prior-period approval rate without incident days", "pct"),
+        ("approval_b_excl_days", round(approval([r for r in B if r["date"] not in INCIDENT_DAYS]), 4), "Recent-period approval rate without incident days", "pct"),
+        ("delta_excl_days_pp", round(100 * (approval([r for r in B if r["date"] not in INCIDENT_DAYS]) - approval([r for r in A if r["date"] not in INCIDENT_DAYS])), 2), "Change in approval rate without incident days", "pp"),
+        ("share_recent_on_incident_days", round(sum(1 for r in B if r["date"] in INCIDENT_DAYS) / nB, 4), "Share of recent decisions that fall on incident days", "pct"),
+        ("incident_days_n", len({r["date"] for r in B if r["date"] in INCIDENT_DAYS}), "Incident days in the recent period", "int"),
+        ("delta_rel", round(rB / rA - 1, 4), "Relative change in the approval rate", "pct"),
+        ("approved_change_rel", round(apB / apA - 1, 4), "Relative change in the approved count", "pct"),
+        ("volume_effect_share", round((exp_approvals_b - apA) / (apB - apA), 4), "Share of the approved-count change from lower volume", "pct"),
+        ("rate_effect_share", round((apB - exp_approvals_b) / (apB - apA), 4), "Share of the approved-count change from the lower rate", "pct"),
         ("incident_excess_base", inc_total["base"], "Incident failures above baseline (base estimate)", "int"),
         ("incident_excess_low", min(inc_total[v] for v in ("base", "wide_window", "broad_signature", "recent_baseline")), "Incident failures above baseline, low end of sensitivity range", "int"),
         ("incident_excess_high", max(inc_total[v] for v in ("base", "wide_window", "broad_signature", "recent_baseline")), "Incident failures above baseline, high end of sensitivity range", "int"),
@@ -968,8 +977,9 @@ def main():
     caught = {i["id"]: any(i["dates"][0] in a["fired_dates"].split() for a in alerts) for i in INCIDENTS}
 
     comp = {c[0]: c[2] for c in compliance}
+    n_capture_class = sum(cb[g] for g in DRIVERS if DRIVER_CLASS[g] == "Capture or document issue")
     write_actions(nB, cb, len(mex_doc), len(capture), len(face_warn), len(face_nomatch), exec_inc, live_inc, comp, caught,
-                  sum(a["days_prior"] for a in alerts))
+                  sum(a["days_prior"] for a in alerts), n_capture_class=n_capture_class)
     # ---------------- quick review: the whole story in ASD-STE100 Simplified Technical English ----------------
     KP = {m: v for m, v, _l, _u in kpis}
     BR = {b_["driver"]: b_["effect_pp"] for b_ in bridge}
@@ -983,49 +993,64 @@ def main():
     with open(os.path.join(OUT, "actions.csv"), newline="") as f:
         acts = list(csv.DictReader(f))
     assert {a["id"] for a in acts if a["phase"] == "0"} >= {"instrument_min", "tech_error_hold", "alerting", "compliance_reconcile", "investigate_fraud", "vendor_confirm"}
-    assert {a["id"] for a in acts if a["phase"] == "1"} == {"liveness_retake", "mex_doc_guidance", "fraud_precheck"}
+    assert {a["id"] for a in acts if a["phase"] == "1"} == {"liveness_retake", "mex_doc_guidance", "fraud_precheck", "qual_research", "vendor_bakeoff"}
     mid_be, mid_v = VR[("Mid", "Central", "breakeven")], VI["value_per_activated"]["mid"]
     cau_be, cau_v = VR[("Cautious", "Central", "breakeven")], VI["value_per_activated"][VI["value_per_activated"]["cautious"]]
     assert mid_v >= mid_be and cau_v < cau_be, (mid_v, mid_be, cau_v, cau_be)
-    # (section, heading, goto tab, kind, text). kind: lead, p, li, step, caution
+    # (section, heading, goto tab, kind, text). kinds: lead, p, li, step, caution, chart (text = chart id),
+    # t_fix / t_test / t_learn / t_vendor (plan tracks). Every number is computed above, none is typed.
+    DC = {d_["name"]: d_ for d_ in declines if d_["level"] == "class"}
+    cls_share = lambda name: f"{100 * float(DC[name]['of_unsuccessful_b']):.0f}%"
+    face_share = f"{100 * cb['Face match'] / (nB - apB):.0f}%"
+    n_sources = len(vp.SOURCES)
+    assert abs(KP["volume_effect_share"] + KP["rate_effect_share"] - 1) < 0.001
     Q = [
-        ("result", "The result", "summary", "lead", f"In the last 30 days, the KYC approval rate decreased by {abs(KP['delta_pp']):.1f} percentage points, from {p1(KP['approval_a'])} to {p1(KP['approval_b'])}."),
-        ("result", "", "", "p", f"ARQ approved {abs(KP['approved_change']):,} fewer people than in the first 30 days."),
-        ("result", "", "", "p", f"Of these {abs(KP['approved_change']):,} approvals, {abs(KP['volume_effect']):,} are because of fewer decisions and {abs(KP['rate_effect']):,} are because of the lower rate."),
-        ("result", "", "", "p", f"Both countries show the decrease. Mexico decreased from {p1(KP['mex_approval_a'])} to {p1(KP['mex_approval_b'])}. Argentina decreased from {p1(KP['arg_approval_a'])} to {p1(KP['arg_approval_b'])}."),
-        ("data", "What the data can show", "measurement", "p", "The data has one decision record for each person, with a date."),
-        ("data", "", "", "p", "The data does not show when a person starts KYC. Because of this, we cannot measure the completion rate."),
-        ("data", "", "", "p", "This review uses the approval rate of recorded decisions. This rate is not the same as the completion rate."),
-        ("data", "", "", "caution", "CAUTION: Do not report the approval rate as the completion rate."),
-        ("causes", "Why the rate decreased", "drivers", "p", "Four causes give most of the decrease:"),
+        ("result", "The result", "summary", "chart", "funnel"),
+        ("result", "", "", "lead", f"The KYC pass rate decreased by {abs(KP['delta_pp']):.1f} points in the last 30 days: from {p1(KP['approval_a'])} to {p1(KP['approval_b'])}."),
+        ("result", "", "", "li", f"Relative decrease: {100 * abs(KP['delta_rel']):.1f}%."),
+        ("result", "", "", "li", f"Approved people: {100 * abs(KP['approved_change_rel']):.1f}% fewer ({abs(KP['approved_change']):,} people)."),
+        ("result", "", "", "li", f"Of the drop, {100 * KP['volume_effect_share']:.0f}% is because of fewer decisions and {100 * KP['rate_effect_share']:.0f}% is because of the lower rate."),
+        ("result", "", "", "li", f"By country: Mexico from {p1(KP['mex_approval_a'])} to {p1(KP['mex_approval_b'])}, Argentina from {p1(KP['arg_approval_a'])} to {p1(KP['arg_approval_b'])}."),
+        ("result", "", "", "term", "Pass rate here = approved decisions ÷ all recorded decisions. The data cannot show the people who started KYC and did not finish."),
+        ("data", "What the data can show", "measurement", "p", "The data has one decision record for each person, with a date. It does not show when a person starts KYC."),
+        ("data", "", "", "p", "Because of this, we cannot measure the completion rate. We measure the pass rate of recorded decisions."),
+        ("data", "", "", "caution", "CAUTION: Do not report this pass rate as the completion rate."),
+        ("causes", "Why it fell", "drivers", "chart", "causes"),
+        ("causes", "", "", "p", f"Of the {nB - apB:,} not-approved decisions, {cls_share('Unexplained or identity mismatch')} are unexplained or identity mismatches and {cls_share('Capture or document issue')} are capture or document problems. Fraud signals are {cls_share('Fraud signal (not adjudicated)')} and execution errors are {cls_share('Execution error')}."),
+        ("causes", "", "", "p", "Four causes give most of the decrease. The points show the change in pass rate for each cause."),
         ("causes", "", "", "li", f"Fraud signals: {pts(BR['Fraud signal'])}. The vendor found more images that look altered or fake."),
         ("causes", "", "", "li", f"Execution errors: {pts(BR['Execution error'])}. On Sep 1–2, some checks did not run, and the system rejected these people."),
         ("causes", "", "", "li", f"Selfie and liveness failures: {pts(BR['Selfie / liveness'])}. The vendor status page shows liveness incidents on Sep 1 and Sep 6."),
         ("causes", "", "", "li", f"Mexican documents with no document type: {pts(BR['No document type, no reason code'])}. The vendor did not identify these documents."),
-        ("causes", "", "", "p", f"Face match failures decreased ({pts(BR['Face match'])}). But face match is still a large cause of rejections."),
+        ("causes", "", "", "p", f"Face match failures decreased ({pts(BR['Face match'])}). But face match is still {face_share} of the not-approved decisions."),
         ("causes", "", "", "caution", "CAUTION: A fraud signal is not confirmed fraud. Do not call it fraud before an analyst examines it."),
-        ("incidents", "Short incidents", "incidents", "p", f"We found about {KP['incident_excess_base']:,} more failures than usual in four short date windows. The range is {KP['incident_excess_low']:,} to {KP['incident_excess_high']:,}."),
+        ("incidents", "Short incidents", "incidents", "chart", "days"),
+        ("incidents", "", "", "p", f"We found about {KP['incident_excess_base']:,} more failures than usual in four short date windows (range {KP['incident_excess_low']:,} to {KP['incident_excess_high']:,})."),
         ("incidents", "", "", "li", "Aug 24, Argentina: more fraud signals and more traffic than usual."),
         ("incidents", "", "", "li", "Sep 1–2: execution errors in both countries."),
         ("incidents", "", "", "li", "Sep 1 and Sep 6: liveness failures."),
         ("incidents", "", "", "li", "Sep 14–19, Mexico: more fraud signals, with usual traffic."),
+        ("incidents", "", "", "p", f"Without the {KP['incident_days_n']} incident days, the pass rate still decreased by {abs(KP['delta_excl_days_pp']):.2f} points. These days hold {100 * KP['share_recent_on_incident_days']:.0f}% of the recent decisions. We keep them and show both views."),
         ("incidents", "", "", "p", "The causes of these incidents are not confirmed. The vendor status page does not show an incident on Sep 2."),
-        ("first", "Do these steps first (weeks 0–2)", "plan", "step", "Record each KYC start, each step and each final decision."),
-        ("first", "", "", "step", "Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person."),
-        ("first", "", "", "step", "Set alerts for sudden increases in failures."),
-        ("first", "", "", "step", "Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6."),
-        ("first", "", "", "step", "Examine a sample of fraud signals. Find which signals are real fraud."),
-        ("first", "", "", "step", "Compare the control findings with the source systems. Correct the errors that you find."),
-        ("tests", "Then do these tests (weeks 2–6)", "hypotheses", "step", "Test one guided retake for unclear selfies."),
-        ("tests", "", "", "step", "In Mexico, show pictures of the accepted documents before the capture."),
-        ("tests", "", "", "step", "If the fraud is confirmed, add device checks before the vendor call."),
-        ("gain", "The possible gain", "plan", "p", f"If the tests work, ARQ can approve about {TOT['Central']['steady_30d']:,} more people each 30 days."),
-        ("gain", "", "", "p", f"The range is {TOT['Conservative']['steady_30d']:,} to {TOT['Optimistic']['steady_30d']:,} people. This is {TOT['Conservative']['steady_pp']:.1f} to {TOT['Optimistic']['steady_pp']:.1f} points of approval rate."),
+        ("plan", "What to do", "plan", "p", "The plan has three tracks that run at the same time. The obvious fixes go first because they are cheap to try."),
+        ("plan", "", "", "t_fix", "Record each KYC start, each step and each final decision."),
+        ("plan", "", "", "t_fix", "Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person."),
+        ("plan", "", "", "t_fix", "Set alerts for sudden increases in failures. Compare the control findings with the source systems."),
+        ("plan", "", "", "t_test", "Test one guided retake for unclear selfies."),
+        ("plan", "", "", "t_test", "In Mexico, show pictures of the accepted documents before the capture."),
+        ("plan", "", "", "t_test", "If the fraud is confirmed, add device checks before the vendor call."),
+        ("plan", "", "", "t_learn", "Examine a sample of fraud signals. Find which signals are real fraud."),
+        ("plan", "", "", "t_learn", "Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6."),
+        ("plan", "", "", "t_learn", "Talk to people who failed the capture. Start with support tickets, then interviews, then session replays, then eye tracking if the budget permits."),
+        ("plan", "", "", "t_vendor", "Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor."),
+        ("gain", "What we gain", "gain", "chart", "gain"),
+        ("gain", "", "", "p", f"If the tests work, the pass rate increases by about {TOT['Central']['steady_pp']:.1f} points (range {TOT['Conservative']['steady_pp']:.1f} to {TOT['Optimistic']['steady_pp']:.1f})."),
+        ("gain", "", "", "p", f"That is about {TOT['Central']['steady_30d']:,} more approved people each 30 days (range {TOT['Conservative']['steady_30d']:,} to {TOT['Optimistic']['steady_30d']:,})."),
         ("gain", "", "", "p", "These numbers come from scenarios. They are not forecasts."),
-        ("money", "Money", "plan", "p", "The value model uses market data. It does not use ARQ data."),
-        ("money", "", "", "p", f"With middle market values, the first-year value is {usd0(mid_v)} for each active customer. The cost is {usd0(mid_be)} for each active customer."),
-        ("money", "", "", "p", f"With cautious values, the value is {usd0(cau_v)} and the cost is {usd0(cau_be)}. The cost is more than the value in the first year."),
-        ("money", "", "", "caution", "CAUTION: Replace the market values with ARQ values before you make a decision."),
+        ("money", "Money", "gain", "p", f"The value model has no ARQ numbers. It uses benchmark values from {n_sources} public sources: vendor price lists, Nu Holdings filings, Liftoff reports and Mexican salary data."),
+        ("money", "", "", "li", f"Middle benchmarks: the actions pay back in the first year. Each active customer gives {usd0(mid_v)} of value for {usd0(mid_be)} of cost."),
+        ("money", "", "", "li", f"Cautious benchmarks: the actions do not pay back in the first year. Each active customer gives {usd0(cau_v)} of value for {usd0(cau_be)} of cost."),
+        ("money", "", "", "caution", "CAUTION: Replace the benchmark values with ARQ values before you make a decision."),
         ("questions", "Questions for ARQ", "reference", "li", "Does each row show the first attempt, the last attempt or the final decision?"),
         ("questions", "", "", "li", "Does ARQ have records of people who started KYC but did not send their documents?"),
         ("questions", "", "", "li", "What does the app do after a TECHNICAL_ERROR or a liveness failure?"),
@@ -1033,18 +1058,21 @@ def main():
         ("questions", "", "", "p", "The answers can change the results of this review."),
     ]
 
-    # STE checks that a script can do: sentence length (20 words for steps, 25 for descriptive text),
+    # STE checks that a script can do: sentence length (20 words for steps and cautions, 25 for descriptive text),
     # no contractions, no progressive or perfect tenses, no -ing verb forms, at most 6 sentences per item.
-    ING_OK = {"during", "thing", "something", "nothing", "string"}
+    ING_OK = {"during", "thing", "something", "nothing", "string", "tracking"}
+    STEP_KINDS = {"step", "caution", "t_fix", "t_test", "t_learn", "t_vendor"}
     def ste_sentences(t):
         return [x for x in re.split(r"(?<=[.?!:])\s+(?=[A-Z])", t.strip()) if x]
     ste_max = 0
     for sec, _h, _g, kind, t in Q:
+        if kind == "chart":
+            continue
         sents = ste_sentences(t)
         assert len(sents) <= 6, t
         for s_ in sents:
             words = [w_ for w_ in re.split(r"\s+", s_) if re.search(r"[A-Za-z0-9]", w_)]
-            limit = 20 if kind in ("step", "caution") else 25
+            limit = 20 if kind in STEP_KINDS else 25
             assert len(words) <= limit, (len(words), s_)
             ste_max = max(ste_max, len(words))
             assert not re.search(r"\b\w+'(t|re|ve|ll|d|s)\b|n't\b", s_), ("contraction", s_)
@@ -1054,7 +1082,7 @@ def main():
                 assert w_.lower() in ING_OK, ("-ing form", w_, s_)
     quick = [dict(order=i_ + 1, section=sec, heading=h, goto=g, kind=kind, text=t) for i_, (sec, h, g, kind, t) in enumerate(Q)]
     write("quick_review.csv", list(quick[0].keys()), quick)
-    n_words = sum(len(re.split(r"\s+", r["text"])) for r in quick)
+    n_words = sum(len(re.split(r"\s+", r["text"])) for r in quick if r["kind"] != "chart")
     print(f"quick review: {len(quick)} items, {n_words} words, longest sentence {ste_max} words")
 
     write_org()
@@ -1090,7 +1118,17 @@ PHASES = {
 }
 
 
-def write_actions(nB, cb, n_mexdoc, n_capture, n_facewarn, n_nomatch, exec_inc, live_inc, comp, caught, false_prior):
+# Tracks group the roadmap by the kind of work; phases stay the time axis.
+TRACKS = {"Remediate": "Fix", "Control": "Fix", "Measure": "Fix", "Experiment": "Test", "Investigate": "Learn", "Platform": "Build"}
+TRACK_INFO = [
+    ("Fix", "Fix and measure", "Obvious fixes and the instruments to see them work. Cheap, start now."),
+    ("Test", "Test the fixes", "Hypotheses that are quick to try as experiments."),
+    ("Learn", "Learn why", "Investigations and research that run beside the fixes."),
+    ("Build", "Build later", "Platform work that needs a quarter or more."),
+]
+
+
+def write_actions(nB, cb, n_mexdoc, n_capture, n_facewarn, n_nomatch, exec_inc, live_inc, comp, caught, false_prior, n_capture_class=0):
     A = [
         dict(id="instrument_min", phase=0, kind="Measure", area="Measurement", title="Minimum funnel instrumentation",
              action="Emit the nine KYC events (start, document, selfie, submission, vendor result, decision, review, account state) with person, session and attempt ids and app/SDK version.",
@@ -1172,6 +1210,21 @@ def write_actions(nB, cb, n_mexdoc, n_capture, n_facewarn, n_nomatch, exec_inc, 
              effort="M (assumed 3–5 engineer-weeks)", acceptance="False-block rate on a holdout below an agreed threshold.", window="4 weeks",
              rollout="Shadow mode first (log, don't block), then block.", guardrails="Monitor blocks of genuine applicants via appeals and support contacts.",
              conditional="Depends on adjudication confirming coordinated fraud."),
+        dict(id="qual_research", phase=1, kind="Investigate", area="Capture flow", title="Watch and ask people who failed the capture",
+             action="Mine support tickets and vendor case images first; then run 8–10 remote interviews and unmoderated capture tests; add session replay and eye tracking only if the cheaper rungs leave questions open.",
+             hypothesis="h_liveness, h_mex_docs", evidence=f"Capture and document issues are {n_capture_class:,} of the recent not-approved decisions; the extract says what failed, not why.",
+             eligible="Recently declined applicants who consent to contact", eligible_n=n_capture_class, outcome="A ranked list of observed failure causes, as input for the retake and guidance tests.",
+             confidence="Medium", accountable="product", participants="cx, mobile, data, country, legal", dependencies="Consent to contact declined applicants; vendor case access.",
+             effort="S–M (assumed 1 researcher-week per rung)", acceptance="Written causes ranked by frequency, each with a ticket, clip or image as evidence.", window="2–4 weeks",
+             rollout="Not applicable", guardrails="No copies of ID documents kept; consent for every session.", conditional="Interviews and tests depend on consent; the costlier rungs on budget."),
+        dict(id="vendor_bakeoff", phase=1, kind="Investigate", area="Vendor", title="Decide on the vendor: bake-off on a sample",
+             action="If the vendor cannot explain Sep 1, 2 and 6, or cannot support retakes, run a second vendor in shadow mode on a sample and compare decisions.",
+             hypothesis="h_exec, h_liveness", evidence="Liveness incidents on the vendor's status page on Sep 1 and 6; execution errors on Sep 1–2 with no vendor entry.",
+             eligible="A sample of recent submissions", eligible_n="", outcome="A decision: stay, renegotiate, or add a second vendor (Phase 3).", confidence="Medium",
+             accountable="vendors", participants="platform, finance, compliance, risk, legal", dependencies="The vendor's incident reports (Phase 0); a second vendor's sandbox; a data-sharing review.",
+             effort="M (assumed 2–3 engineer-weeks plus commercial time)", acceptance="Side-by-side approval, false-reject and latency figures on the same sample.", window="4 weeks",
+             rollout="Shadow only; no production decisions from the second vendor.", guardrails="No applicant data sent without a contract and a privacy review.",
+             conditional="Only if the Phase 0 vendor answers are missing or insufficient."),
         dict(id="capture_quality", phase=2, kind="Experiment", area="ID capture", title="On-device capture quality checks",
              action="Use auto-capture with blur and glare checks and a retake prompt; restrict uploads if the current flow allows them.",
              hypothesis="", evidence=f"{n_capture:,} recent image-quality or copy declines.", eligible="All ID captures", eligible_n=n_capture,
@@ -1215,13 +1268,24 @@ def write_actions(nB, cb, n_mexdoc, n_capture, n_facewarn, n_nomatch, exec_inc, 
     for i, a in enumerate(A, 1):
         a["order"] = i
         a["phase_label"] = PHASES[a["phase"]]
+        a["track"] = TRACKS[a["kind"]]
         a["owner"] = names[a["accountable"]]
         a["participant_names"] = ", ".join(names[p.strip()] for p in a["participants"].split(","))
-    cols = ["id", "order", "phase", "phase_label", "kind", "area", "title", "action", "hypothesis", "evidence", "eligible", "eligible_n",
+    cols = ["id", "order", "phase", "phase_label", "track", "kind", "area", "title", "action", "hypothesis", "evidence", "eligible", "eligible_n",
             "outcome", "confidence", "accountable", "owner", "participants", "participant_names", "dependencies", "effort", "acceptance",
             "window", "rollout", "guardrails", "conditional"]
     write("actions.csv", cols, [{c: a.get(c, "") for c in cols} for a in A])
     write("phases.csv", ["phase", "label"], [{"phase": k, "label": v} for k, v in PHASES.items()])
+    write("tracks.csv", ["id", "order", "name", "note"], [{"id": t, "order": i, "name": n, "note": d} for i, (t, n, d) in enumerate(TRACK_INFO, 1)])
+    # the budget ladder for the qualitative research action: assumptions, not quotes
+    research = [
+        ("none", 1, "No budget", "Support tickets, app analytics, vendor case images", "Which failures people complain about; what the vendor saw on the image", "Week 1", "Existing data; no consent needed beyond current terms"),
+        ("low", 2, "Low", "8–10 remote interviews; unmoderated capture tests on the real flow", "Why people choose the wrong document or fail the selfie", "Weeks 1–3", "Consent; a researcher-week; small incentives"),
+        ("medium", 3, "Medium", "Session replay on the capture screens; a one-week diary study in Mexico", "Where people hesitate, retry or quit; what happens at home, not in a lab", "Weeks 2–4", "A replay tool with PII masking; privacy review"),
+        ("high", 4, "High", "Lab usability sessions with eye tracking on the capture screens", "What people look at before a bad capture; whether the guidance is seen", "Weeks 3–6", "A lab or vendor; only if the cheaper rungs leave questions open"),
+    ]
+    write("research_options.csv", ["id", "order", "budget", "method", "answers", "when", "needs"],
+          [dict(zip(["id", "order", "budget", "method", "answers", "when", "needs"], r)) for r in research])
     raci = []
     for a in A:
         raci.append({"id": f"{a['id']}-{a['accountable']}", "action_id": a["id"], "dept_id": a["accountable"], "role": "A"})
@@ -1236,9 +1300,10 @@ def write_actions(nB, cb, n_mexdoc, n_capture, n_facewarn, n_nomatch, exec_inc, 
 
 RESPONSIBLE = {"instrument_min": ("platform", "mobile"), "alerting": ("platform",), "compliance_reconcile": ("data",), "investigate_fraud": ("ops",),
                "investigate_docs": ("vendors", "data"), "liveness_retake": ("mobile",), "mex_doc_guidance": ("mobile",), "fraud_precheck": ("platform",),
-               "review_queue": (), "reengagement": ("cx",), "orchestration": ("product",), "registry_checks": ("platform",), "second_vendor": ("platform",)}
+               "review_queue": (), "reengagement": ("cx",), "orchestration": ("product",), "registry_checks": ("platform",), "second_vendor": ("platform",),
+               "qual_research": ("cx",), "vendor_bakeoff": ("platform",)}
 INFORMED = {"tech_error_hold": ("cx",), "vendor_confirm": ("finance",), "kpi_split": ("finance",), "fraud_precheck": ("growth",), "capture_quality": ("data",),
-            "reengagement": ("data",), "mex_doc_guidance": ("cx",), "liveness_retake": ()}
+            "reengagement": ("data",), "mex_doc_guidance": ("cx",), "liveness_retake": (), "qual_research": ("legal",), "vendor_bakeoff": ("finance",)}
 
 # Role-based example functions. Not ARQ's org chart: no people, headcount or reporting lines.
 DEPARTMENTS = [
@@ -1324,6 +1389,8 @@ MANIFEST = {
     "hypotheses": "Leading hypotheses with evidence, alternatives and next steps.",
     "open_questions": "Questions to confirm with ARQ before acting, with what each answer changes.",
     "quick_review": "The whole story in ASD-STE100 Simplified Technical English, with STE rule checks.",
+    "tracks": "The four roadmap tracks (Fix, Test, Learn, Build) and what each means.",
+    "research_options": "Budget ladder for the qualitative research action (assumptions).",
     "scenarios": "Recovery scenarios per population: observed counts and assumed factors.",
     "scenario_totals": "Scenario totals and possible control-gap reversals.",
     "experiments": "Experiment and validation designs.",
