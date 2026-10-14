@@ -68,7 +68,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 // ======================= EXECUTIVE NARRATIVE =======================
 {
   const s = slide('Executive narrative', null, { dark: true, noTitle: true,
-    notes: 'Purpose: answer the brief in one pass. The headline metric is approval among recorded decisions; the start-to-finish funnel the brief describes cannot be measured from these extracts, and the deck says so up front.' });
+    notes: 'Purpose: answer the brief in one pass. The headline metric is approval among recorded decisions. These extracts cannot measure the start-to-finish funnel that the brief describes, and the deck says so first.' });
   rect(s, 0, 0, W, H, C.teal);
   text(s, MX, 1.25, 9.5, 0.4, [{ text: 'Product Owner case study · KYC onboarding' }], { size: 14, color: 'BFD6D5' });
   text(s, MX, 1.8, 11.4, 1.9, [{ text: `KYC approval fell ${Math.abs(K('delta_pp')).toFixed(1)} points in a month. Most of the arithmetic is known; most of the causes are not yet.` }], { font: 'head', size: 34, color: C.white });
@@ -78,15 +78,15 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     { text: 'Vendor research dated Oct 13, 2026. Case-study submission; it contains fraud-control and compliance findings from the extract.' }], { size: 12, color: 'BFD6D5' });
 }
 {
-  const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order an executive needs: what is measurable, what changed, the arithmetic, what is still hypothesis, what to do first, what is needed, and how success is verified.' });
+  const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order that an executive needs. They are: what we can measure, what changed, the arithmetic, the hypotheses, the first steps, the needs, and the checks.' });
   const items = [
-    ['What is measurable', 'Approval among recorded decisions, by day, document country and failing check. Not measurable: starts, completion, abandonment, retries, review outcomes, time to completion.'],
+    ['What is measurable', 'Approval among recorded decisions, by day, document country and failed check. Not measurable: starts, completion, abandonment, retries, review outcomes, time to completion.'],
     ['What changed', `Pass rate ${pct(K('approval_a'))} → ${pct(K('approval_b'))} (${pp(K('delta_pp'))}, ${pct(Math.abs(K('delta_rel')))} relative). Approvals ${pct(Math.abs(K('approved_change_rel')))} fewer (${sint(K('approved_change'))}): ${pct(K('volume_effect_share'), 0)} of that from fewer decisions, ${pct(K('rate_effect_share'), 0)} from the lower rate.`],
     ['Arithmetic drivers', `Fraud signals ${pp(b('Fraud signal').effect, 2)}, execution errors ${pp(b('Execution error').effect, 2)}, selfie / liveness ${pp(b('Selfie / liveness').effect, 2)}, no document type ${pp(b('No document type, no reason code').effect, 2)}. Face match improved (${pp(b('Face match').effect, 2)}).`],
     ['Still hypotheses', `${int(K('incident_excess_base'))} failures (range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))}) sit above baseline in four date windows. Fraud signals are not adjudicated; the execution errors are unattributed; vendor incidents on Sep 1 and 6 are documented, but impact on ARQ is not.`],
-    ['First (Phase 0, weeks 0–2)', 'Instrument the funnel; hold and retry execution errors; alert per reason code; reconcile control findings; adjudicate fraud samples; diagnose Mexican "no document type" with the vendor.'],
+    ['First (Phase 0, weeks 0–2)', 'Instrument the funnel and hold and retry execution errors. Alert per reason code. Reconcile control findings and adjudicate fraud samples. Diagnose Mexican "no document type" with the vendor.'],
     ['Needed', 'Event schema with privacy sign-off; vendor case access and incident reports; Risk and Compliance time; one medium and several small engineering items (sizes to confirm).'],
-    ['Verification', `Acceptance criteria per action; experiments on eventual approval per person within 7 days. Scenarios for recurring causes: ${pp(+scen.Conservative.steady_pp)} to ${pp(+scen.Optimistic.steady_pp)}, not forecasts. Confirmed control gaps could cost up to ${pp(Math.abs(+scen.Central.control_gap_all_pp)).replace('+', '')}.`],
+    ['Verification', `Acceptance criteria per action; experiments on eventual approval per person within 7 days. Scenarios for repeated causes: ${pp(+scen.Conservative.steady_pp)} to ${pp(+scen.Optimistic.steady_pp)}, not forecasts. Confirmed control gaps could cost up to ${pp(Math.abs(+scen.Central.control_gap_all_pp)).replace('+', '')}.`],
   ];
   items.forEach(([k, v], i) => {
     const y = 1.45 + i * 0.73;
@@ -114,7 +114,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     ...D.events.map((e) => ({ text: e.event, bullet: true, size: 11.5, after: 2 })),
     { text: 'with person, session and attempt ids, timestamps and app/SDK version.', size: 11.5, color: C.muted },
   ], { size: 13 });
-  note(s, [{ text: 'Do not read the approval rate as completion: people who never submit, and approvals after retry or review, are invisible here. Whether true completion is lower or higher cannot be determined from these extracts.' }]);
+  note(s, [{ text: 'Do not read the approval rate as completion. People who never submit, and approvals after retry or review, are not visible here. Whether true completion is lower or higher cannot be determined from these extracts.' }]);
 }
 {
   const s = slide('Executive narrative', `Approval fell from ${pct(K('approval_a'))} to ${pct(K('approval_b'))}: ${int(K('approved_change'))} fewer approvals`, { notes: 'The count fell for two reasons: fewer decisions in the recent period, and a lower approval rate. Only the rate effect is about KYC performance.' });
@@ -158,24 +158,24 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   rect(s, MX + 6.6, 6.25, 0.22, 0.18, C.teal); text(s, MX + 6.9, 6.22, 2.0, 0.25, [{ text: 'Everything else' }], { size: 10.5, color: C.muted });
   rect(s, 8.9, 1.55, W - MX - 8.9, 4.7, C.panel, { radius: 0.08 });
   text(s, 9.1, 1.72, W - MX - 9.3, 4.5, [
-    { text: 'Reading the bars', bold: true, color: C.teal, after: 8 },
+    { text: 'How to read the bars', bold: true, color: C.teal, after: 8 },
     { text: `Fraud signals: ${pp(b('Fraud signal').inc, 2)} of ${pp(b('Fraud signal').effect, 2)} sits in two windows.`, bullet: true, after: 6 },
     { text: `Execution errors: almost all of ${pp(b('Execution error').effect, 2)} is on Sep 1–2.`, bullet: true, after: 6 },
     { text: `Selfie / liveness: ${pp(b('Selfie / liveness').inc, 2)} on Sep 1 and 6, ${pp(b('Selfie / liveness').rest, 2)} elsewhere.`, bullet: true, after: 6 },
-    { text: `No document type, no reason code: ${pp(b('No document type, no reason code').effect, 2)}, all outside the windows, so it is a slower, ongoing shift (mostly Mexican documents).`, bullet: true, after: 6 },
-    { text: `Face match: ${pct(K('face_a'), 2)} → ${pct(K('face_b'), 2)} of decisions. Not a cause of the drop, but a large existing loss.`, bullet: true },
+    { text: `No document type, no reason code: ${pp(b('No document type, no reason code').effect, 2)}, all outside the windows, so it is a slower, continuous shift (mostly Mexican documents).`, bullet: true, after: 6 },
+    { text: `Face match: ${pct(K('face_a'), 2)} → ${pct(K('face_b'), 2)} of decisions. Not a cause of the drop, but a large loss from before the drop.`, bullet: true },
   ], { size: 12.5 });
-  note(s, [{ text: `${int(K('multi_fail_b'))} recent unsuccessful decisions had two or more failing checks. A primary reason avoids double counting; it does not mean fixing that reason gets the person approved.` }]);
+  note(s, [{ text: `${int(K('multi_fail_b'))} recent unsuccessful decisions had two or more failed checks. A primary reason prevents double counts. A fix for that reason does not by itself get the person approved.` }]);
 }
 {
-  const s = slide('Executive narrative', `About ${int(K('incident_excess_base'))} failures sit above baseline in four windows; causes are unconfirmed`, { notes: 'Attribution is observed minus expected at the prior-period rate of the same signature. Dates only: no intraday matching. Other failures on those days are not attributed.' });
+  const s = slide('Executive narrative', `About ${int(K('incident_excess_base'))} failures sit above baseline in four windows; causes are unconfirmed`, { notes: 'Attribution is observed minus expected at the prior-period rate of the same signature. Dates only: we cannot match records to times of day. Other failures on those days are not attributed.' });
   const rows = [['Window (2023)', 'Type', 'Observed', 'Expected', 'Above baseline', 'Of recent unsuccessful', 'Approval pts']]
     .concat(incs.map((i) => [`${i.order}. ${i.title}, ${i.when}`, i.type, int(+i.observed), (+i.expected).toFixed(1), int(+i.excess), pct(+i.share_of_unsuccessful_b), pp(+i.contribution_pp, 2)]))
     .concat([[{ text: 'Total', bold: true }, '', '', '', { text: int(K('incident_excess_base')), bold: true }, { text: pct(K('incident_share_unsuccessful')), bold: true }, { text: pp(K('incident_contribution_pp'), 2), bold: true }]]);
   table(s, MX, 1.5, W - 2 * MX, [3.6, 3.0, 0.95, 0.95, 1.2, 1.35, 1.08], rows, { size: 11.5 });
   const ex = row('incidents', 'id', 'exec_errors'), arg = row('incidents', 'id', 'fraud_arg');
   text(s, MX, 4.25, 5.9, 2.3, [
-    { text: 'What is and isn’t known', bold: true, color: C.teal, after: 6 },
+    { text: 'What we know and what we do not know', bold: true, color: C.teal, after: 6 },
     { text: `Argentina, Aug 24: ${int(+arg.volume)} decisions vs a typical ${int(+arg.baseline_volume)}; ${int(+arg.liveness_passed)} of the flagged passed liveness. Suggests attack traffic; not adjudicated.`, bullet: true, size: 12, after: 4 },
     { text: `Sep 1–2: usability TECHNICAL_ERROR, liveness passed in all ${int(+ex.liveness_passed)}, screening passed in ${int(+ex.screening_passed)}. Vendor or ARQ integration: unknown.`, bullet: true, size: 12, after: 4 },
     { text: 'Mexico, Sep 14–19: INE flags without extra volume: fraud, a rule change or a new card version.', bullet: true, size: 12 },
@@ -186,7 +186,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     { text: 'Liveness incidents on the vendor’s US data centre: Sep 1 (15:38–16:42 and 18:07–22:44 UTC) and Sep 6 (10:00–17:22 UTC). No entry for Sep 2 or for the fraud-signal dates.', size: 12, after: 6 },
     { text: 'A documented vendor incident is not confirmation of impact on ARQ.', size: 12, color: C.muted },
   ], { size: 13 });
-  note(s, [{ text: `Without the ${int(K('incident_days_n'))} incident days the rate still fell ${pp(K('delta_excl_days_pp'), 2)} (${pct(K('approval_a_excl_days'))} → ${pct(K('approval_b_excl_days'))}); they hold ${pct(K('share_recent_on_incident_days'), 0)} of recent decisions. Sensitivity range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))} across window, signature and baseline variants. Removing the ${int(K('selected_incident'))} matching failures gives ${pct(K('approval_excl_selected'), 2)}: a descriptive rate, not performance without incidents.` }]);
+  note(s, [{ text: `Without the ${int(K('incident_days_n'))} incident days the rate still fell ${pp(K('delta_excl_days_pp'), 2)} (${pct(K('approval_a_excl_days'))} → ${pct(K('approval_b_excl_days'))}); they hold ${pct(K('share_recent_on_incident_days'), 0)} of recent decisions. Sensitivity range ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))} across window, signature and baseline variants. Without the ${int(K('selected_incident'))} failures that match the patterns, the rate is ${pct(K('approval_excl_selected'), 2)}. That is a descriptive rate, not performance without incidents.` }]);
 }
 {
   const s = slide('Executive narrative', 'Six hypotheses, each with the step that would settle it', { notes: 'None of these is established. Each row names the evidence, the strongest alternative, and the investigation and the decision it enables.' });
@@ -196,14 +196,14 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     h_attack: ['Aug 24 Argentina burst was coordinated fraud', 'Vendor false positives during a campaign', 'Adjudicate a sample; channel and device data', 'Pre-vendor velocity controls'],
     h_ine: ['Sep 14–19 INE flags reflect a vendor rule change', 'Quieter fraud; new INE card version', 'Sample review with the vendor; registry check', 'Review vs auto-decline for INE flags'],
     h_mex_docs: ['Mexican "no document type" has several causes', 'Unsupported documents, capture, configuration, coverage', 'Review 100 cases with the vendor; config history', 'Picker vs configuration vs escalation'],
-    h_face: ['Face mismatches partly reflect old ID photos', 'Impostors; selfie lighting', 'Adjudicate NO_MATCH and NOT_POSSIBLE samples', 'Review queue or registry face check'],
+    h_face: ['Face mismatches partly reflect old ID photos', 'Impostors; poor light on the selfie', 'Adjudicate NO_MATCH and NOT_POSSIBLE samples', 'Review queue or registry face check'],
   };
   const rows = [['', 'Hypothesis', 'Strongest alternative', 'Next step', 'Decision it enables']].concat(Object.entries(short).map(([id, v]) => [HL[id], ...v]));
   table(s, MX, 1.5, W - 2 * MX, [0.55, 3.5, 2.85, 2.95, 2.28], rows, { size: 11.5 });
-  note(s, [{ text: `Evidence for each (from the data): H1 ${int(+row('incidents', 'id', 'exec_errors').observed)} TECHNICAL_ERROR rejections; H2 ${int(+row('incidents', 'id', 'liveness_spike').observed)} liveness quality failures on two days; H3 ${int(+row('incidents', 'id', 'fraud_arg').observed)} signals with doubled volume; H4 ${int(+row('incidents', 'id', 'fraud_mex').observed)} INE signals at normal volume; H5 no document type ${pct(K('mex_nodoc_a'))} → ${pct(K('mex_nodoc_b'))} of Mexican decisions; H6 face match ${pct(K('face_b'), 2)} of recent decisions.` }], 6.25);
+  note(s, [{ text: `Data behind each: H1 ${int(+row('incidents', 'id', 'exec_errors').observed)} TECHNICAL_ERROR rejections. H2 ${int(+row('incidents', 'id', 'liveness_spike').observed)} liveness quality failures on two days. H3 ${int(+row('incidents', 'id', 'fraud_arg').observed)} signals with doubled volume. H4 ${int(+row('incidents', 'id', 'fraud_mex').observed)} INE signals at normal volume. H5 no document type ${pct(K('mex_nodoc_a'))} → ${pct(K('mex_nodoc_b'))} of Mexican decisions. H6 face match ${pct(K('face_b'), 2)} of recent decisions.` }], 6.25);
 }
 {
-  const s = slide('Executive narrative', 'The plan in four tracks: fix and measure, test, learn, build', { notes: 'Rows are the kind of work, columns are time. Fixes and instruments go first because they are cheap and useful whatever the root cause; experiments test the obvious hypotheses; research runs beside them, from support tickets up to eye tracking if the cheaper rungs leave questions open; platform work comes later. Dashed items are conditional.' });
+  const s = slide('Executive narrative', 'The plan in four tracks: fix and measure, test, learn, build', { notes: 'Rows are the kind of work, columns are time. Fixes and instruments go first, because they are cheap and useful whatever the root cause. Experiments test the obvious hypotheses. Research runs beside them, from support tickets up to eye tracking. Platform work comes later. Items marked ◌ are conditional.' });
   const tracks = D.tracks.slice().sort((a, b) => +a.order - +b.order), phases = D.phases;
   const labelW = 2.3, gap = 0.08, colW = (W - 2 * MX - labelW - 3 * gap) / 4, lineH = 0.23;
   let y = 1.45;
@@ -227,7 +227,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   note(s, [{ text: '◌ = conditional on a Phase 0 finding. Owners, evidence, acceptance criteria and guardrails per action are in the dashboard (What to do). Effort sizes are assumptions.' }], Math.max(y + 0.05, 6.55));
 }
 {
-  const s = slide('Executive narrative', 'Phase 0, weeks 0–2: measure and stabilise before optimising', { notes: 'Phase 0 is mostly measurement and investigation, plus one remediation (hold and retry) that is worth doing whatever the root cause.' });
+  const s = slide('Executive narrative', 'Phase 0, weeks 0–2: measure and stabilise before we optimise', { notes: 'Phase 0 is mostly measurement and investigation, plus one remediation (hold and retry) that is useful whatever the root cause.' });
   const p0 = actions.filter((a) => a.phase === '0');
   p0.forEach((a, i) => {
     const col = i % 4, r = Math.floor(i / 4);
@@ -237,16 +237,16 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     text(s, x + 0.17, y + 0.78, w - 0.34, 0.3, [{ text: `${a.owner} · ${a.kind} · ${a.effort.split(' ')[0]}` }], { size: 10, color: C.muted });
     text(s, x + 0.17, y + 1.2, w - 0.34, 1.05, [{ text: 'Done when: ' + a.acceptance }], { size: 10.5 });
   });
-  note(s, [{ text: 'Effort sizes are assumptions (S ≤ 2 engineer-weeks, M = 2–6). Owners are role-based examples, not named people. Later phases: P1 weeks 2–6, P2 weeks 6–13, P3 the following two quarters.' }]);
+  note(s, [{ text: 'Effort sizes are assumptions (S ≤ 2 engineer-weeks, M = 2–6). Owners are role-based examples, not named people. Later phases: P1 weeks 2–6, P2 weeks 6–13, P3 the next two quarters.' }]);
 }
 {
-  const s = slide('Executive narrative', `Recovery scenarios: ${pp(+scen.Conservative.steady_pp)} to ${pp(+scen.Optimistic.steady_pp)} on recurring causes, not a forecast`, { notes: 'Each population is observed; every multiplier is an assumption. Populations do not overlap. Incident-type benefits occur only when a comparable incident recurs. Control-gap reversals are shown separately.' });
+  const s = slide('Executive narrative', `Recovery scenarios: ${pp(+scen.Conservative.steady_pp)} to ${pp(+scen.Optimistic.steady_pp)} on repeated causes, not a forecast`, { notes: 'Each population is observed; every multiplier is an assumption. Populations do not overlap. Incident-type benefits occur only when a comparable incident recurs. Control-gap reversals are shown separately.' });
   ['Conservative', 'Central', 'Optimistic'].forEach((n, i) => {
     const t = scen[n];
     stat(s, MX + i * 2.55, 1.5, 2.4, pp(+t.steady_pp), `${n}: ${int(+t.steady_30d)} approvals per 30 days; recent rate would be ${pct(+t.approval_with_steady)}`, { h: 1.8, bigSize: 30, fill: i === 1 ? C.tealSoft : C.panel });
   });
   stat(s, MX + 7.75, 1.5, 2.25, int(+scen.Central.per_incident), 'Central: approvals protected per comparable incident (execution errors, liveness spikes)', { h: 1.8, bigSize: 28 });
-  stat(s, MX + 10.15, 1.5, W - 2 * MX - 10.15, sint(+scen.Central.control_gap_all), `If all control findings are confirmed: approvals per 30 days that may need reversing (${pp(+scen.Central.control_gap_all_pp)})`, { h: 1.8, bigSize: 26, fill: C.redSoft, color: C.red });
+  stat(s, MX + 10.15, 1.5, W - 2 * MX - 10.15, sint(+scen.Central.control_gap_all), `If all control findings are confirmed: approvals per 30 days that we may need to reverse (${pp(+scen.Central.control_gap_all_pp)})`, { h: 1.8, bigSize: 26, fill: C.redSoft, color: C.red });
   text(s, MX, 3.5, W - 2 * MX, 0.4, [{ text: 'Recovered = observed population × eligibility × reach × return × remediation × subsequent approval', bold: true }], { size: 13, color: C.teal });
   const rows = [['Population (recent period)', 'Observed', 'Central factors (E × R × Ret × Fix × Then)', 'Central', 'Range']].concat(
     ['tech_error_hold', 'liveness_retake_incident', 'liveness_retake', 'mex_doc_guidance', 'capture_quality', 'review_queue'].map((a) => {
@@ -256,7 +256,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
       return [c.population + (c.cadence === 'Per comparable incident' ? ' (per incident)' : ''), int(+c.observed_n), [c.eligibility, c.reach, c.return_rate, c.remediation, c.subsequent_approval].map(f).join(' × '), int(+c.recovered), `${int(+g('Conservative').recovered)}–${int(+g('Optimistic').recovered)}`];
     }));
   table(s, MX, 3.95, W - 2 * MX, [4.55, 1.05, 4.0, 1.0, 1.53], rows, { size: 10.5 });
-  note(s, [{ text: 'A target set from these scenarios is a goal, not a prediction. "Eligible" for selfie populations is the observed share with no other failing check; "Then" is the prior-period approval rate for the same countries, except review, where a reviewer approval is final.' }], 6.55);
+  note(s, [{ text: 'A target set from these scenarios is a goal, not a prediction. "Eligible" for selfie populations is the observed share with no other failed check. "Then" is the prior-period approval rate for the same countries, except review, where a reviewer approval is final.' }], 6.55);
 }
 {
   const s = slide('Executive narrative', 'What we need, and how we will know it worked', { notes: 'The ask is small in Phase 0. Verification is per action (acceptance criteria) and per experiment (eventual approval per person within 7 days).' });
@@ -283,9 +283,9 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 
 {
   const q = D.open_questions.slice().sort((a, b) => +a.order - +b.order);
-  const s = slide('Executive narrative', 'Four things to confirm with the team before acting', { notes:
-    'These are not asked in the submission; they are the answers that would change the findings. Each row says what changes with the answer, so the first conversation can settle them in order. '
-    + q.map((r) => r.order + '. ' + r.question + ' Who would know: ' + r.who).join(' ') });
+  const s = slide('Executive narrative', 'Four things to confirm with the team before we act', { notes:
+    'These are not asked in the submission. They are the answers that would change the findings. Each row says what changes with the answer.\n\n'
+    + q.map((r) => r.order + '. ' + r.question + ' Who would know: ' + r.who).join('\n\n') });
   const rows = [['', 'Question', 'Why it matters', 'What the answer changes']].concat(q.map((r) => [String(r.order), r.question, r.why, r.changes]));
   table(s, MX, 1.4, W - 2 * MX, [0.35, 3.9, 4.5, 3.38], rows, { size: 11 });
   note(s, [{ text: 'The analysis stands on the extract alone. These answers decide how far each conclusion carries, not whether the work was done.' }], 6.5);
@@ -325,10 +325,10 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   table(s, MX, 1.45, 7.6, [3.4, 0.75, 0.75, 0.9, 0.9, 0.9], rows, { size: 10.5 });
   const drow = [['Document type returned (Mexico)', 'Approval prior', 'Approval recent']].concat(D.docs.filter((d) => d.country === 'MEX').map((d) => [d.label, pct(+d.approval_rate_a), pct(+d.approval_rate_b)]));
   table(s, 8.5, 1.45, W - MX - 8.5, [2.25, 0.95, 1.03], drow, { size: 10.5 });
-  note(s, [{ text: `Argentine documents: ${int(K('arg_usability_rejects'))} usability rejections or warnings in the extract; Mexican: ${int(K('mex_usability_rejects'))}. Possible causes include documents outside the accepted list, capture quality, issuing-country mismatch, configuration and vendor coverage.` }]);
+  note(s, [{ text: `Argentine documents: ${int(K('arg_usability_rejects'))} usability rejections or warnings in the extract; Mexican: ${int(K('mex_usability_rejects'))}. Possible causes include documents outside the accepted list, capture quality, a mismatch with the issuer country, configuration and vendor coverage.` }]);
 }
 {
-  const s = slide('Appendix', 'A5 · Incident attribution: sensitivity and vendor evidence', { notes: 'Four baseline-based variants plus the old method (every matching failure, no baseline) for comparison.' });
+  const s = slide('Appendix', 'A5 · Incident attribution: sensitivity and vendor evidence', { notes: 'Four baseline-based variants plus the old method (every failure of the pattern, no baseline) for comparison.' });
   const v = (id, variant) => int(+D.incident_sensitivity.find((r) => r.incident === id && r.variant === variant).attributed);
   const rows = [['Window', 'Base', 'Window ±1 day', 'Broader signature', 'Recent baseline', 'Old method (no baseline)']]
     .concat(incs.map((i) => [`${i.order}. ${i.title}`, v(i.id, 'base'), v(i.id, 'wide_window'), v(i.id, 'broad_signature'), v(i.id, 'recent_baseline'), v(i.id, 'all_matching')]))
@@ -336,15 +336,15 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   table(s, MX, 1.45, 7.3, [2.5, 0.8, 0.95, 1.0, 0.95, 1.1], rows, { size: 10.5 });
   text(s, MX, 3.75, 7.3, 2.6, [
     { text: 'How to read it', bold: true, color: C.teal, after: 5 },
-    { text: 'Base: failures matching the window\u2019s signature, minus the count expected at the prior-period rate for the window\u2019s volume.', bullet: true, size: 11.5, after: 3 },
+    { text: 'Base: failures that match the window\u2019s pattern, minus the count expected at the prior-period rate for the window\u2019s volume.', bullet: true, size: 11.5, after: 3 },
     { text: `Range across the four baseline-based variants: ${int(K('incident_excess_low'))}–${int(K('incident_excess_high'))}.`, bullet: true, size: 11.5, after: 3 },
-    { text: 'The old method attributes every matching failure on the day, including ones that would have happened anyway.', bullet: true, size: 11.5 },
+    { text: 'The old method counts every failure of the pattern on the day. That includes failures that also occur on normal days.', bullet: true, size: 11.5 },
   ], { size: 12.5 });
   const er = [['Date', 'UTC', 'Vendor status page entry']].concat(D.vendor_evidence.map((e) => [e.date, e.window_utc || '—', e.description]));
   table(s, 8.15, 1.45, W - MX - 8.15, [1.05, 0.95, 2.58], er, { size: 10 });
 }
 {
-  const s = slide('Appendix', 'A6 · Experiment and validation designs', { notes: 'Assignment by person avoids counting repeat attempts as independent users. Sample sizes use stand-in baselines and must be recomputed after Phase 0.' });
+  const s = slide('Appendix', 'A6 · Experiment and validation designs', { notes: 'With assignment by person, repeat attempts do not count as independent users. Sample sizes use stand-in baselines and must be recomputed after Phase 0.' });
   const ex = D.experiments;
   const fields = [['Kind', 'kind'], ['Hypothesis', 'hypothesis'], ['Population', 'population'], ['Assignment unit', 'unit'], ['Primary outcome', 'primary'], ['Window', 'window'], ['Minimum effect', 'mde'], ['Sample', 'sample'], ['Guardrails', 'guardrails'], ['Rules', 'rules']];
   const pickE = ['exp_mex_docs', 'exp_liveness'].map((id) => ex.find((e) => e.id === id));
@@ -354,14 +354,14 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 {
   const vi = D.value_inputs;
   const s = slide('Appendix', 'A7 · Value model inputs: market-based presets, not ARQ figures', { notes:
-    'Each preset is derived from a published price, salary or fintech benchmark, fetched on the research date; the dashboard lists every source with its figure and fetch status. '
+    'Each preset comes from a published price, salary or fintech benchmark, fetched on the research date. The dashboard lists every source with its figure and fetch status. '
     + 'Low, Mid and High are the ends and middle of each input’s range, not pessimistic and optimistic cases. Cautious takes the end that weakens the case. '
     + 'Finance should replace each preset with ARQ’s own number; the value model recomputes immediately.' });
   const rows = [['Input', 'Low', 'Mid', 'High', 'Kind', 'Basis', 'Sources']].concat(vi.map((r) => [
     r.label + ' (' + (r.unit === 'share' ? '%' : r.unit) + ')', inputFmt(r, r.low), inputFmt(r, r.mid), inputFmt(r, r.high), r.kind, r.short, r.sources.split(' ').join(', ')]));
   table(s, MX, 1.3, W - 2 * MX, [3.05, 0.85, 0.85, 0.85, 1.6, 3.6, 1.33], rows, { size: 11 });
   const src = D.value_sources.map((r) => r.id + ' ' + r.publisher).join(' · ');
-  note(s, [{ text: 'Sources: ' + src + '. Full figures, periods and links are in the dashboard (What we gain).' }], 6.45);
+  note(s, [{ text: `Sources S1–S${D.value_sources.length}: the dashboard (What we gain) gives each figure, period and link.` }], 6.45);
 }
 {
   const vr = D.value_results;
@@ -377,7 +377,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const rows = [['Result (per 30 days unless stated)'].concat(P)].concat(ids.map((id) => [get('Mid', id).label].concat(P.map((p) => fmtR(get(p, id))))));
   rows.push(['Pays back within the first year? (value per activated customer vs break-even)'].concat(P.map((p) => { const b = +get(p, 'breakeven').value; return (vpa(p) >= b ? 'Yes: ' : 'No: ') + usd(vpa(p)) + ' vs ' + usd(b); })));
   table(s, MX, 1.3, W - 2 * MX, [5.33, 1.8, 1.8, 1.8, 1.4], rows, { size: 11.5 });
-  note(s, [{ text: 'The first-year value of a cohort is earned over the following year, not recognised in the next 12 months. Past vendor and paid-acquisition spend on not-approved applicants is spent; it is not a saving unless the cause is removed.' }], 6.35);
+  note(s, [{ text: 'The first-year value of a cohort comes in over the next year. It is not revenue recognised in the next 12 months. Past vendor and paid-acquisition spend on not-approved applicants is already spent. Only a fix of the cause stops future spend.' }], 6.35);
 }
 {
   const s = slide('Appendix', 'A9 · Operating model: owned metrics with versions, lineage and adoption', { notes: 'Role-based example functions, not ARQ’s organisation. Relevant to a company KPI platform: definitions, owners, versions, freshness, access and adoption.' });
@@ -401,7 +401,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const s = slide('Appendix', 'A10 · Control findings in the extract: to reconcile, not confirmed failures', { notes: 'An approval record is not an enabled account; a blank field is not proof a check never ran. Legal obligations are not asserted here.' });
   const rows = [['Finding', 'Records', 'Other explanations', 'How to validate']].concat(D.compliance.map((c) => [c.finding, int(+c.n), c.alternatives, c.validation]));
   table(s, MX, 1.45, W - 2 * MX, [3.3, 0.9, 3.9, 4.03], rows, { size: 10.5 });
-  note(s, [{ text: 'If an extracted birth year of 2006 or later is accurate, the person was under 18 during 2023. The applicable eligibility policy and the data quality both still need confirming.' }]);
+  note(s, [{ text: 'If an extracted birth year of 2006 or later is accurate, the person was under 18 during 2023. The applicable eligibility policy and the data quality both still need confirmation.' }]);
 }
 {
   const s = slide('Appendix', 'A11 · Vendor research (Oct 13, 2026): availability is not effectiveness', { notes: 'Kept separate from the 2023 diagnosis. Each row lists prerequisites and what is not verified for ARQ.' });
@@ -497,8 +497,24 @@ html, body { margin: 0; padding: 0; background: #888; }
   fs.writeFileSync(file, doc);
 }
 
+// every reader-facing string (titles, text boxes, table cells, speaker notes), for the STE check
+function deckTexts() {
+  const out = [];
+  const cellText = (c) => (typeof c === 'string' ? c : c && c.text ? c.text : '');
+  slides.forEach((s) => {
+    if (s.title) out.push(s.title);
+    if (s.notes) out.push(s.notes);
+    s.els.forEach((e) => {
+      if (e.t === 'text') e.paras.forEach((p) => { const t = typeof p === 'string' ? p : p.text; if (t) out.push(t); });
+      if (e.t === 'table') e.rows.forEach((r) => r.forEach((c) => { const t = cellText(c); if (t) out.push(t); }));
+    });
+  });
+  return out;
+}
+
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(SCRATCH, { recursive: true });
+fs.writeFileSync(path.join(SCRATCH, 'deck-text.json'), JSON.stringify(deckTexts(), null, 0));
 renderHtml(path.join(SCRATCH, 'deck.html'));
 await renderPptx(path.join(OUT, 'kyc-approval-deck.pptx'));
 console.log(`slides ${slides.length}; pptx -> analysis/export/kyc-approval-deck.pptx; html -> ${path.join(SCRATCH, 'deck.html')}`);

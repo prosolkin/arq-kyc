@@ -36,4 +36,9 @@ if [ -n "${STATICRYPT_PASSWORD:-}" ]; then
 else
   echo "STATICRYPT_PASSWORD not set: docs/index.html not rebuilt"
 fi
+
+# writing rules: every text a reader sees (dashboard, deck, note, README, password page) must pass the script-checkable rules
+if [ -x "$CHROME" ]; then
+  CHROME="$CHROME" DECK_SCRATCH="$SCRATCH" python3 -I analysis/check_ste.py
+fi
 ls -la analysis/export

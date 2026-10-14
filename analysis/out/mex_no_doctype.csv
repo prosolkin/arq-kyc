@@ -1,8 +1,8 @@
 group,n_a,n_b,share_a,share_b,change_pp
 No reason code,945,1034,0.06128,0.07239,1.11
 Unsupported document type,245,264,0.01589,0.01848,0.26
-Missing mandatory data,203,204,0.01316,0.01428,0.11
-Missing page or part,80,68,0.00519,0.00476,-0.04
+Mandatory data not present,203,204,0.01316,0.01428,0.11
+Page or part not present,80,68,0.00519,0.00476,-0.04
 Image quality,186,175,0.01206,0.01225,0.02
 Screen or paper copy,59,116,0.00383,0.00812,0.43
 Execution error,1,96,6e-05,0.00672,0.67

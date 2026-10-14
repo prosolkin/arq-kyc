@@ -106,7 +106,7 @@ def build(ctx):
     P["activation_rate"] = dict(
         vals=(0.382, 0.563, 0.83), kind="Proxy", sources="S6 S7",
         short="Liftoff LATAM and fintech activation; Nu activity rate",
-        basis=("Low: Liftoff LATAM activation rate 38.2%. Mid: Liftoff fintech activation rate 56.3% (2021–22 data; the source doesn't define activation). "
+        basis=("Low: Liftoff LATAM activation rate 38.2%. Mid: Liftoff fintech activation rate 56.3% (2021–22 data; the source does not define activation). "
                "High: Nu's monthly activity rate of 83%, a ceiling set by a mature primary bank. None measures approved-to-active directly."))
 
     P["paid_share"] = dict(
@@ -120,7 +120,7 @@ def build(ctx):
         vals=(round(cpr_latam, 2), 17.96, round(17.96 / A["registrant_to_kyc"], 2)), kind="Derived", sources="S7",
         short="Liftoff cost per install and per registration",
         basis=(f"Low: Liftoff LATAM cost per install $1.60 ÷ 18.3% registration rate = {money(cpr_latam)} per registration. "
-               f"Mid: Liftoff fintech cost per registration $17.96. High: $17.96 ÷ {A['registrant_to_kyc']:.0%} of registrants reaching KYC (assumption). 2021–22 data."))
+               f"Mid: Liftoff fintech cost per registration $17.96. High: $17.96 ÷ {A['registrant_to_kyc']:.0%} of registrants who reach KYC (assumption). 2021–22 data."))
 
     P["billable_per_decision"] = dict(
         vals=A["billable"], kind="Assumption", sources="S2",
@@ -142,7 +142,7 @@ def build(ctx):
     rv = (review(11236, 0), review(kyc_month, 1), review(kyc_month, 2))
     P["review_cost"] = dict(
         vals=tuple(round(x, 2) for x in rv), kind="Derived", sources="S10 S11 S13 S14",
-        short="Mexico analyst salaries × handling time",
+        short="Mexico analyst salaries × time per case",
         basis=(f"Monthly gross salary × loaded factor ÷ MXN {FX} ÷ {A['reviewer_hours']} productive hours × minutes per case × quality uplift. "
                f"Low: MXN 11,236 (Paylab, lowest 10% of financial analysts) × {A['loaded'][0]}, {A['handle_min'][0]} min, ×{A['qa_uplift'][0]}. "
                f"Mid: MXN {kyc_month:,.0f} (TalentUp KYC analyst median) × {A['loaded'][1]}, {A['handle_min'][1]} min, ×{A['qa_uplift'][1]}. "
@@ -155,7 +155,7 @@ def build(ctx):
         vals=bc, kind="Derived", sources="S12 S13 S14",
         short="Roadmap effort × Mexico engineering cost",
         basis=(f"Engineer-weeks × loaded weekly cost × team overhead. Weeks: {A['eng_weeks'][0]:g} / {A['eng_weeks'][1]:g} / {A['eng_weeks'][2]:g}, from the roadmap's effort for the four 30-day actions "
-               "plus 2 weeks of review tooling; high adds a 50% overrun. "
+               "plus 2 weeks for review tools; high adds a 50% overrun. "
                f"Weekly cost: Levels.fyi median MX$1,146,490 ÷ {FX} × {A['loaded'][0]} or × {A['loaded'][1]} ÷ 52 ({money(weekly[0])}, {money(weekly[1])}); high uses Revelo's top fully loaded $126,000 ({money(weekly[2])}). "
                f"Overhead for product, design, QA and vendor work: ×{A['team_overhead'][0]} / ×{A['team_overhead'][1]} / ×{A['team_overhead'][2]} (assumption)."))
 
@@ -164,6 +164,6 @@ def build(ctx):
     P["run_cost_month"] = dict(
         vals=rc, kind="Derived", sources="S1 S2 S3 S10 S11",
         short="Review cases and retake vendor calls, central scenario",
-        basis=(f"Central scenario, per 30 days: {ctx['review_n']:,} review-pilot cases × cost per review, plus about {ctx['retake_attempts']:,.0f} guided selfie retakes × billable transactions × cost per transaction, "
-               "using the same preset's values. Excludes support contacts and monitoring tools."))
+        basis=(f"Central scenario, per 30 days: {ctx['review_n']:,} review-pilot cases × cost per review. Add about {ctx['retake_attempts']:,.0f} guided selfie retakes × billable transactions × cost per transaction, "
+               "with the same preset's values. Excludes support contacts and alert tools."))
     return P

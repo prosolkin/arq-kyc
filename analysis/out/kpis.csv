@@ -43,10 +43,10 @@ rate_effect_share,0.4612,Share of the approved-count change from the lower rate,
 incident_excess_base,1057,Incident failures above baseline (base estimate),int
 incident_excess_low,1055,"Incident failures above baseline, low end of sensitivity range",int
 incident_excess_high,1130,"Incident failures above baseline, high end of sensitivity range",int
-incident_all_matching,1068,Every matching failure in the windows (old method),int
+incident_all_matching,1068,Every failure of the same pattern in the windows (old method),int
 incident_share_unsuccessful,0.2516,Base incident estimate as a share of recent unsuccessful decisions,pct
 incident_contribution_pp,-4.2,Base incident estimate as approval-rate points,pp
-multi_fail_b,298,Recent unsuccessful decisions with two or more failing or warning checks,int
+multi_fail_b,298,Recent unsuccessful decisions with two or more failed or warning checks,int
 liveness_incident_face,44,Liveness-spike cases that also had a face-match warning or rejection,int
 liveness_incident_n,174,Liveness-spike cases,int
 exec_liveness_passed,407,Execution-error cases with liveness passed,int

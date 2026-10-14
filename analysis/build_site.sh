@@ -2,8 +2,8 @@
 # Build docs/index.html: the offline dashboard, encrypted for GitHub Pages with StatiCrypt.
 # The password comes only from the STATICRYPT_PASSWORD environment variable. It is never
 # written to a file: the page holds a salt and the encrypted payload, nothing else.
-# The password page is analysis/site/password_template.html, filled from analysis/out by
-# analysis/build_site_template.py so its figures match the report.
+# The password page is analysis/site/password_template.html, filled by analysis/build_site_template.py
+# with the dashboard theme tokens and the figures from analysis/out.
 # Run from the project root after analysis/export_html.py:
 #     STATICRYPT_PASSWORD='...' bash analysis/build_site.sh
 set -euo pipefail
@@ -26,7 +26,7 @@ python3 -I analysis/build_site_template.py "$PWD/$SCRATCH/password_template.html
     --template-placeholder "Password" \
     --template-button "Open dashboard" \
     --template-remember "Remember on this device for 30 days" \
-    --template-error "That password didn't match. Check the submission email and try again." \
+    --template-error "That password is not correct. Look at the submission email and try again." \
     --template-toggle-show "Show password" \
     --template-toggle-hide "Hide password" )
 

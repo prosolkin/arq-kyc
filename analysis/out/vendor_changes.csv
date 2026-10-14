@@ -2,5 +2,5 @@ id,when,area,change,source,verification
 2025-04-22,"Apr 22, 2025",Fraud,Cross Transaction Risk announced as generally available.,https://www.jumio.com/about/press-releases/data-to-fight-identity-fraud/,Press release
 2025-06-18,"Jun 18, 2025",Liveness,Liveness Premium (deepfake and injection detection) generally available.,https://www.jumio.com/about/press-releases/jumio-launches-premium-liveness-detection-solution/,Press release
 sdk,SDK 4.9–4.18,SDK,"ML document classification, unsupported-document check, injection detection, manual-capture controls.",https://github.com/Jumio/mobile-sdk-android,Fetched (agent)
-status,Current,Status page,"Vendor status history is published at monitor.jumio.com, by data centre, including 2023.",https://monitor.jumio.com/history,Fetched
+status,Current,Status page,"Vendor status history is published at monitor.jumio.com, by data centre, with 2023 included.",https://monitor.jumio.com/history,Fetched
 docs,Current,Documentation,Developer documentation moved to documentation.jumio.ai; pages carry no update dates.,https://documentation.jumio.ai/,Fetched

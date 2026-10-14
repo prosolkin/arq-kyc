@@ -4,7 +4,7 @@ document_selected,Person chooses a document type,"session_id, ts, doc_type_selec
 document_captured,"ID images captured (front, back)","session_id, ts, capture_mode (camera/upload), retakes",Capture-quality diagnosis
 selfie_captured,Selfie captured,"session_id, ts, retakes",Liveness diagnosis
 kyc_submitted,Submission sent to the vendor,"session_id, attempt_no, ts, vendor_transaction_id","Submissions, retries"
-vendor_result,Vendor result received,"vendor_transaction_id, ts, every capability decision and label, workflow version","Reason analysis, incident matching"
+vendor_result,Vendor result received,"vendor_transaction_id, ts, every capability decision and label, workflow version","Reason analysis, incident windows"
 kyc_decided,ARQ decision applied,"session_id, ts, outcome, reason_code, decided_by (rule/reviewer), policy_version","Approval, eventual approval, time to decision"
 review_completed,Manual review disposition,"session_id, ts, reviewer_role, outcome, reason",Review outcomes
 account_enabled,Account state after KYC,"person_id, ts, state",Approval vs account enablement

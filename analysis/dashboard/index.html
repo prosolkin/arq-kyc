@@ -43,6 +43,10 @@
   .kx-lane-t { font-weight: 600; padding: 6px; border-right: 1px solid var(--color-border-line); }
   .kx-lane-t small { display: block; font-weight: 400; color: var(--color-fg-muted); line-height: 1.4; margin-top: 2px; }
   .kx-lane-c { background: var(--color-bg); border-radius: var(--cds-radius); padding: 4px; display: flex; flex-direction: column; gap: 4px; min-height: 2rem; }
+  #docmix-card #docmix { flex: 1; justify-content: space-evenly; }
+  #docmix-card .kx-bar-row { padding: 3px 0; }
+  .kx-lane-c:empty { background: transparent; border: 1px dashed var(--color-border-line); }
+  .kx-lane-c:empty::after { content: '—'; color: var(--cds-chart-muted); margin: auto; font-size: var(--cds-font-size-caption); }
   .kx-lane-chip { font: inherit; text-align: left; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 6px; padding: 4px 6px; cursor: pointer; color: var(--color-fg); line-height: 1.35; }
   .kx-lane-chip:hover { border-color: var(--color-fg-muted); }
   .kx-lane-chip.kx-lane-cond { border-style: dashed; }
@@ -52,8 +56,19 @@
     .kx-quick .kx-qchart[data-chart="days"] svg, .kx-quick .kx-qchart[data-chart="gain"] svg, .kx-quick .kx-qchart[data-chart="causes"] svg[aria-label^="Change"] { font-size: 14px; }
   }
   .kx-ste { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; max-width: 90ch; }
-  .kx-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); align-items: stretch; }
-  .kx-quick .kx-qhero { grid-column: 1 / -1; }
+  .kx-quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cds-gap-md); align-items: stretch; }
+  .kx-quick .kx-qwide { grid-column: 1 / -1; }
+  .kx-qsplit { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--cds-gap-sm) var(--cds-gap-xl); align-items: start; }
+  .kx-qsplit > div { display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .kx-qaside { border-left: 1px solid var(--color-border-line); padding-left: var(--cds-gap-xl); }
+  .kx-qaside h3 { margin: 0; }
+  .kx-quick .kx-qcols { columns: 2 20rem; column-gap: var(--cds-gap-xl); display: block; }
+  .kx-quick .kx-qcols > li { break-inside: avoid; margin-bottom: 4px; }
+  @media (max-width: 900px) {
+    .kx-quick { grid-template-columns: minmax(0, 1fr); }
+    .kx-qsplit { grid-template-columns: minmax(0, 1fr); }
+    .kx-qaside { border-left: 0; padding-left: 0; border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-md); }
+  }
   .kx-quick p { margin: 0; line-height: 1.55; max-width: 72ch; }
   .kx-quick .kx-qlead { font-size: calc(var(--cds-font-size-body) * 1.3); line-height: 1.4; font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
   .kx-quick ul, .kx-quick ol { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: 4px; line-height: 1.55; }
@@ -61,6 +76,33 @@
   .kx-quick .kx-caveat { font-size: var(--cds-font-size-body); }
   .kx-quick .kx-more { margin-top: auto; padding-top: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .kx-page { display: flex; flex-direction: column; gap: var(--cds-gap-xl); }
+  /* page heads: the tab question, the heading and the intro read as one block */
+  .kx-page > .kx-tabq { margin-bottom: calc(var(--cds-gap-sm) - var(--cds-gap-xl)); }
+  .kx-page > h2 + .kx-intro, .kx-page > h2 + .kx-caveat, .kx-page > h2 + p { margin-top: calc(var(--cds-gap-sm) - var(--cds-gap-xl)); }
+  .kx-page > h2 { margin-bottom: 0; }
+  .kx-stack { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .kx-masonry { columns: 17rem; column-gap: var(--cds-gap-md); }
+  .kx-masonry > * { break-inside: avoid; margin-bottom: var(--cds-gap-md); }
+  .kx-valuegrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: var(--cds-gap-md); align-items: start; }
+  .kx-reqgrid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--cds-gap-md); align-items: start; }
+  .kx-cols2 { columns: 2 20rem; column-gap: var(--cds-gap-xl); display: block; }
+  .kx-cols2 > li { break-inside: avoid; margin-bottom: var(--cds-gap-xs); }
+  #treatment-card .kx-gloss { grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) minmax(0, 11rem) minmax(0, 1fr); }
+  #unknowns-card .kx-list { columns: 2 20rem; column-gap: var(--cds-gap-xl); display: block; }
+  #unknowns-card .kx-list > li { break-inside: avoid; margin-bottom: var(--cds-gap-xs); }
+  /* hypotheses: five fields side by side; experiments: field pairs in two columns */
+  #hyp-cards .kx-gloss { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: auto auto; grid-auto-flow: column; gap: 4px var(--cds-gap-lg); }
+  #exp-cards .kx-gloss { grid-template-columns: minmax(0, 10rem) minmax(0, 1fr) minmax(0, 10rem) minmax(0, 1fr); }
+  @media (max-width: 1000px) {
+    #hyp-cards .kx-gloss { grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; }
+    #exp-cards .kx-gloss, #treatment-card .kx-gloss { grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); }
+    .kx-valuegrid, .kx-reqgrid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 600px) {
+    #hyp-cards .kx-gloss, #exp-cards .kx-gloss, #treatment-card .kx-gloss { grid-template-columns: minmax(0, 1fr); }
+    #hyp-cards .kx-gloss dd, #exp-cards .kx-gloss dd, #treatment-card .kx-gloss dd { margin-bottom: var(--cds-gap-xs); }
+  }
+  #hyp-cards .kx-gloss dd, #exp-cards .kx-gloss dd, #treatment-card .kx-gloss dd, #treatment-card .kx-gloss dt { overflow-wrap: anywhere; }
 
   .kx-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
   .kx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
@@ -258,16 +300,16 @@
     <p class="kx-lede">
       The KYC pass rate (approval among recorded decisions) fell from
       <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_a" data-fmt="pct">—</b>
-      in the prior period to
+      to
       <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approval_b" data-fmt="pct">—</b>
-      in the recent period
+      between the two periods
       (<b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=delta_pp" data-fmt="pp" data-good="up">—</b>),
       or <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</b> approvals.
     </p>
-    <p class="kx-caveat"><b>What this measures.</b> Approval among the decisions recorded in the two extracts. It is not the start-to-finish completion rate the brief describes: the extracts have no KYC starts, attempts, abandonment or times of day, and don't say whether a record is a first, latest or final attempt. Completion becomes measurable once the Phase 0 events exist.</p>
+    <p class="kx-caveat"><b>What this measures.</b> Approval among the decisions recorded in the two extracts. It is not the start-to-finish completion rate that the brief describes. The extracts have no KYC starts, attempts, abandonment or times of day. They do not say whether a record is a first, latest or final attempt. Completion becomes measurable once the Phase 0 events exist.</p>
     <p class="kx-scope">
       <span data-fill data-source="kpis" data-field="value" data-where="metric=total_users" data-fmt="int">—</span> recorded decisions, one per user.
-      Prior period: Jul 25 – Aug 23, 2023. Recent period: Aug 24 – Sep 22, 2023. Country means document issuing country. Checks by Jumio.
+      Prior period: Jul 25 – Aug 23, 2023; recent period: Aug 24 – Sep 22, 2023. Country means the country that issued the document; Jumio did the checks.
       Vendor research dated <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>. Case-study submission: aggregated 2023 extract, no personal data.
     </p>
   </header>
@@ -294,8 +336,7 @@
 
   <!-- Quick review -->
   <section class="kx-page" id="quick" role="tabpanel" aria-labelledby="tab-quick">
-    <p class="kx-tabq">This tab answers: what happened, why, what to do and what we gain, in five minutes.</p>
-    <p class="kx-ste">The whole story on one page, in ASD-STE100 Simplified Technical English: short sentences, one topic in each sentence, active voice. Reading time: about <span id="quick-time">3</span> minutes.</p>
+    <p class="kx-tabq">This tab answers: what happened, why, what to do and what we gain. Time to read: about <span id="quick-time">4</span> minutes.</p>
     <div class="kx-quick" id="quick-body" data-source="quick_review"></div>
   </section>
 
@@ -320,24 +361,24 @@
           (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Fraud signal" data-fmt="pp2">—</b>),
           execution errors (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Execution error" data-fmt="pp2">—</b>),
           selfie and liveness failures (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Selfie / liveness" data-fmt="pp2">—</b>) and
-          decisions with no document type or reason code (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=No document type, no reason code" data-fmt="pp2">—</b>).
-          Face match improved (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Face match" data-fmt="pp2">—</b>) but remains a large existing loss.</li>
+          decisions with no document type (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=No document type, no reason code" data-fmt="pp2">—</b>).
+          Face match improved (<b class="kx-n" data-fill data-source="bridge" data-field="effect_pp" data-where="driver=Face match" data-fmt="pp2">—</b>) but is still a large loss from before the drop.</li>
         <li><b class="kx-q">What is still a hypothesis.</b> About
           <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_base" data-fmt="int">—</b>
           unsuccessful decisions (range <span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_low" data-fmt="int">—</span>–<span data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_high" data-fmt="int">—</span>)
-          sit above normal levels in four short date windows, but their causes are not established. The fraud signals are not adjudicated. The execution errors could be the vendor's or ARQ's integration. The liveness spike matches incidents on the vendor's status page, but impact on ARQ is unconfirmed. Mexico's rising "no document type" share has several possible causes.</li>
-        <li><b class="kx-q">What should happen first.</b> Instrument the funnel; hold and retry execution errors instead of rejecting; alert per reason code; reconcile the control findings; adjudicate fraud samples; diagnose Mexico's missing document types with the vendor. This is Phase 0, weeks 0–2.</li>
-        <li><b class="kx-q">What is needed.</b> An event schema with privacy sign-off; vendor case access and incident reports; Risk and Compliance time for adjudication and reconciliation; engineering time for one medium and several small items. Effort sizes are assumptions to confirm with the teams.</li>
-        <li><b class="kx-q">How success is verified.</b> Every action has acceptance criteria. Experiments measure eventual approval per person within 7 days of first start, which needs the new events. Recovery scenarios for recurring causes range from
+          sit above normal levels in four short date windows, but their causes are not established. The fraud signals are not adjudicated. The execution errors could be the vendor's or ARQ's integration. The liveness spike matches incidents on the vendor's status page, but impact on ARQ is unconfirmed. Mexico's higher "no document type" share has several possible causes.</li>
+        <li><b class="kx-q">What should happen first.</b> Instrument the funnel. Hold and retry execution errors; do not reject them. Alert per reason code, reconcile the control findings and adjudicate fraud samples. Diagnose the absent Mexican document types with the vendor. This is Phase 0, weeks 0–2.</li>
+        <li><b class="kx-q">What is needed.</b> An event schema with privacy sign-off, and vendor case access and incident reports. Risk and Compliance time for adjudication and reconciliation, and engineering time for one medium and several small items. Effort sizes are assumptions to confirm with the teams.</li>
+        <li><b class="kx-q">How success is verified.</b> Every action has acceptance criteria. Experiments measure eventual approval per person within 7 days of first start, which needs the new events. Recovery scenarios for repeated causes range from
           <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Conservative" data-fmt="pp">—</b> to
           <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Optimistic" data-fmt="pp">—</b>
           (central <b class="kx-n" data-fill data-source="scenario_totals" data-field="steady_pp" data-where="scenario=Central" data-fmt="pp">—</b>).
-          They rest on stated assumptions and are not forecasts. If the control findings are confirmed, fixing them could lower approval by up to
+          They rest on stated assumptions and are not forecasts. If the control findings are confirmed, the fixes could lower approval by up to
           <b class="kx-n" data-fill data-source="scenario_totals" data-field="control_gap_all_pp" data-where="scenario=Central" data-fmt="pp_abs">—</b>.</li>
       </ol>
     </div>
     <div class="kx-card" id="open-questions-card" data-source="open_questions">
-      <h3>To confirm with the team before acting</h3>
+      <h3>To confirm with the team before we act</h3>
       <p class="kx-note">Four answers that would change the findings above, in the order they matter. Each says what changes with the answer.</p>
       <ol class="kx-list kx-answer" id="open-questions-summary"></ol>
       <p><button type="button" class="kx-link" data-goto="reference">Full detail on the Reference tab</button></p>
@@ -385,7 +426,7 @@
         <label class="kx-check"><input type="checkbox" id="trend-excl-days"> Without incident days (the <span data-fill data-source="kpis" data-field="value" data-where="metric=incident_days_n" data-fmt="int">—</span> days hold <span data-fill data-source="kpis" data-field="value" data-where="metric=share_recent_on_incident_days" data-fmt="pct0">—</span> of recent decisions)</label>
         <div class="kx-legend">
           <span><i class="kx-sw kx-sw-line" style="border-color: var(--kx-c0)"></i>Approval rate</span>
-          <span><i class="kx-sw kx-sw-dash" style="border-color: var(--cds-chart-muted)"></i>Excluding selected incident-window failures (descriptive only)</span>
+          <span><i class="kx-sw kx-sw-dash" style="border-color: var(--cds-chart-muted)"></i>Without the selected incident-window failures (descriptive only)</span>
           <span><i class="kx-sw kx-sw-badge"></i>Incident window</span>
         </div>
         <div class="kx-chart dash-skeleton" id="trend-chart" data-source="daily incidents kpis" role="img" aria-label="Daily approval rate; the data table below has the values"></div>
@@ -415,12 +456,12 @@
         </div>
       </div>
       <div class="kx-lens" data-lens-panel="leadership">
-        <p>Approve Phase 0 now: instrumentation, hold-and-retry for execution errors, alerting, control reconciliation and two investigations. Phase 1 experiments depend on what Phase 0 finds. The orchestration layer, registry checks and a second vendor are multi-quarter platform work, not quick fixes.</p>
+        <p>Approve Phase 0 now: instrumentation, hold-and-retry for execution errors, alerts, control reconciliation and two investigations. Phase 1 experiments depend on what Phase 0 finds. The orchestration layer, registry checks and a second vendor are multi-quarter platform work, not quick fixes.</p>
         <p><button type="button" class="kx-link" data-goto="plan">Open What to do</button></p>
       </div>
       <div class="kx-lens" data-lens-panel="product" hidden>
         <p><b class="kx-n" data-fill data-source="incidents" data-field="observed" data-where="id=exec_errors" data-fmt="int">—</b>
-          recent decisions were rejected with a TECHNICAL_ERROR at usability. Liveness ran and passed in all of them; document checks and face match did not run. The extract doesn't show whether the fault was the vendor's or in ARQ's integration. Mexico's "no document type" outcomes need a diagnosis with the vendor before a fix is chosen.</p>
+          recent decisions were rejected with a TECHNICAL_ERROR at usability. Liveness ran and passed in all of them; document checks and face match did not run. The extract does not show whether the fault was the vendor's or in ARQ's integration. Mexico's "no document type" outcomes need a diagnosis with the vendor before a fix is chosen.</p>
         <p><button type="button" class="kx-link" data-goto="hypotheses">Open Hypotheses &amp; tests</button></p>
       </div>
       <div class="kx-lens" data-lens-panel="risk" hidden>
@@ -436,14 +477,14 @@
       </div>
       <div class="kx-lens" data-lens-panel="ops" hidden>
         <p><b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=warning_b" data-fmt="int">—</b>
-          recent decisions ended in an unresolved WARNING; what happened afterwards is not in the extract. A review pilot for face-match warnings needs capacity, a service level and quality sampling before launch.</p>
+          recent decisions ended in an unresolved WARNING; what happened afterwards is not in the extract. A review pilot for face-match warnings needs capacity, a service level and quality checks on a sample before launch.</p>
         <p><button type="button" class="kx-link" data-goto="drivers">Open Drivers</button></p>
       </div>
       <div class="kx-lens" data-lens-panel="finance" hidden>
         <p>The approved count fell by
           <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="abs">—</b>,
           of which <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="abs">—</b>
-          is due to the lower rate. Money values need inputs the data doesn't contain: activation after approval, value per customer, paid-channel share and vendor billing per decision. The What-we-gain tab's value model fills them with market-based presets (Low, Mid, High and Cautious, each sourced) and shows break-even conditions. The presets are not ARQ figures, so they are not used as a headline.</p>
+          is due to the lower rate. Money values need inputs that the data does not contain: activation after approval, value per customer, paid-channel share and vendor charges per decision. The What-we-gain tab's value model fills them with market-based presets (Low, Mid, High and Cautious, each sourced) and shows break-even conditions. The presets are not ARQ figures, so they are not used as a headline.</p>
         <p><button type="button" class="kx-link" data-goto="gain">Open the value model</button></p>
       </div>
     </div>
@@ -452,7 +493,7 @@
   <!-- Measurement -->
   <section class="kx-page" id="measurement" role="tabpanel" aria-labelledby="tab-measurement" hidden>
     <p class="kx-tabq">This tab answers: what the extracts can and cannot measure, and how the data was checked.</p>
-    <h2>What can and can't be measured</h2>
+    <h2>What can and cannot be measured</h2>
     <p class="kx-intro">The brief asks about people who start and finish KYC. The extracts hold one recorded decision per user, so this analysis measures approval among those decisions. The definitions below are proposals for the KPI registry; unavailable metrics list the events that would make them measurable.</p>
     <div class="kx-card" id="metrics-card">
       <h3>Metric definitions</h3>
@@ -471,7 +512,7 @@
         </table>
       </div>
     </div>
-    <div class="kx-grid">
+    <div class="kx-stack">
       <div class="kx-card" id="treatment-card">
         <h3>How outcomes and values are treated</h3>
         <dl class="kx-gloss">
@@ -487,11 +528,11 @@
         </dl>
       </div>
       <div class="kx-card" id="unknowns-card">
-        <h3>What the extracts can't establish</h3>
+        <h3>What the extracts cannot establish</h3>
         <ul class="kx-list">
           <li>Whether each record is a first, latest or final attempt, and which event its date marks.</li>
           <li>Starts, abandonment, retries, review outcomes, account enablement and time to completion.</li>
-          <li>Time of day: all timestamps are midnight UTC, so outages can't be matched to records.</li>
+          <li>Time of day: all timestamps are midnight UTC, so outages cannot be matched to records.</li>
           <li>Whether recent cohorts are mature: late approvals after review would not appear.</li>
           <li>ARQ's current flow: whether vendor decisions reach users directly, whether retries or a review queue exist, whether uploads are allowed, and the architecture.</li>
           <li>Whether documented vendor incidents affected ARQ's transactions.</li>
@@ -538,7 +579,7 @@
     <div class="kx-grid-4" id="decline-classes" data-source="declines"></div>
     <p class="kx-caveat kx-caveat-sm"><b>Multiple failures.</b>
       <span data-fill data-source="kpis" data-field="value" data-where="metric=multi_fail_b" data-fmt="int">—</span>
-      recent unsuccessful decisions had two or more failing or warning checks. A single primary reason prevents double counting; it doesn't mean fixing that one reason would get the person approved.</p>
+      recent unsuccessful decisions had two or more failed or warning checks. A single primary reason prevents double counts. It does not mean that a fix for that one reason would get the person approved.</p>
     <section class="kx-section" id="mexico">
       <h2>Mexico: what "no document type" breaks down into</h2>
       <p class="kx-intro">
@@ -550,7 +591,7 @@
         <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=arg_usability_rejects" data-fmt="int">—</b>
         usability rejections or warnings in the extract, against
         <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=mex_usability_rejects" data-fmt="int">—</b>
-        for Mexican ones. A missing type is a symptom with several possible causes; the split shows which outcomes grew.
+        for Mexican ones. No document type is a symptom with several possible causes; the split shows which outcomes grew.
       </p>
       <div class="kx-grid">
         <div class="kx-card">
@@ -581,12 +622,12 @@
       </div>
     </section>
     <div class="kx-card" id="face-card">
-      <h3>Face match: a large existing loss that improved</h3>
+      <h3>Face match: a large, older loss that improved</h3>
       <p class="kx-intro">Face-match failures were
         <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=face_a" data-fmt="pct2">—</b>
         of prior-period decisions and
         <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=face_b" data-fmt="pct2">—</b>
-        of recent ones, so they did not cause the drop. They are still worth working on: see hypothesis H6 and the review pilot.</p>
+        of recent ones, so they did not cause the drop. They still need work: see hypothesis H6 and the review pilot.</p>
     </div>
     <div class="kx-card" id="process-card">
       <h3>The checks, block by block</h3>
@@ -648,7 +689,7 @@
   <section class="kx-page" id="incidents" role="tabpanel" aria-labelledby="tab-incidents" hidden>
     <p class="kx-tabq">This tab answers: what the four short failure spikes were, how much they explain, and what the vendor's status page shows.</p>
     <h2>Four date windows with unusual failures</h2>
-    <p class="kx-intro">Each window is a date range, a country scope and a failure signature. "Above baseline" is the observed count minus what the prior-period rate of that signature predicts for the window's volume. Other failures on those days are not attributed. The data has dates only, so individual records can't be matched to intraday outages.</p>
+    <p class="kx-intro">Each window is a date range, a country scope and a failure signature. "Above baseline" is the observed count minus what the prior-period rate of that signature predicts for the window's volume. Other failures on those days are not attributed. The data has dates only, so individual records cannot be matched to intraday outages.</p>
     <div class="kx-card" id="incident-table-card">
       <h3>Counts and denominators</h3>
       <div class="kx-tablewrap-free">
@@ -669,11 +710,11 @@
       </div>
       <p class="kx-note">Total above baseline: <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_excess_base" data-fmt="int">—</b>
         (<b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=incident_contribution_pp" data-fmt="pp">—</b> of approval).
-        For comparison, removing the <span data-fill data-source="kpis" data-field="value" data-where="metric=selected_incident" data-fmt="int">—</span> matching failures from the recent period gives
-        <span data-fill data-source="kpis" data-field="value" data-where="metric=approval_excl_selected" data-fmt="pct">—</span>. That is a descriptive rate after excluding selected records, not an estimate of performance without incidents.</p>
+        For comparison, if we remove the <span data-fill data-source="kpis" data-field="value" data-where="metric=selected_incident" data-fmt="int">—</span> failures that match the patterns, the recent rate is
+        <span data-fill data-source="kpis" data-field="value" data-where="metric=approval_excl_selected" data-fmt="pct">—</span>. That is a descriptive rate without the selected records. It is not an estimate of performance without incidents.</p>
     </div>
     <div class="kx-grid-4" id="incident-cards" data-source="incidents daily vendor_evidence"></div>
-    <div class="kx-grid">
+    <div class="kx-stack">
       <div class="kx-card" id="sensitivity-card">
         <h3>Sensitivity of the attribution</h3>
         <div class="kx-tablewrap-free">
@@ -701,13 +742,13 @@
   <!-- Hypotheses & tests -->
   <section class="kx-page" id="hypotheses" role="tabpanel" aria-labelledby="tab-hypotheses" hidden>
     <p class="kx-tabq">This tab answers: what we think the causes are, and the test that would settle each one.</p>
-    <h2>Leading hypotheses and how to test them</h2>
-    <p class="kx-intro">Each hypothesis lists the evidence for it, credible alternatives, what is missing, the next step, and the decision that step enables.</p>
-    <div class="kx-grid" id="hyp-cards" data-source="hypotheses"></div>
+    <h2>Main hypotheses and how to test them</h2>
+    <p class="kx-intro">Each hypothesis lists the evidence for it, credible alternatives, the evidence still needed, the next step, and the decision that step enables.</p>
+    <div class="kx-stack" id="hyp-cards" data-source="hypotheses"></div>
     <section class="kx-section">
       <h2>Experiment and validation designs</h2>
       <p class="kx-intro">Two optimisation experiments, one remediation of a confirmed failure, and one capacity-limited pilot. Sample sizes use the stated stand-in baselines and must be recomputed once the Phase 0 events give start-based rates. Assignment is per person, so repeated attempts are not counted as independent users.</p>
-      <div class="kx-grid" id="exp-cards" data-source="experiments"></div>
+      <div class="kx-stack" id="exp-cards" data-source="experiments"></div>
     </section>
   </section>
 
@@ -732,7 +773,7 @@
     <section class="kx-section" id="scenarios">
       <h2>Recovery scenarios</h2>
       <div class="kx-cardhead">
-        <p class="kx-intro">Recovered approvals = observed population × eligibility × reach × return × remediation × subsequent approval. The observed population comes from the extract; every other factor is an assumption. Populations don't overlap. Incident-type benefits occur only when a comparable incident happens.</p>
+        <p class="kx-intro">Recovered approvals = observed population × eligibility × reach × return × remediation × subsequent approval. The observed population comes from the extract; every other factor is an assumption. Populations do not overlap. Incident-type benefits occur only when a comparable incident happens.</p>
         <div class="kx-seg" role="group" aria-label="Scenario for the tables and value model on this tab">
           <button type="button" data-scenario="Conservative">Conservative</button>
           <button type="button" data-scenario="Central">Central</button>
@@ -758,23 +799,31 @@
             <tbody></tbody>
           </table>
         </div>
-        <p class="kx-note">"Eligible" for the selfie populations is the observed share with no other failing check. "Then approved" uses the prior-period approval rate for the same countries, because checks that didn't run could still fail; a reviewer's approval counts as final. A target set from these scenarios is a goal, not a prediction.</p>
+        <p class="kx-note">"Eligible" for the selfie populations is the observed share with no other failed check. "Then approved" uses the prior-period approval rate for the same countries, because checks that did not run could still fail. A reviewer's approval counts as final. A target set from these scenarios is a goal, not a prediction.</p>
       </div>
     </section>
     <section class="kx-section" id="value">
       <h2>Value model</h2>
       <p class="kx-intro">The data contains approvals, not money. The inputs start from a market-based preset built from published vendor prices, salaries and fintech benchmarks. None of them is an ARQ figure: switch presets, or type ARQ's own values. A result appears only when every input it needs is valid.</p>
-      <div class="kx-grid">
-        <div class="kx-card">
-          <h3>Observed quantities</h3>
-          <dl class="kx-kv">
-            <dt>Change in approved count, prior to recent</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</dd>
-            <dt>Of which from the lower rate (counterfactual at the prior rate)</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="signed">—</dd>
-            <dt>Of which from fewer decisions</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=volume_effect" data-fmt="signed">—</dd>
-            <dt>Recoverable approvals per 30 days, active scenario</dt><dd id="value-recoverable">—</dd>
-            <dt>Per comparable incident, active scenario</dt><dd id="value-incident">—</dd>
-          </dl>
-          <p class="kx-note">An approval is not an activated customer, and a decline is wasted paid acquisition only if the applicant came from a paid channel.</p>
+      <div class="kx-valuegrid">
+        <div class="kx-stack">
+          <div class="kx-card">
+            <h3>Observed quantities</h3>
+            <dl class="kx-kv">
+              <dt>Change in approved count, prior to recent</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=approved_change" data-fmt="signed">—</dd>
+              <dt>Of which from the lower rate (counterfactual at the prior rate)</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=rate_effect" data-fmt="signed">—</dd>
+              <dt>Of which from fewer decisions</dt><dd data-fill data-source="kpis" data-field="value" data-where="metric=volume_effect" data-fmt="signed">—</dd>
+              <dt>Recoverable approvals per 30 days, active scenario</dt><dd id="value-recoverable">—</dd>
+              <dt>Per comparable incident, active scenario</dt><dd id="value-incident">—</dd>
+            </dl>
+            <p class="kx-note">An approval is not an activated customer, and a decline is wasted paid acquisition only if the applicant came from a paid channel.</p>
+          </div>
+        <div class="kx-card" id="value-out">
+          <h3>Results</h3>
+          <p class="kx-status" id="value-results-status"></p>
+          <dl class="kx-kv" id="value-results"></dl>
+          <p class="kx-note">The first-year value of a cohort comes in over the next year. It is not the revenue recognised in the next 12 months. The annual figure assumes that 30-day volumes repeat; seasonality can change this.</p>
+        </div>
         </div>
         <div class="kx-card">
           <h3>Inputs</h3>
@@ -791,15 +840,9 @@
           <div class="kx-inputs" id="value-inputs" data-source="value_inputs"></div>
         </div>
       </div>
-      <div class="kx-card" id="value-out">
-        <h3>Results</h3>
-        <p class="kx-status" id="value-results-status"></p>
-        <dl class="kx-kv" id="value-results"></dl>
-        <p class="kx-note">The first-year value of a cohort is earned over the following year, so it is not the revenue recognised in the next 12 months. Annualising assumes 30-day volumes repeat, which seasonality may contradict.</p>
-      </div>
       <div class="kx-card">
         <h3>Where the presets come from</h3>
-        <p class="kx-note">Low, Mid and High are the low, middle and high values of each input's published range, so a High preset raises costs as well as value. Cautious takes the end of each range that weakens the case: low value and activation, high build, run and review costs, and the smaller estimate of past waste. Open a basis to see its derivation. Sources were fetched on <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>; replace each preset with ARQ's own figure.</p>
+        <p class="kx-note">Low, Mid and High are the low, middle and high values of each published range. A High preset raises costs as well as value. Cautious takes the weaker end of each range: low value and activation, high costs, and the smaller estimate of past waste. Open a basis to see its derivation. Sources were fetched on <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>; replace each preset with ARQ's own figure.</p>
         <div class="kx-tablewrap-free">
           <table class="kx-table" id="preset-table" data-source="value_inputs" data-row-key="id">
             <caption class="kx-sr">Preset values per input, with their basis and sources</caption>
@@ -826,8 +869,8 @@
   <!-- Operating model -->
   <section class="kx-page" id="operating" role="tabpanel" aria-labelledby="tab-operating" hidden>
     <p class="kx-tabq">This tab answers: how the pass rate would be owned and run as a company metric.</p>
-    <h2>Running KYC metrics as an owned system</h2>
-    <p class="kx-intro">How this analysis would live in a company KPI platform: defined metrics with owners, approved versions, freshness and lineage; commitments with check-ins; and access by audience. The functions are role-based examples, not ARQ's organisation: no people, headcount or reporting lines are implied.</p>
+    <h2>KYC metrics as an owned system</h2>
+    <p class="kx-intro">How this analysis would live in a company KPI platform. It holds metric definitions with owners, approved versions, freshness and lineage, commitments with check-ins, and access by audience. The functions are role-based examples, not ARQ's organisation. They do not show people, headcount or who reports to whom.</p>
     <div class="kx-card" id="registry-card">
       <h3>KPI registry entries</h3>
       <div class="kx-tablewrap-free" id="registry" data-source="metrics departments"></div>
@@ -863,7 +906,7 @@
       <p class="kx-note">Example commitments derived from the roadmap. Each is checked at the weekly funnel review against its acceptance criterion.</p>
       <div class="kx-tablewrap-free" id="commitments" data-source="actions departments"></div>
     </div>
-    <div class="kx-grid-3" id="dept-cards" data-source="departments raci actions rituals metrics"></div>
+    <div class="kx-masonry" id="dept-cards" data-source="departments raci actions rituals metrics"></div>
     <div class="kx-grid">
       <div class="kx-card">
         <h3>Operating rhythm</h3>
@@ -903,11 +946,11 @@
       <h3>Proposed alert rules, replayed on the extract</h3>
       <div class="kx-tablewrap-free">
         <table class="kx-table" id="alerts-table" data-source="alerts" data-row-key="id">
-          <thead><tr><th data-field="metric">Metric</th><th data-field="owner" class="kx-hide-narrow">Owner</th><th class="kx-num" data-field="normal">Normal day</th><th data-field="rule">Alert when</th><th class="kx-num" data-field="days_prior">Days firing, prior</th><th class="kx-num" data-field="days_recent">Days firing, recent</th><th class="kx-num" data-field="first_recent">First recent</th></tr></thead>
+          <thead><tr><th data-field="metric">Metric</th><th data-field="owner" class="kx-hide-narrow">Owner</th><th class="kx-num" data-field="normal">Normal day</th><th data-field="rule">Alert when</th><th class="kx-num" data-field="days_prior">Alert days, prior</th><th class="kx-num" data-field="days_recent">Alert days, recent</th><th class="kx-num" data-field="first_recent">First recent</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
-      <p class="kx-note">Daily data only. Prior-period firings are false alarms by construction and are the basis for tuning.</p>
+      <p class="kx-note">Daily data only. Alerts in the prior period are false alarms by construction. Use them to set the thresholds.</p>
     </div>
   </section>
 
@@ -915,23 +958,23 @@
   <section class="kx-page" id="design" role="tabpanel" aria-labelledby="tab-design" hidden>
     <p class="kx-tabq">This tab answers: what a KYC flow built for retries, review and failover would look like.</p>
     <h2>Proposed target design</h2>
-    <p class="kx-caveat">A proposal for discussion with Engineering. ARQ's current architecture is not known from the extracts, and parts of this may already exist. Sequencing follows the roadmap: Phase 0 changes are small; the orchestration layer, registry checks and a second vendor are Phase 3, multi-quarter work.</p>
-    <div class="kx-grid">
+    <p class="kx-caveat">A proposal for discussion with Engineering. ARQ's current architecture is not known from the extracts, and parts of this may already exist. The order follows the roadmap: Phase 0 changes are small; the orchestration layer, registry checks and a second vendor are Phase 3, multi-quarter work.</p>
+    <div class="kx-reqgrid">
       <div class="kx-card">
         <h3>Requirements</h3>
-        <ul class="kx-list">
+        <ul class="kx-list kx-cols2">
           <li>Capture ID and selfie with quality checks on the phone.</li>
           <li>Verify through one or more vendors, plus registries where available.</li>
           <li>Decide with versioned per-country rules: approve, retake, review or reject, always with a reason code.</li>
           <li>Never turn an execution error into a final rejection.</li>
           <li>Emit the Phase 0 events; keep an audit trail of checks, rule versions and reviewers.</li>
-          <li>Protect identity data: encryption, access logging, and retention per local law, to confirm with Legal.</li>
+          <li>Protect identity data: encryption, access logs, and retention per local law, to confirm with Legal.</li>
         </ul>
       </div>
       <div class="kx-card">
         <h3>Scale</h3>
         <p class="kx-intro">About <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=avg_daily" data-fmt="int">—</b> decisions on an average day in 2023 and
-          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=peak_daily" data-fmt="int">—</b> at most. Throughput is not the hard part. Staying correct when a vendor misbehaves, handling fraud bursts and protecting data are.</p>
+          <b class="kx-n" data-fill data-source="kpis" data-field="value" data-where="metric=peak_daily" data-fmt="int">—</b> at most. Throughput is not the hard part. The hard parts are correct results when a vendor fails, fraud bursts, and data protection.</p>
       </div>
     </div>
     <div class="kx-card">
@@ -947,8 +990,8 @@
         </div></div>
         <div class="kx-down" aria-hidden="true">↓</div>
         <div class="kx-layer"><div class="kx-layer-name">Core</div><div class="kx-boxes">
-          <div class="kx-box"><b>Orchestration and decisions</b><span>Session state, retries, rules and review routing (Phase 3). Phase 0 adds hold-and-retry within the current integration.</span></div>
-          <div class="kx-box"><b>Review queue</b><span>Pilot in Phase 2, with capacity and quality planning.</span></div>
+          <div class="kx-box"><b>Orchestration and decisions</b><span>Session state, retries, rules and the route to review (Phase 3). Phase 0 adds hold-and-retry within the current integration.</span></div>
+          <div class="kx-box"><b>Review queue</b><span>Pilot in Phase 2, with a capacity and quality plan.</span></div>
         </div></div>
         <div class="kx-down" aria-hidden="true">↓ ↑</div>
         <div class="kx-layer"><div class="kx-layer-name">Vendors</div><div class="kx-boxes">
@@ -965,13 +1008,13 @@
     <div class="kx-grid">
       <div class="kx-card">
         <h3>Session states</h3>
-        <p class="kx-intro">Started → document captured → selfie captured → submitted → verifying → one of: approved; retake requested; held (execution error, retried); in review; rejected with a reason code.</p>
+        <p class="kx-intro">Started → document captured → selfie captured → submitted → in verification → one of: approved; retake requested; held (execution error, retried); in review; rejected with a reason code.</p>
       </div>
       <div class="kx-card">
         <h3>Build or buy</h3>
         <ul class="kx-list">
           <li><b>Buy</b> document forensics, liveness, face match, watchlists and registry access.</li>
-          <li><b>Build</b> the events, metrics, decision rules, retries and review routing that are specific to ARQ.</li>
+          <li><b>Build</b> the events, metrics, decision rules, retries and review routes that are specific to ARQ.</li>
         </ul>
       </div>
     </div>
@@ -1015,12 +1058,12 @@
     <p class="kx-tabq">This tab answers: the control findings, risks, open questions, FAQ and glossary.</p>
     <div class="kx-card" id="open-questions-ref">
       <h3>Open questions for ARQ</h3>
-      <p class="kx-note">What to confirm before acting on the findings. The analysis stands on the extract alone; these answers decide how far each conclusion carries.</p>
+      <p class="kx-note">What to confirm before we act on the findings. The analysis stands on the extract alone; these answers decide how far each conclusion carries.</p>
       <div class="kx-tablewrap-free" id="open-questions-table" data-source="open_questions"></div>
     </div>
     <div class="kx-card" id="compliance-card">
       <h3>Control findings in the extract</h3>
-      <p class="kx-caveat kx-caveat-sm">Extract findings that need reconciliation. An approval record is not an enabled account, and a blank field is not proof a check never happened. If an extracted birth year of 2006 or later is right, the person was under 18 in 2023; the applicable policy still needs confirming.</p>
+      <p class="kx-caveat kx-caveat-sm">Extract findings that need reconciliation. An approval record is not an enabled account, and a blank field is not proof a check never happened. If an extracted birth year of 2006 or later is right, the person was under 18 in 2023; the applicable policy still needs confirmation.</p>
       <div class="kx-tablewrap-free">
         <table class="kx-table" id="compliance-table" data-source="compliance" data-row-key="id">
           <thead><tr><th data-field="finding">Finding</th><th class="kx-num" data-field="n">Records</th><th data-field="detail" class="kx-hide-narrow">Detail</th><th data-field="alternatives" class="kx-hide-narrow">Other explanations</th><th data-field="validation">How to validate</th></tr></thead>
@@ -1042,11 +1085,11 @@
       <div class="kx-card">
         <h3>Questions people ask</h3>
         <div class="kx-faq">
-          <details><summary>Is the start-to-finish completion rate falling?</summary><p>It can't be measured from these extracts. Approval among recorded decisions fell; completion needs start events and an observation window.</p></details>
-          <details><summary>Are genuine customers being turned away?</summary><p>Probably some, but the extract can't prove it. Execution-error rejections and liveness-spike failures are the strongest candidates; neither group's eligibility or outcome on retry is known.</p></details>
+          <details><summary>Did the start-to-finish completion rate fall?</summary><p>These extracts cannot measure it. Approval among recorded decisions fell; completion needs start events and an observation window.</p></details>
+          <details><summary>Does KYC reject genuine customers?</summary><p>Probably some, but the extract cannot prove it. Execution-error rejections and liveness-spike failures are the strongest candidates; neither group's eligibility or outcome on retry is known.</p></details>
           <details><summary>Did fraud go up?</summary><p>Fraud signals went up, mostly in two clusters. Signals are not adjudicated fraud; Phase 0 adjudicates a sample.</p></details>
           <details><summary>Is the vendor at fault?</summary><p>The vendor's status page documents liveness incidents on Sep 1 and 6, 2023, on its US data centre. Whether ARQ was affected, and who caused the Sep 1–2 execution errors, is not established.</p></details>
-          <details><summary>How fast can it be fixed?</summary><p>Phase 0 takes about two weeks. Experiments follow in weeks 2–6, scaling in weeks 6–13, and platform work over the next two quarters.</p></details>
+          <details><summary>How fast can it be fixed?</summary><p>Phase 0 takes about two weeks. Experiments follow in weeks 2–6, then wider rollout in weeks 6–13, and platform work over the next two quarters.</p></details>
           <details><summary>What data is in this dashboard?</summary><p>Aggregated counts and rates only. No user ids, birth dates, images or record-level fields.</p></details>
         </div>
       </div>

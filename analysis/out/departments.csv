@@ -1,7 +1,7 @@
 id,order,name,focus
 leadership,1,Leadership team,Decide priorities and resources; review the KYC metrics monthly.
 product,2,Product · Onboarding,Owns the approval-rate metric and the onboarding flow.
-platform,3,Engineering · Onboarding platform,"Owns integrations, retries and execution-error handling."
+platform,3,Engineering · Onboarding platform,"Owns integrations, retries and the response to execution errors."
 mobile,4,Engineering · Mobile,Owns capture in the app.
 data,5,Data & Analytics,"Owns metric definitions, events, data quality and alerts."
 ops,6,Operations · KYC review,"Owns manual review, if one exists or is introduced."
@@ -12,4 +12,4 @@ risk,10,Risk & Fraud,Owns fraud signals and controls.
 finance,11,Finance,Owns unit economics and vendor cost.
 growth,12,Growth & Marketing,Owns acquisition channels and re-engagement.
 legal,13,Legal & Privacy,Owns data protection and consent.
-country,14,Country leads,Bring local document and regulatory knowledge.
+country,14,Country leads,Give local knowledge of documents and regulations.

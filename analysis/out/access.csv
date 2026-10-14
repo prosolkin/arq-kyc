@@ -1,6 +1,6 @@
 audience,sees,restriction
 Leadership and investors,"Summary, Plan, aggregate metrics",No record-level data; fraud-control detail summarised.
 Department leads,All tabs for their metrics and actions,Aggregates only.
-Risk and Compliance,"Everything, including control findings","Record-level drill-down only in source systems, by role."
+Risk and Compliance,"All tabs, with the control findings","Record-level drill-down only in source systems, by role."
 Analysts,"Definitions, lineage, validation",Record-level data in the warehouse under access control.
 Public,Nothing from this dashboard,"Separate explainer, reviewed by Legal and Communications."

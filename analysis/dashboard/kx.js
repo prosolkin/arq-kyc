@@ -212,7 +212,7 @@ function drawTrend() {
       rule.attr('x1', cx).attr('x2', cx).attr('visibility', 'visible');
       dot.attr('cx', cx).attr('cy', y(r.rate)).attr('visibility', 'visible');
       const lines = [[colors()[0], 'Approval rate', FMT.pct(r.rate)], [null, 'Decisions', FMT.int(r.n)]];
-      if (r.sel) lines.push([null, 'Selected incident failures', FMT.int(r.sel)], ['var(--cds-chart-muted)', 'Excluding them (descriptive)', FMT.pct(r.excl)]);
+      if (r.sel) lines.push([null, 'Selected incident failures', FMT.int(r.sel)], ['var(--cds-chart-muted)', 'Without them (descriptive)', FMT.pct(r.excl)]);
       showTip(tip, box, cx * scale, y(r.rate) * scale, d3.utcFormat('%a %b %-d, %Y')(r.date) + ' · ' + COUNTRY[c], lines);
     })
     .on('pointerleave', () => { hideTip(tip); dot.attr('visibility', 'hidden'); rule.attr('visibility', 'hidden'); });
@@ -462,10 +462,10 @@ function drawIncidentCards() {
     if (i.id === 'fraud_arg' || i.id === 'fraud_mex') add('Decisions vs typical', FMT.int(+i.volume) + ' vs ' + FMT.int(+i.baseline_volume));
     if (i.signature === 'fraud') { add('Liveness passed', FMT.int(+i.liveness_passed)); add('Face match passed', FMT.int(+i.face_passed)); }
     if (i.id === 'exec_errors') { add('Liveness passed', FMT.int(+i.liveness_passed)); add('Screening passed', FMT.int(+i.screening_passed)); add('Document type returned', FMT.int(+i.doc_type_present)); }
-    if (i.id === 'liveness_spike') add('Also had another failing check', FMT.int(+i.other_failing));
+    if (i.id === 'liveness_spike') add('Also had another failed check', FMT.int(+i.other_failing));
     const text = {
-      fraud_arg: 'Argentine volume was about double a typical day. Manipulation signals on extra traffic suggest an attack, but passing liveness and face match does not prove a genuine person holding an altered ID. Adjudication is needed.',
-      exec_errors: 'Usability returned TECHNICAL_ERROR, so document checks and face match never ran, but liveness ran and passed. The vendor status page lists no matching incident for these days; the fault may be in ARQ’s integration.',
+      fraud_arg: 'Argentine volume was about double a typical day. Manipulation signals on extra traffic suggest an attack. A pass on liveness and face match does not prove a genuine person with an altered ID. Adjudication is needed.',
+      exec_errors: 'Usability returned TECHNICAL_ERROR, so document checks and face match never ran, but liveness ran and passed. The vendor status page lists no incident for these days, so the fault may be in ARQ’s integration.',
       liveness_spike: 'The vendor’s status page documents liveness incidents on both days, on its US data centre. That supports, but does not confirm, a vendor cause for ARQ.',
       fraud_mex: 'Signals on INE cards without extra volume. This could be quieter fraud, a vendor rule or model change, or a new card version. No vendor incident is listed.',
     }[i.id];
@@ -502,7 +502,7 @@ function drawHypotheses() {
     const card = el('article', 'kx-card'); card.id = 'hyp-' + h.id;
     const head = el('div', 'kx-cardhead'); head.append(el('h3', null, HYP_LABEL[h.id] + ' · ' + h.hypothesis), el('span', 'kx-chip', 'Hypothesis'));
     const dl = el('dl', 'kx-gloss');
-    [['Evidence', h.evidence], ['Alternatives', h.alternatives], ['Missing', h.missing], ['Next step', h.next], ['Decision it enables', h.decision]].forEach(([k, v]) => dl.append(el('dt', null, k), el('dd', null, v)));
+    [['Evidence', h.evidence], ['Alternatives', h.alternatives], ['Still needed', h.missing], ['Next step', h.next], ['Decision it enables', h.decision]].forEach(([k, v]) => dl.append(el('dt', null, k), el('dd', null, v)));
     card.append(head, dl); box.append(card);
   });
 }
@@ -556,9 +556,9 @@ function drawScenarios() {
   const tiles = document.getElementById('scenario-tiles'); tiles.replaceChildren();
   if (!tot || !rows) return;
   const t = tot.find((r) => r.scenario === sc);
-  [['Recoverable approvals per 30 days (' + sc.toLowerCase() + ')', FMT.int(+t.steady_30d), FMT.pp(+t.steady_pp) + ' on recurring causes; the recent rate would become ' + FMT.pct(+t.approval_with_steady)],
+  [['Recoverable approvals per 30 days (' + sc.toLowerCase() + ')', FMT.int(+t.steady_30d), FMT.pp(+t.steady_pp) + ' on repeated causes; the recent rate would become ' + FMT.pct(+t.approval_with_steady)],
     ['Per comparable incident', FMT.int(+t.per_incident), 'Execution errors and liveness spikes; only when such an incident recurs'],
-    ['If control findings are confirmed', FMT.signed(+t.control_gap_all), 'Approvals per 30 days that might need reversing if all are confirmed; ' + FMT.signed(+t.control_gap_50) + ' if half are']]
+    ['If control findings are confirmed', FMT.signed(+t.control_gap_all), 'Approvals per 30 days that we might need to reverse if all are confirmed; ' + FMT.signed(+t.control_gap_50) + ' if half are']]
     .forEach(([label, big, sub]) => { const c = el('div', 'kx-card kx-tile'); c.append(el('span', 'kx-label', label), el('span', 'kx-big', big), el('span', 'kx-sub', sub)); tiles.append(c); });
   fillTable('scenario-table', rows.filter((r) => r.scenario === sc), 'id', [
     { field: 'population' }, { field: 'cadence', cls: 'kx-hide-narrow' }, { field: 'observed_n', fmt: 'int', cls: 'kx-num' }, { field: 'eligibility', fmt: 'share', cls: 'kx-num' },
@@ -691,7 +691,7 @@ function drawPresetTables() {
   if (st && src) st.querySelectorAll('tbody tr').forEach((tr) => { const a = tr.children[1].querySelector('a'); const r = src.find((x) => x.id === tr.dataset.key); if (a && r) a.textContent = r.publisher + ': ' + r.title; });
 }
 
-/* ---------- Quick review (ASD-STE100) ---------- */
+/* ---------- Quick review ---------- */
 const TRACK_KINDS = { t_fix: ['1', 'Fix and measure'], t_test: ['2', 'Test the fixes'], t_learn: ['3', 'Learn why'], t_vendor: ['4', 'Decide on the vendor'] };
 function drawQuick() {
   const box = document.getElementById('quick-body');
@@ -699,37 +699,53 @@ function drawQuick() {
   const items = rows.slice().sort((a, b) => +a.order - +b.order);
   const sections = [];
   items.forEach((r) => { let sec = sections.find((x) => x.id === r.section); if (!sec) { sec = { id: r.section, heading: r.heading, goto: r.goto, items: [] }; sections.push(sec); } sec.items.push(r); });
+  const WIDE = new Set(['result', 'causes', 'incidents', 'plan', 'questions']);
   const charts = [];
-  box.replaceChildren(...sections.map((sec, i) => {
-    const card = el('article', 'kx-card' + (i === 0 ? ' kx-qhero' : ''));
-    card.append(el(i === 0 ? 'h2' : 'h3', null, sec.heading));
-    let list = null, tracks = null;
-    sec.items.forEach((r) => {
-      if (r.kind === 'chart') { const c = el('div', 'kx-qchart'); c.dataset.chart = r.text; card.append(c); charts.push(c); list = null; return; }
+  // render one section's items into a container; returns the container
+  const fill = (into, list) => {
+    let ul = null, tracks = null;
+    list.forEach((r) => {
+      if (r.kind === 'chart') { const c = el('div', 'kx-qchart'); c.dataset.chart = r.text; into.append(c); charts.push(c); ul = null; return; }
       if (r.kind in TRACK_KINDS) {
-        if (!tracks) { tracks = el('div', 'kx-tracks'); card.append(tracks); }
+        if (!tracks) { tracks = el('div', 'kx-tracks'); into.append(tracks); }
         let t = tracks.querySelector('[data-track="' + r.kind + '"]');
         if (!t) { t = el('div', 'kx-track'); t.dataset.track = r.kind; const h = el('h4'); h.append(el('span', null, TRACK_KINDS[r.kind][0]), document.createTextNode(TRACK_KINDS[r.kind][1])); t.append(h, el('ol')); tracks.append(t); }
-        t.querySelector('ol').append(el('li', null, r.text));
-        list = null; return;
+        t.querySelector('ol').append(el('li', null, r.text)); ul = null; return;
       }
-      if (r.kind === 'li' || r.kind === 'step') {
-        const tag = r.kind === 'li' ? 'ul' : 'ol';
-        if (!list || list.tagName.toLowerCase() !== tag) { list = el(tag); card.append(list); }
-        list.append(el('li', null, r.text));
-        return;
-      }
-      list = null;
-      if (r.kind === 'caution') { const c = el('p', 'kx-caveat'); const [head, ...rest] = r.text.split(': '); c.append(el('b', null, head + ': '), document.createTextNode(rest.join(': '))); card.append(c); }
-      else card.append(el('p', r.kind === 'lead' ? 'kx-qlead' : r.kind === 'term' ? 'kx-qterm' : null, r.text));
+      if (r.kind === 'li') { if (!ul) { ul = el('ul'); into.append(ul); } ul.append(el('li', null, r.text)); return; }
+      ul = null;
+      if (r.kind === 'caution') { const c = el('p', 'kx-caveat'); const [head, ...rest] = r.text.split(': '); c.append(el('b', null, head + ': '), document.createTextNode(rest.join(': '))); into.append(c); }
+      else into.append(el('p', r.kind === 'lead' ? 'kx-qlead' : r.kind === 'term' ? 'kx-qterm' : null, r.text));
     });
-    if (sec.goto) {
-      const tab = document.getElementById('tab-' + sec.goto);
-      const more = el('p', 'kx-more'); const b = el('button', 'kx-link', 'More detail: ' + (tab ? tab.textContent : sec.goto)); b.type = 'button'; b.dataset.goto = sec.goto;
-      more.append(b); card.append(more);
+    return into;
+  };
+  const more = (goto) => {
+    const tab = document.getElementById('tab-' + goto);
+    const p = el('p', 'kx-more'); const b = el('button', 'kx-link', 'More detail: ' + (tab ? tab.textContent : goto)); b.type = 'button'; b.dataset.goto = goto; p.append(b); return p;
+  };
+  const data = sections.find((x) => x.id === 'data');
+  const cards = sections.filter((x) => x.id !== 'data').map((sec, i) => {
+    const card = el('article', 'kx-card' + (WIDE.has(sec.id) ? ' kx-qwide' : ''));
+    card.append(el(i === 0 ? 'h2' : 'h3', null, sec.heading));
+    const chartItems = sec.items.filter((r) => r.kind === 'chart'), textItems = sec.items.filter((r) => r.kind !== 'chart');
+    if (sec.id === 'result' && data) {
+      // the result, with what the data can show beside it
+      const split = el('div', 'kx-qsplit');
+      const left = fill(el('div'), sec.items);
+      const aside = el('div', 'kx-qaside'); aside.append(el('h3', null, data.heading)); fill(aside, data.items); aside.append(more(data.goto));
+      split.append(left, aside); card.append(split);
+    } else if (WIDE.has(sec.id) && chartItems.length && sec.id !== 'plan') {
+      const split = el('div', 'kx-qsplit');
+      split.append(fill(el('div'), chartItems), fill(el('div'), textItems));
+      card.append(split);
+    } else {
+      fill(card, sec.items);
+      if (sec.id === 'questions') card.querySelectorAll('ul').forEach((u) => u.classList.add('kx-qcols'));
     }
+    if (sec.goto) card.append(more(sec.goto));
     return card;
-  }));
+  });
+  box.replaceChildren(...cards);
   const words = items.reduce((n, r) => n + (r.kind === 'chart' ? 0 : r.text.split(/\s+/).length), 0);
   const t = document.getElementById('quick-time'); if (t) t.textContent = String(Math.max(1, Math.round(words / 200)));
   if (visible(box)) charts.forEach((c) => QUICK_CHARTS[c.dataset.chart]?.(c));
@@ -821,7 +837,7 @@ const QUICK_CHARTS = {
     svg.append('text').attr('x', x(lo)).attr('y', 18).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text(FMT.pp(lo));
     svg.append('text').attr('x', x(hi)).attr('y', 18).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text(FMT.pp(hi));
     svg.append('text').attr('x', x(mid)).attr('y', 18).attr('text-anchor', 'middle').style('font-weight', 600).text('Central ' + FMT.pp(mid));
-    svg.append('text').attr('x', W - R).attr('y', 72).attr('text-anchor', 'end').attr('class', 'kx-qmuted').text('Pass-rate points recoverable per 30 days, on recurring causes');
+    svg.append('text').attr('x', W - R).attr('y', 72).attr('text-anchor', 'end').attr('class', 'kx-qmuted').text('Pass-rate points recoverable per 30 days, on repeated causes');
   },
 };
 

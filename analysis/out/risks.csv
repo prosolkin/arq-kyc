@@ -1,9 +1,9 @@
 id,risk,likelihood,impact,owner,mitigation,evidence_n,evidence_label
 exec_final,Execution errors or vendor faults recorded as final rejections,Medium,High,Engineering · Onboarding platform,Hold and retry on TECHNICAL_ERROR; vendor failover only after the orchestration work.,407,recent TECHNICAL_ERROR rejections
 fraud_bursts,"Bursts of fraud signals, confirmed or not",High,Medium,Risk & Fraud,Adjudicate samples; pre-vendor velocity checks if fraud is confirmed.,598,recent fraud-signal decisions
-unexplained,Mexican rejections that carry no reason code,High,High,Product · Onboarding,Diagnose with the vendor before choosing a fix.,1034,recent Mexican cases with no reason code
+unexplained,Mexican rejections that carry no reason code,High,High,Product · Onboarding,Diagnose with the vendor before you choose a fix.,1034,recent Mexican cases with no reason code
 control_findings,"Approvals that may conflict with policy (birth year, screening)",Unknown,High,Compliance,"Reconcile against policy, raw responses, reviews and account state.",1378,approved records to reconcile
 measurement_gap,No measurement before submission or across attempts,High,Medium,Data & Analytics,Phase 0 instrumentation.,,
 vendor_change,Vendor-side faults or changes that go unnoticed,Medium,Medium,Vendor management,Per-code alerts; status-page subscription; incident confirmation process.,174,liveness-spike decisions
-face_mismatch,Genuine people failing face match,Medium,Medium,Operations · KYC review,Review pilot; threshold changes only with risk validation.,606,recent face-match decisions
-review_capacity,New manual review without capacity or quality planning,Medium,Medium,Operations · KYC review,"Capacity plan, service level and second-reviewer sampling before launch.",,
+face_mismatch,Genuine people who fail face match,Medium,Medium,Operations · KYC review,Review pilot; threshold changes only with risk validation.,606,recent face-match decisions
+review_capacity,New manual review without a capacity or quality plan,Medium,Medium,Operations · KYC review,"Capacity plan, service level and a second review of a sample before launch.",,
