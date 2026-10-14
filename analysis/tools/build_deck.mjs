@@ -32,7 +32,11 @@ const usd2 = (v) => '$' + (Number.isInteger(+v) ? String(+v) : Number(v).toFixed
 const inputFmt = (r, v) => (r.unit === 'share' ? pct(+v) : r.unit === 'USD' ? (+v < 100 ? usd2(v) : usd(+v)) : String(+v));
 
 // ---------------- design ----------------
-const C = { ink: '1F2A2E', muted: '5C686C', faint: '8A9497', line: 'D5DCDD', panel: 'F3F6F6', teal: '0F4C4D', tealSoft: 'DCEAE9', amber: 'B8691F', amberSoft: 'F6E7D6', red: 'B93A2C', redSoft: 'F5DEDA', white: 'FFFFFF', blue: '2F6DB3' };
+// The dashboard's own theme tokens (analysis/export_html.py): light for content slides, dark for the cover and divider.
+const C = { ink: '1C2126', muted: '59636D', faint: '8B949C', line: 'DFE3E7', panel: 'FFFFFF', bg: 'F6F7F8', head: 'F1F3F5',
+  teal: '1C2126', tealSoft: 'EEF3FA', amber: '8F5B00', amberSoft: 'F8F1E6', red: 'B4361F', redSoft: 'F9E8E4', white: 'FFFFFF', blue: '2F6DB3', chartRed: 'C63F2B' };
+const DK = { bg: '111417', panel: '181C20', line: '2A3036', fg: 'E5E9EC', muted: 'A1ABB4', blue: '6FA6E6', red: 'F07A66' };
+const SOFT_LINE = { [C.panel]: C.line, [C.tealSoft]: 'D3E0F2', [C.amberSoft]: 'EAD9BE', [C.redSoft]: 'EDCAC2' };
 const W = 13.333, H = 7.5, MX = 0.6;
 const FONT = { head: 'Georgia', body: 'Arial' };
 const FOOT = 'KYC approval-rate diagnosis · 2023 extracts (Jul 25 – Sep 22) · Case-study submission';
@@ -45,7 +49,7 @@ function slide(section, title, opts = {}) {
   return s;
 }
 const text = (s, x, y, w, h, paras, o = {}) => s.els.push({ t: 'text', x, y, w, h, paras: paras.map((p) => (typeof p === 'string' ? { text: p } : p)), size: o.size || 14, color: o.color || C.ink, font: o.font || 'body', align: o.align, valign: o.valign });
-const rect = (s, x, y, w, h, fill, o = {}) => s.els.push({ t: 'rect', x, y, w, h, fill, line: o.line, radius: o.radius });
+const rect = (s, x, y, w, h, fill, o = {}) => s.els.push({ t: 'rect', x, y, w, h, fill, line: o.line || (o.radius ? SOFT_LINE[fill] : undefined), radius: o.radius });
 const line = (s, x1, y1, x2, y2, color, o = {}) => s.els.push({ t: 'line', x1, y1, x2, y2, color, width: o.width || 1, dash: o.dash });
 const table = (s, x, y, w, colW, rows, o = {}) => s.els.push({ t: 'table', x, y, w, colW, rows, size: o.size || 11, header: o.header !== false, rowH: o.rowH });
 const stat = (s, x, y, w, big, label, o = {}) => {
@@ -69,13 +73,51 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 {
   const s = slide('Executive narrative', null, { dark: true, noTitle: true,
     notes: 'Purpose: answer the brief in one pass. The headline metric is approval among recorded decisions. These extracts cannot measure the start-to-finish funnel that the brief describes, and the deck says so first.' });
-  rect(s, 0, 0, W, H, C.teal);
-  text(s, MX, 1.25, 9.5, 0.4, [{ text: 'Product Owner case study · KYC onboarding' }], { size: 14, color: 'BFD6D5' });
-  text(s, MX, 1.8, 11.4, 1.9, [{ text: `KYC approval fell ${Math.abs(K('delta_pp')).toFixed(1)} points in a month. Most of the arithmetic is known; most of the causes are not yet.` }], { font: 'head', size: 34, color: C.white });
-  text(s, MX, 4.0, 11, 0.9, [{ text: 'What the 2023 extracts show, what remains a hypothesis, and what to do first.' }], { size: 18, color: 'DCEAE9' });
-  text(s, MX, 5.6, 12, 1.1, [
-    { text: `Data: KYC_summary and KYC_details extracts, ${int(K('total_users'))} recorded decisions, Jul 25 – Sep 22, 2023 (prior period Jul 25 – Aug 23; recent period Aug 24 – Sep 22).`, after: 4 },
-    { text: 'Vendor research dated Oct 13, 2026. Case-study submission; it contains fraud-control and compliance findings from the extract.' }], { size: 12, color: 'BFD6D5' });
+  const sgn = (v, d) => (v < 0 ? MINUS : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+  text(s, MX, 0.5, W - 2 * MX, 0.7, [{ text: 'KYC pass rate: why it fell and what to do' }], { font: 'head', size: 32, color: DK.fg });
+  text(s, MX, 1.28, 9.6, 0.6, [{ text: `The KYC pass rate (approval among recorded decisions) fell from ${pct(K('approval_a'))} to ${pct(K('approval_b'))} between the two periods (${sgn(K('delta_pp'), 1)} pp), or ${sgn(K('approved_change'), 0)} approvals.` }], { size: 15, color: DK.fg });
+  text(s, MX, 1.98, W - 2 * MX, 0.3, [{ text: `${int(K('total_users'))} recorded decisions, one per user. Prior period: Jul 25 – Aug 23, 2023; recent period: Aug 24 – Sep 22, 2023. Aggregated data, no personal data. Vendor research dated Oct 13, 2026.` }], { size: 10.5, color: DK.muted });
+  // the daily chart, in a dark card
+  const cx = MX, cy = 2.5, cw = 8.05, ch = 3.2;
+  rect(s, cx, cy, cw, ch, DK.panel, { line: DK.line, radius: 0.08 });
+  text(s, cx + 0.22, cy + 0.16, cw - 0.4, 0.3, [{ text: 'Approval among recorded decisions, by day', bold: true }], { size: 12, color: DK.fg });
+  const days = D.daily.filter((r) => r.country === 'ALL');
+  const L = cx + 0.62, R = cx + cw - 1.15, top = cy + 0.62, bot = cy + ch - 0.48, lo = 0.5, hi = 1.0;
+  const yv = (v) => bot - (v - lo) / (hi - lo) * (bot - top);
+  [0.6, 0.8, 1.0].forEach((v) => { line(s, L, yv(v), R, yv(v), DK.line, { width: 0.75 }); text(s, cx + 0.12, yv(v) - 0.09, 0.42, 0.2, [{ text: Math.round(v * 100) + '%' }], { size: 9, color: DK.muted, align: 'right' }); });
+  const bw = (R - L) / days.length;
+  days.forEach((d, i) => rect(s, L + i * bw + bw * 0.14, yv(+d.approval_rate), bw * 0.72, bot - yv(+d.approval_rate), d.incident_day === '1' ? DK.red : DK.blue));
+  const split = days.findIndex((d) => d.date === '2023-08-24');
+  [[0, split, K('approval_a'), 'Prior'], [split, days.length, K('approval_b'), 'Recent']].forEach(([a, z, v, name]) => {
+    line(s, L + a * bw, yv(v), L + z * bw, yv(v), DK.muted, { width: 1, dash: 'dash' });
+  });
+  text(s, R + 0.08, yv(K('approval_a')) - 0.16, 1.0, 0.2, [{ text: 'Prior ' + pct(K('approval_a')) }], { size: 9, color: DK.muted });
+  text(s, R + 0.08, yv(K('approval_b')) - 0.02, 1.0, 0.2, [{ text: 'Recent ' + pct(K('approval_b')) }], { size: 9, color: DK.muted });
+  text(s, L, bot + 0.08, 1, 0.2, [{ text: 'Jul 25' }], { size: 9, color: DK.muted });
+  text(s, L + split * bw - 0.5, bot + 0.08, 1, 0.2, [{ text: 'Aug 24' }], { size: 9, color: DK.muted, align: 'center' });
+  text(s, R - 1, bot + 0.08, 1, 0.2, [{ text: 'Sep 22' }], { size: 9, color: DK.muted, align: 'right' });
+  rect(s, L, cy + ch - 0.2, 0.12, 0.08, DK.blue); text(s, L + 0.18, cy + ch - 0.25, 1.4, 0.2, [{ text: 'Daily pass rate' }], { size: 9, color: DK.muted });
+  rect(s, L + 1.55, cy + ch - 0.22, 0.12, 0.12, DK.red); text(s, L + 1.73, cy + ch - 0.25, 1.8, 0.2, [{ text: 'Incident window day' }], { size: 9, color: DK.muted });
+  // what the deck covers, where the password card sits on the web page
+  const tx = cx + cw + 0.18, tw = W - MX - tx;
+  rect(s, tx, cy, tw, ch, DK.panel, { line: DK.line, radius: 0.08 });
+  text(s, tx + 0.22, cy + 0.16, tw - 0.4, 0.3, [{ text: 'In this deck', bold: true }], { size: 12, color: DK.fg });
+  text(s, tx + 0.22, cy + 0.58, tw - 0.4, ch - 0.7, ['The answer in seven points', 'What we can and cannot measure', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
+    .map((t, i) => ({ text: `${i + 1}.  ${t}`, after: 5 })), { size: 11, color: DK.fg });
+  // three tiles, like the web page
+  const tiles = [
+    ['Pass rate change', `${MINUS}${Math.abs(K('delta_pp')).toFixed(1)} pts`, `${pct(K('approval_a'))} → ${pct(K('approval_b'))}, prior to recent 30 days`],
+    ['Approvals', `${MINUS}${pct(Math.abs(K('approved_change_rel')))}`, `${int(K('approved_change'))} fewer: ${pct(K('volume_effect_share'), 0)} from fewer decisions, ${pct(K('rate_effect_share'), 0)} from the lower rate`],
+    ['Short incidents', `≈${int(K('incident_excess_base'))}`, 'failures above baseline in four date windows; causes not confirmed'],
+  ];
+  const gap = 0.18, tw3 = (W - 2 * MX - 2 * gap) / 3, ty = cy + ch + 0.18, th = 1.32;
+  tiles.forEach(([label, big, sub], i) => {
+    const x = MX + i * (tw3 + gap);
+    rect(s, x, ty, tw3, th, DK.panel, { line: DK.line, radius: 0.08 });
+    text(s, x + 0.22, ty + 0.12, tw3 - 0.4, 0.24, [{ text: label }], { size: 10, color: DK.muted });
+    text(s, x + 0.22, ty + 0.36, tw3 - 0.4, 0.5, [{ text: big }], { font: 'head', size: 24, color: DK.fg });
+    text(s, x + 0.22, ty + 0.86, tw3 - 0.4, 0.42, [{ text: sub }], { size: 9.5, color: DK.muted });
+  });
 }
 {
   const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order that an executive needs. They are: what we can measure, what changed, the arithmetic, the hypotheses, the first steps, the needs, and the checks.' });
@@ -132,7 +174,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const bw = (cw - 0.5) / days.length;
   days.forEach((d, i) => {
     const v = +d.approval_rate, x = cx + 0.5 + i * bw;
-    rect(s, x, yv(v), bw * 0.72, bot - yv(v), incDays.has(d.date) ? C.red : C.teal);
+    rect(s, x, yv(v), bw * 0.72, bot - yv(v), incDays.has(d.date) ? C.chartRed : C.blue);
   });
   const splitIdx = days.findIndex((d) => d.date === '2023-08-24');
   line(s, cx + 0.5 + splitIdx * bw - bw * 0.14, top - 0.05, cx + 0.5 + splitIdx * bw - bw * 0.14, bot, C.ink, { width: 1, dash: 'dash' });
@@ -149,13 +191,13 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     text(s, MX, y + 0.04, 3.2, 0.3, [{ text: r.driver }], { size: 12, align: 'right' });
     if (r.inc) rect(s, Math.min(xv(0), xv(r.inc)), y, Math.abs(xv(r.inc) - xv(0)), 0.32, C.red);
     const st = Math.sign(r.rest) === Math.sign(r.inc) ? r.inc : 0;
-    if (Math.abs(r.rest) > 1e-9) rect(s, Math.min(xv(st), xv(st + r.rest)), y, Math.abs(xv(st + r.rest) - xv(st)), 0.32, C.teal);
+    if (Math.abs(r.rest) > 1e-9) rect(s, Math.min(xv(st), xv(st + r.rest)), y, Math.abs(xv(st + r.rest) - xv(st)), 0.32, C.blue);
     const endX = r.effect < 0 ? xv(Math.min(r.effect, r.inc)) - 0.85 : xv(Math.max(r.effect, 0)) + 0.08;
     text(s, endX, y + 0.04, 0.8, 0.3, [{ text: pp(r.effect, 2), bold: true }], { size: 11.5, align: r.effect < 0 ? 'right' : 'left' });
   });
   line(s, xv(0), 1.55, xv(0), 1.65 + bridge.length * 0.5, C.ink, { width: 1 });
   rect(s, MX + 3.3, 6.25, 0.22, 0.18, C.red); text(s, MX + 3.6, 6.22, 3.0, 0.25, [{ text: 'Above baseline in incident windows' }], { size: 10.5, color: C.muted });
-  rect(s, MX + 6.6, 6.25, 0.22, 0.18, C.teal); text(s, MX + 6.9, 6.22, 2.0, 0.25, [{ text: 'Everything else' }], { size: 10.5, color: C.muted });
+  rect(s, MX + 6.6, 6.25, 0.22, 0.18, C.blue); text(s, MX + 6.9, 6.22, 2.0, 0.25, [{ text: 'Everything else' }], { size: 10.5, color: C.muted });
   rect(s, 8.9, 1.55, W - MX - 8.9, 4.7, C.panel, { radius: 0.08 });
   text(s, 9.1, 1.72, W - MX - 9.3, 4.5, [
     { text: 'How to read the bars', bold: true, color: C.teal, after: 8 },
@@ -294,9 +336,8 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 // ======================= APPENDIX =======================
 {
   const s = slide('Appendix', null, { dark: true, noTitle: true, notes: 'Evidence appendix: definitions, validation, composition, Mexico, incident sensitivity, experiments, value model, operating model, control findings, vendor research.' });
-  rect(s, 0, 0, W, H, C.teal);
-  text(s, MX, 2.7, 11, 1.0, [{ text: 'Appendix: evidence and method' }], { font: 'head', size: 34, color: C.white });
-  text(s, MX, 3.8, 11, 1.6, [{ text: 'A1 Definitions · A2 Validation · A3 Composition · A4 Mexico · A5 Incident sensitivity · A6 Experiments · A7–A8 Value model · A9 Operating model · A10 Control findings · A11 Vendor research' }], { size: 15, color: 'DCEAE9' });
+  text(s, MX, 2.7, 11, 1.0, [{ text: 'Appendix: evidence and method' }], { font: 'head', size: 34, color: DK.fg });
+  text(s, MX, 3.8, 11, 1.6, [{ text: 'A1 Definitions · A2 Validation · A3 Composition · A4 Mexico · A5 Incident sensitivity · A6 Experiments · A7–A8 Value model · A9 Operating model · A10 Control findings · A11 Vendor research' }], { size: 15, color: DK.muted });
 }
 {
   const s = slide('Appendix', 'A1 · Metric definitions: what is available and what needs new events', { notes: 'Proposed KPI registry entries. Unavailable metrics list the gap.' });
@@ -419,10 +460,10 @@ function renderPptx(file) {
   pres.author = 'KYC case study';
   pres.company = 'Case study';
   pres.theme = { headFontFace: FONT.head, bodyFontFace: FONT.body };
-  pres.defineSlideMaster({ title: 'CONTENT', background: { color: C.white },
+  pres.defineSlideMaster({ title: 'CONTENT', background: { color: C.bg },
     objects: [{ text: { text: FOOT, options: { x: MX, y: H - 0.42, w: 9, h: 0.25, fontSize: 9, color: C.faint, fontFace: FONT.body, margin: 0 } } }],
     slideNumber: { x: W - MX - 0.6, y: H - 0.42, w: 0.6, h: 0.25, fontSize: 9, color: C.faint, fontFace: FONT.body, align: 'right' } });
-  pres.defineSlideMaster({ title: 'DARK', background: { color: C.teal }, objects: [] });
+  pres.defineSlideMaster({ title: 'DARK', background: { color: DK.bg }, objects: [] });
   let section = null;
   slides.forEach((s) => {
     if (s.section !== section) { pres.addSection({ title: s.section }); section = s.section; }
@@ -444,7 +485,7 @@ function renderPptx(file) {
         const rows = e.rows.map((r, ri) => r.map((c) => {
           const cell = typeof c === 'object' ? c : { text: String(c) };
           const head = e.header && ri === 0;
-          return { text: cell.text, options: { bold: head || !!cell.bold, color: head ? C.white : (cell.color || C.ink), fill: { color: head ? C.teal : (ri % 2 ? C.white : C.panel) }, fontSize: e.size, fontFace: FONT.body, valign: 'top' } };
+          return { text: cell.text, options: { bold: head || !!cell.bold, color: head ? C.muted : (cell.color || C.ink), fill: { color: head ? C.head : C.white }, fontSize: e.size, fontFace: FONT.body, valign: 'top' } };
         }));
         sl.addTable(rows, { x: e.x, y: e.y, w: e.w, colW: e.colW, border: { type: 'solid', pt: 0.5, color: C.line }, margin: [0.04, 0.06, 0.04, 0.06], autoPage: false, objectName: name });
       }
@@ -475,14 +516,14 @@ function renderHtml(file) {
         const body = e.rows.map((r, ri) => '<tr>' + r.map((c) => {
           const cell = typeof c === 'object' ? c : { text: String(c) };
           const head = e.header && ri === 0;
-          return `<td style="background:#${head ? C.teal : (ri % 2 ? C.white : C.panel)};color:#${head ? C.white : (cell.color || C.ink)};font-weight:${head || cell.bold ? 700 : 400}">${esc(cell.text)}</td>`;
+          return `<td style="background:#${head ? C.head : C.white};color:#${head ? C.muted : (cell.color || C.ink)};font-weight:${head || cell.bold ? 700 : 400}">${esc(cell.text)}</td>`;
         }).join('') + '</tr>').join('');
         return `<table class="tb" style="position:absolute;left:${e.x}in;top:${e.y}in;width:${e.w}in;font-size:${e.size}pt"><colgroup>${cols}</colgroup>${body}</table>`;
       }
       return '';
     }).join('\n');
     const foot = s.dark ? '' : `<div class="foot" style="left:${MX}in">${esc(FOOT)}</div><div class="foot" style="right:${MX}in;text-align:right">${si + 1}</div>`;
-    return `<section class="slide" id="s${si + 1}" style="background:#${s.dark ? C.teal : C.white}">${els}${foot}</section>`;
+    return `<section class="slide" id="s${si + 1}" style="background:#${s.dark ? DK.bg : C.bg}">${els}${foot}</section>`;
   }).join('\n');
   const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>KYC approval-rate diagnosis</title><style>
 @page { size: ${W}in ${H}in; margin: 0; }

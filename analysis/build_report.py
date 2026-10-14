@@ -24,26 +24,28 @@ SCRATCH = os.environ.get("REPORT_SCRATCH") or os.path.join(ROOT, "analysis", "to
 CHROME = os.environ.get("CHROME") or "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 CSS = """
+/* the dashboard's light theme tokens (analysis/export_html.py) */
+:root { --bg: #f6f7f8; --panel: #ffffff; --fg: #1c2126; --muted: #59636d; --line: #dfe3e7; --head: #f1f3f5; --blue: #2f6db3; --warn: #8f5b00; }
 @page { size: Letter; margin: 0.7in 0.65in; }
-html { font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #1F2A2E; line-height: 1.45; }
+html { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 10pt; color: var(--fg); line-height: 1.5; }
 body { margin: 0; }
-h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: normal; color: #0F4C4D; }
-h1 { font-size: 24pt; margin: 0 0 4pt; }
-h1 + p { color: #5C686C; margin-top: 0; }
-h2 { font-size: 15pt; margin: 20pt 0 6pt; page-break-after: avoid; border-bottom: 1px solid #D5DCDD; padding-bottom: 3pt; }
-h3 { font-size: 12pt; margin: 14pt 0 4pt; page-break-after: avoid; }
+h1, h2 { font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; font-weight: 400; color: var(--fg); }
+h1 { font-size: 24pt; line-height: 1.15; margin: 0 0 6pt; }
+h1 + p { color: var(--muted); margin-top: 0; }
+h2 { font-size: 15pt; margin: 22pt 0 6pt; page-break-after: avoid; border-bottom: 1px solid var(--line); padding-bottom: 4pt; }
+h3 { font-size: 11pt; font-weight: 600; margin: 14pt 0 4pt; page-break-after: avoid; }
 p, ul, ol { margin: 0 0 7pt; }
 li { margin-bottom: 2pt; }
-code { font-family: Menlo, Consolas, monospace; font-size: 9pt; background: #F3F6F6; padding: 0 2pt; }
-pre { background: #F3F6F6; padding: 6pt 8pt; font-size: 9pt; border-radius: 3pt; }
-table { border-collapse: collapse; width: 100%; font-size: 8.5pt; margin: 4pt 0 10pt; page-break-inside: auto; }
+strong { font-weight: 600; }
+code { font-family: Menlo, Consolas, monospace; font-size: 8.5pt; background: var(--bg); border: 1px solid var(--line); border-radius: 3pt; padding: 0 2pt; }
+pre { background: var(--bg); border: 1px solid var(--line); padding: 6pt 8pt; font-size: 8.5pt; border-radius: 6pt; }
+table { border-collapse: collapse; width: 100%; font-size: 8.5pt; margin: 4pt 0 12pt; page-break-inside: auto; border: 1px solid var(--line); }
 thead { display: table-header-group; }
 tr { page-break-inside: avoid; }
-th { background: #0F4C4D; color: #fff; text-align: left; font-weight: bold; padding: 3pt 4pt; vertical-align: top; }
-td { border-bottom: 1px solid #D5DCDD; padding: 3pt 4pt; vertical-align: top; overflow-wrap: break-word; }
-tr:nth-child(even) td { background: #F7F9F9; }
-a { color: #0F4C4D; text-decoration: none; }
-.part { font-family: Georgia, serif; color: #5C686C; font-size: 11pt; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14pt; }
+th { background: var(--head); color: var(--muted); text-align: left; font-weight: 600; padding: 4pt 5pt; vertical-align: top; border-bottom: 1px solid var(--line); }
+td { border-bottom: 1px solid var(--line); padding: 4pt 5pt; vertical-align: top; overflow-wrap: break-word; }
+a { color: var(--blue); text-decoration: none; }
+.part { color: var(--muted); font-size: 9pt; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14pt; }
 """
 
 

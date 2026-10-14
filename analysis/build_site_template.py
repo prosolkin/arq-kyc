@@ -85,7 +85,6 @@ def main(dest):
     research = day(K["research_date"]).strftime("%b %-d, %Y")
     signed = lambda v, fmt: ("−" if v < 0 else "+") + format(abs(v), fmt)
     text = {
-        "strip": "Case study for the ARQ Product Owner role (ARQ Operating System). This is independent work, not an ARQ page.",
         "headline": "KYC pass rate: why it fell and what to do",
         "lede": f"The KYC pass rate (approval among recorded decisions) fell from {pct(k('approval_a'))} to {pct(k('approval_b'))} between the two periods "
                 f"({signed(k('delta_pp'), '.1f')} pp), or {signed(k('approved_change'), ',.0f')} approvals.",
