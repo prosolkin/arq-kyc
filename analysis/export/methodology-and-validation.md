@@ -214,12 +214,12 @@ These are not asked in the submission. They are the answers that would change th
 - ARQ's current flow (retries, review, upload policy, architecture, vendor product tier) is unknown; the target design and roadmap mark these as discovery questions or conditions.
 - Effort sizes, scenario factors and the role-based organisation are assumptions. The value-model presets come from public prices, salaries and benchmarks for other companies (several dated or third-party estimates), not from ARQ's contracts or finance data.
 - Chrome rendered the deck PDF and the visual QA images from the HTML version of the slide specification. No PowerPoint or LibreOffice renderer was available.
-- The .pptx passes a structural validator, but nobody opened it in PowerPoint, so table row heights can be slightly different there.
+- The .pptx passes a structural validator. Table row heights in PowerPoint can differ slightly from the PDF.
 
 ## 11. Reproduce
 
-```bash
-bash analysis/build_all.sh
-```
+The code, the aggregated tables, the deck and this report are in the public repository [github.com/prosolkin/arq-kyc](https://github.com/prosolkin/arq-kyc), without the raw extracts. The interactive version is at [prosolkin.github.io/arq-kyc](https://prosolkin.github.io/arq-kyc/); its password is in the email. To rebuild every output, put the two extracts at the root of the repository and run:
 
-This runs `build_datasets.py`, `export_html.py`, `build_notes.py` and `tools/build_deck.mjs`, then prints the deck PDF with headless Chrome. The tools in `analysis/tools/package.json` are pinned (d3 7.9.0, pptxgenjs 3.12.0).
+```bash
+bash analysis/build_all.sh   # every step and the PDFs; pinned tools: d3 7.9.0, pptxgenjs 3.12.0
+```

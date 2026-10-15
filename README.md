@@ -5,7 +5,7 @@ Why ARQ's KYC approval rate fell in August–September 2023, what the two extrac
 **Start here**
 
 - **Interactive version:** [prosolkin.github.io/arq-kyc](https://prosolkin.github.io/arq-kyc/). The password is in the submission email.
-- **Report (PDF, 35 pages):** [`kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf). It has the executive deck, the evidence appendix and the methodology and validation note.
+- **Report (PDF, 36 pages):** [`kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf). It has the executive deck, the evidence appendix and the methodology and validation note.
 
 ## Deliverables
 

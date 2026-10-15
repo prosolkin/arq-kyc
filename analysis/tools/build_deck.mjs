@@ -16,6 +16,7 @@ const OUT = path.join(ROOT, 'analysis', 'export');
 const SCRATCH = process.env.DECK_SCRATCH || path.join(ROOT, 'analysis', 'tools', '.deck-build');
 
 const load = (n) => csvParse(fs.readFileSync(path.join(DATA, n + '.csv'), 'utf8'));
+const D_FILES = fs.readdirSync(DATA).filter((f) => f.endsWith('.csv')).length; // the aggregated tables, as published
 const D = Object.fromEntries(['kpis', 'bridge', 'incidents', 'incident_sensitivity', 'daily', 'declines', 'metrics', 'validation', 'events', 'hypotheses',
   'actions', 'phases', 'tracks', 'scenarios', 'scenario_totals', 'experiments', 'value_inputs', 'value_sources', 'value_results', 'open_questions', 'compliance', 'mex_no_doctype', 'docs', 'vendor_evidence',
   'vendor_capabilities', 'departments', 'adoption', 'alerts'].map((n) => [n, load(n)]));
@@ -41,6 +42,7 @@ const W = 13.333, H = 7.5, MX = 0.6;
 const FONT = { head: 'Georgia', body: 'Arial' };
 const FOOT = 'KYC approval-rate diagnosis · 2023 extracts (Jul 25 – Sep 22) · Case-study submission';
 const SITE = 'https://prosolkin.github.io/arq-kyc/'; // the hosted dashboard; its password is only in the email
+const REPO = 'https://github.com/prosolkin/arq-kyc'; // code, aggregated tables, deck and report
 
 const slides = [];
 function slide(section, title, opts = {}) {
@@ -107,10 +109,10 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   text(s, tx + 0.22, cy + 0.52, tw - 0.4, 1.9, ['The answer in seven points', 'What we can and cannot measure', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
     .map((t, i) => ({ text: `${i + 1}.  ${t}`, after: 3 })), { size: 11, color: DK.fg });
   line(s, tx + 0.22, cy + 2.44, tx + tw - 0.22, cy + 2.44, DK.line, { width: 0.75 });
-  text(s, tx + 0.22, cy + 2.54, tw - 0.4, 0.56, [
-    { text: 'Interactive version, with a chat', bold: true, size: 10.5, after: 2 },
-    { text: SITE.replace('https://', ''), link: SITE, size: 11, color: DK.blue, after: 2 },
-    { text: 'The password is in the email.', size: 9.5, color: DK.muted },
+  text(s, tx + 0.22, cy + 2.52, tw - 0.4, 0.62, [
+    { text: 'Website: ' + SITE.replace('https://', '').replace(/\/$/, ''), link: SITE, size: 10.5, color: DK.blue, after: 3 },
+    { text: 'Code and data: ' + REPO.replace('https://', ''), link: REPO, size: 10.5, color: DK.blue, after: 3 },
+    { text: 'The website has a chat. Its password is in the email.', size: 9, color: DK.muted },
   ], { size: 11, color: DK.fg });
   // three tiles, like the web page
   const tiles = [
@@ -126,6 +128,36 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     text(s, x + 0.22, ty + 0.36, tw3 - 0.4, 0.5, [{ text: big }], { font: 'head', size: 24, color: DK.fg });
     text(s, x + 0.22, ty + 0.86, tw3 - 0.4, 0.42, [{ text: sub }], { size: 9.5, color: DK.muted });
   });
+}
+{
+  const s = slide('Executive narrative', 'Where to find the work: the website, the code and this report', { notes: 'The website shows the same analysis and figures as this report, with a chat about the case. Its password is in the email. The repository holds the scripts and the aggregated tables, and one build makes every output from the two extracts.' });
+  const cards = [
+    ['Website', 'Interactive version', SITE.replace('https://', '').replace(/\/$/, ''), SITE, [
+      'The same analysis and figures as this report, on one website.',
+      'Four main tabs: Quick review, Why it fell, What to do and What we gain. Eight detail pages sit under Details.',
+      'A chat answers questions about the case from the case material only.',
+      'The password is in the email.']],
+    ['GitHub', 'Code and data', REPO.replace('https://', ''), REPO, [
+      `The scripts and the ${D_FILES} aggregated tables behind every number.`,
+      'One build makes the website, this deck and the report from the two extracts.',
+      'The raw extracts are not in the repository. It holds aggregates only, with no personal data.',
+      'The README shows where to start.']],
+    ['PDF', 'This report', 'kyc-approval-report.pdf', null, [
+      'The executive narrative: what changed, why, what to do and what we gain.',
+      'The evidence appendix, A1 to A11.',
+      'The methodology and validation note: definitions, data checks, methods and limits.']],
+  ];
+  const gap = 0.25, cw = (W - 2 * MX - 2 * gap) / 3, y = 1.55, h = 4.75;
+  cards.forEach(([tag, name, addr, url, points], i) => {
+    const x = MX + i * (cw + gap);
+    rect(s, x, y, cw, h, C.panel, { radius: 0.08 });
+    text(s, x + 0.3, y + 0.28, cw - 0.6, 0.3, [{ text: tag.toUpperCase() }], { size: 10, color: C.muted });
+    text(s, x + 0.3, y + 0.58, cw - 0.6, 0.45, [{ text: name }], { font: 'head', size: 22, color: C.ink });
+    text(s, x + 0.3, y + 1.12, cw - 0.6, 0.35, [url ? { text: addr, link: url } : { text: addr }], { size: 13, color: url ? C.blue : C.ink });
+    line(s, x + 0.3, y + 1.62, x + cw - 0.3, y + 1.62, C.line, { width: 0.75 });
+    text(s, x + 0.3, y + 1.8, cw - 0.6, h - 2.0, points.map((t) => ({ text: t, bullet: true, after: 7 })), { size: 12.5, color: C.ink });
+  });
+  note(s, [{ text: 'Every figure in the website, the deck and the report comes from the same aggregated tables.' }]);
 }
 {
   const s = slide('Executive narrative', 'The answer in seven points', { notes: 'The seven points follow the order that an executive needs. They are: what we can measure, what changed, the arithmetic, the hypotheses, the first steps, the needs, and the checks.' });
