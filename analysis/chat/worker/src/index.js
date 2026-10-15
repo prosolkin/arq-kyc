@@ -121,6 +121,7 @@ export default {
     try { body = JSON.parse(raw); } catch { return reply(400, MSG.bad, headers); }
     const p = problem(body);
     if (p) return reply(p[1], MSG[p[0]], headers);
+    if (!env.ANTHROPIC_API_KEY) return reply(503, MSG.setup, headers);
 
     // limits: per visitor per minute, then the daily cap (approximate: KV is eventually consistent)
     if (env.PER_VISITOR) {
@@ -134,7 +135,6 @@ export default {
       if (used >= (Number(env.DAILY_LIMIT) || 100)) return reply(429, MSG.day, headers);
       await env.BUDGET.put(day, String(used + 1), { expirationTtl: 3 * 86400 });
     }
-    if (!env.ANTHROPIC_API_KEY) return reply(503, MSG.setup, headers);
 
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

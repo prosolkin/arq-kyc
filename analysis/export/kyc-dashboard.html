@@ -2350,7 +2350,7 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   const state = () => {
     send.disabled = busy || !input.value.trim() || input.value.length > MAX;
     clear.hidden = busy || !thread.children.length;
-    chips.hidden = history.length > 0;
+    chips.hidden = busy || history.length > 0;
     count.textContent = input.value.length > MAX * 0.8 ? input.value.length + ' / ' + MAX : '';
   };
   async function ask(question) {

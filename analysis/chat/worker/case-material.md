@@ -2,6 +2,21 @@
 
 This is the full material behind the dashboard, the deck and the report. Sections follow the dashboard tabs. Numbers are exact as built from the two 2023 extracts (Jul 25 – Sep 22, 2023). Vendor research is dated Oct 13, 2026.
 
+Where things are on the dashboard:
+
+- Quick review: the short story with its charts.
+- Why it fell: the reasons for not-approved decisions by class, the Mexico "no document type" breakdown, face match, the checks block by block, and the failure mix by week.
+- What to do: the plan in phases and in four tracks, and every action with its owner, evidence and acceptance criteria. The research and vendor bake-off actions are here.
+- What we gain: the recovery scenarios and the value model, with its inputs, results, presets and sources.
+- Full summary (under Details): the answer, what to confirm with the team, the daily approval rate, what moved the rate, and what it means for each audience.
+- Measurement (under Details): what can and cannot be measured, the metric definitions, the data validation, and the events needed to measure the funnel.
+- Incidents (under Details): the four date windows with unusual failures, their counts, the sensitivity of the attribution, and the vendor's status-page evidence.
+- Hypotheses & tests (under Details): the main hypotheses, how to test them, and the experiment designs.
+- Operating model (under Details): the KPI registry, ownership, who does what, the operating rhythm, alerts, access and adoption.
+- Target design (under Details): the requirements, scale, components, session states, and build or buy.
+- Vendor research (under Details): the vendor's capabilities today against the 2023 problems, and the changes since 2023.
+- Reference (under Details): the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.
+
 ## Tab: Quick review
 
 
@@ -242,7 +257,7 @@ Experiment designs:
 | 3 | Build | Government registry checks (INE, RENAPER) | Validate credentials and faces against national registries where the vendor offers it. | Vendor management | L (commercial plus integration) | Pilot on a sample with measured agreement. | Requires integration and commercial work. |
 | 3 | Build | Second verification vendor for failover | Add a second vendor behind the orchestration layer for outages and leverage. | Vendor management | L | Failover drill passes with parity on approval rate. | Requires integration and commercial work. |
 
-Qualitative research budget ladder (assumptions):
+Qualitative research budget ladder (assumptions). This is the detail behind the action "Watch and ask people who failed the capture". The dashboard shows it in short form in that action:
 
 | Budget | Method | What it answers | When |
 |---|---|---|---|
@@ -309,6 +324,25 @@ Value model results, central scenario:
 | Cautious | Historical paid acquisition spend on recent not-approved applicants | 10647.85 |
 | Cautious | Review cost per 30 days for the review-pilot population | 2999.62 |
 | Cautious | Break-even first-year value per activated customer | 45.19 |
+
+Sources of the value model inputs (shown under Sources on this tab):
+
+| ID | Publisher | Title | Figure | Period | Status |
+|---|---|---|---|---|---|
+| S1 | Veriff | Pricing page, self-serve plans | Essential $0.80, Plus $1.39, Premium $1.89 per verification; PEP and sanctions add-on +$0.64 | List prices, 13 Oct 2026 | Fetched |
+| S2 | Sumsub | Pricing and plans | Basic $1.35 (ID, liveness, face match); Compliance $1.85 (adds AML screening) per verification; only successful verifications are charged | List prices, 13 Oct 2026 | Fetched |
+| S3 | Vendr | Jumio buyer guide | Estimated $1.50–$3.00 per verification at 100,000–500,000 a year; median contract $55,850 a year | Updated Feb 2026 | Fetched (third-party estimate) |
+| S4 | Nu Holdings | Nu México press release | Nu México ARPAC US$12.5 a month; cost to serve US$1 a month | Q3 2025, published 11 Feb 2026 | Fetched |
+| S5 | Nu Holdings | Form 6-K, Q1 2026 results | Gross profit US$1,877.7m on revenue US$5,315.5m (managerial P&L), a 35.3% margin (derived) | Q1 2026 | Fetched |
+| S6 | Nu Holdings | Form 20-F, FY2025 | Monthly activity rate 83%; 71% of new Brazilian customers in 2025 sourced organically; more than 50% of Mexican customers acquired through word-of-mouth referrals | 31 Dec 2025 | Fetched |
+| S7 | Liftoff, via MarTech Series | Mobile Finance Apps report | Fintech cost per registration $17.96 and activation rate 56.3%; LATAM cost per install $1.60, registration rate 18.3%, activation rate 38.2% | Data Jun 2021 – Jun 2022 | Fetched (secondary, dated) |
+| S8 | Bloomberg Línea | DolarApp raises US$70m and becomes ARQ | More than 2 million users; more than US$10bn annualised transaction volume | 3 Mar 2026 | Fetched (press) |
+| S9 | Passageiro de Primeira | ARQ keeps a 0.5% fee on any conversion | 0.5% of the converted amount, no minimum | 28 Jul 2026 | Fetched (consumer site) |
+| S10 | TalentUp | KYC analyst salary, Mexico City | Median gross MXN 475,300 a year | Not stated (2026 page) | Fetched |
+| S11 | Paylab | Financial analyst salary, banking, Mexico | Monthly gross: the lowest 10% earn under MXN 11,236 and the highest 10% over MXN 38,290; fewer than 20 verified respondents | Not stated | Fetched |
+| S12 | Levels.fyi | Senior software engineer, Mexico | Median total compensation MX$1,146,490 a year (224 submissions) | Updated 13 Oct 2026 | Fetched (self-reported) |
+| S13 | Revelo | Hiring software developers in Mexico | Senior $66,000–$90,000 a year; fully loaded cost 1.3–1.4× salary (IMSS, Infonavit, aguinaldo, PTU), up to $126,000 | 3 Jul 2026 | Fetched (recruiter) |
+| S14 | Banco de México | FIX exchange rate | MXN 18.3528 per USD | 13 Oct 2026 | Fetched |
 
 ## Tab: Reference (under Details)
 

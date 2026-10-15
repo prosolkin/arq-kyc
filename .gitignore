@@ -19,5 +19,6 @@ analysis/export/video-script.md
 
 # Chat proxy: the access token and Wrangler's local state stay on this machine
 analysis/chat/.chat-token
+analysis/chat/chat-endpoint.txt
 analysis/chat/worker/.dev.vars
 analysis/chat/worker/.wrangler/

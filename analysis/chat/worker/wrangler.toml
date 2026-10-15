@@ -29,4 +29,4 @@ namespace_id = "4101"
 # overall daily cap: one counter per UTC date
 [[kv_namespaces]]
 binding = "BUDGET"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "9f313e18ab4a4a76954db080edb66038"

@@ -14,6 +14,22 @@ NOTE = os.path.join(ROOT, "analysis", "export", "methodology-and-validation.md")
 DEST = os.path.join(ROOT, "analysis", "chat", "worker", "case-material.md")
 MAX_BYTES = 120_000  # about 30K tokens; the whole file goes in the cached system prompt
 
+# what each dashboard page holds, so the chat names the right page (keep in step with analysis/dashboard/index.html)
+GUIDE = [
+    "Quick review: the short story with its charts.",
+    "Why it fell: the reasons for not-approved decisions by class, the Mexico \"no document type\" breakdown, face match, the checks block by block, and the failure mix by week.",
+    "What to do: the plan in phases and in four tracks, and every action with its owner, evidence and acceptance criteria. The research and vendor bake-off actions are here.",
+    "What we gain: the recovery scenarios and the value model, with its inputs, results, presets and sources.",
+    "Full summary (under Details): the answer, what to confirm with the team, the daily approval rate, what moved the rate, and what it means for each audience.",
+    "Measurement (under Details): what can and cannot be measured, the metric definitions, the data validation, and the events needed to measure the funnel.",
+    "Incidents (under Details): the four date windows with unusual failures, their counts, the sensitivity of the attribution, and the vendor's status-page evidence.",
+    "Hypotheses & tests (under Details): the main hypotheses, how to test them, and the experiment designs.",
+    "Operating model (under Details): the KPI registry, ownership, who does what, the operating rhythm, alerts, access and adoption.",
+    "Target design (under Details): the requirements, scale, components, session states, and build or buy.",
+    "Vendor research (under Details): the vendor's capabilities today against the 2023 problems, and the changes since 2023.",
+    "Reference (under Details): the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.",
+]
+
 
 def load(name):
     with open(os.path.join(OUT, name + ".csv"), newline="", encoding="utf-8") as f:
@@ -33,6 +49,8 @@ def main():
     s.append("# Case material: KYC approval-rate diagnosis (ARQ case study)\n")
     s.append("This is the full material behind the dashboard, the deck and the report. Sections follow the dashboard tabs. "
              "Numbers are exact as built from the two 2023 extracts (Jul 25 – Sep 22, 2023). Vendor research is dated Oct 13, 2026.\n")
+    s.append("Where things are on the dashboard:\n")
+    s.append("\n".join("- " + x for x in GUIDE) + "\n")
 
     # Quick review: the short story, in reading order
     s.append("## Tab: Quick review\n")
@@ -85,7 +103,8 @@ def main():
     s.append(table(sorted(load("actions"), key=lambda r: int(r["order"])),
                    ["phase", "track", "title", "action", "owner", "effort", "acceptance", "conditional"],
                    ["Phase", "Track", "Action", "What", "Accountable (role)", "Effort (assumed)", "Done when", "Condition"]))
-    s.append("\nQualitative research budget ladder (assumptions):\n")
+    s.append("\nQualitative research budget ladder (assumptions). This is the detail behind the action "
+             "\"Watch and ask people who failed the capture\". The dashboard shows it in short form in that action:\n")
     s.append(table(load("research_options"), ["budget", "method", "answers", "when"], ["Budget", "Method", "What it answers", "When"]))
     s.append("")
 
@@ -97,6 +116,8 @@ def main():
     s.append(table(load("value_inputs"), ["label", "unit", "low", "mid", "high", "short"], ["Input", "Unit", "Low", "Mid", "High", "Basis"]))
     s.append("\nValue model results, central scenario:\n")
     s.append(table([r for r in load("value_results") if r["scenario"] == "Central"], ["preset", "label", "value"], ["Preset", "Result", "Value"]))
+    s.append("\nSources of the value model inputs (shown under Sources on this tab):\n")
+    s.append(table(load("value_sources"), ["id", "publisher", "title", "figure", "period", "status"], ["ID", "Publisher", "Title", "Figure", "Period", "Status"]))
     s.append("")
 
     # Reference
