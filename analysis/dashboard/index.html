@@ -30,6 +30,14 @@
   .kx-quick .kx-qchart svg { display: block; max-width: 100%; height: auto; overflow: visible; font-size: 12px; }
   .kx-quick .kx-qchart text { fill: var(--color-fg); }
   .kx-quick .kx-qchart .kx-qmuted { fill: var(--color-fg-muted); }
+  .kx-qfig { margin: 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .kx-qfig + .kx-qfig { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-md); margin-top: var(--cds-gap-xs); }
+  .kx-qfig figcaption { font-weight: var(--cds-font-weight-medium); }
+  .kx-qfig-row { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: center; }
+  .kx-qkey { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .kx-qkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .kx-qkey b { color: var(--color-fg); margin-right: 4px; font-variant-numeric: tabular-nums; }
+  .kx-qnote { margin: 0; font-size: var(--cds-font-size-caption); line-height: 1.45; }
   .kx-qlegend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .kx-qlegend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
   .kx-quick .kx-qterm { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-xs); }
@@ -53,7 +61,7 @@
   .kx-lane-chip:focus-visible { outline: 2px solid var(--color-fg-muted); }
   @media (max-width: 520px) {
     .kx-quick .kx-qchart[data-chart="funnel"] svg { font-size: 19px; }
-    .kx-quick .kx-qchart[data-chart="days"] svg, .kx-quick .kx-qchart[data-chart="gain"] svg, .kx-quick .kx-qchart[data-chart="causes"] svg[aria-label^="Change"] { font-size: 14px; }
+    .kx-quick .kx-qchart[data-chart="days"] svg, .kx-quick .kx-qchart[data-chart="gain"] svg, .kx-quick .kx-qchart[data-chart="causes"] svg[aria-label^="Bridge"] { font-size: 14px; }
   }
   .kx-ste { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; max-width: 90ch; }
   .kx-quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cds-gap-md); align-items: stretch; }

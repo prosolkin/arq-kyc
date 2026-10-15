@@ -777,31 +777,51 @@ const QUICK_CHARTS = {
   // donut of not-approved decisions by class (recent) + bars of the change in rate by cause
   causes(box) {
     const dec = rowsOf('declines'), br = rowsOf('bridge'); if (!dec || !br) return;
+    box.style.flexDirection = 'column'; box.style.alignItems = 'stretch';
+    // 1. what the not-approved decisions are (composition, recent period)
     const classes = dec.filter((r) => r.level === 'class').map((r) => ({ name: r.name, v: +r.of_unsuccessful_b, n: +r.n_b }));
-    const d1 = el('div'); d1.style.flex = '0 0 190px'; box.append(d1);
-    const svg = qsvg(d1, 190, 190).attr('aria-label', 'Not-approved decisions by class, recent period');
-    const arc = d3.arc().innerRadius(52).outerRadius(90), pie = d3.pie().value((d) => d.v).sort(null);
-    const g = svg.append('g').attr('transform', 'translate(95,95)');
+    const f1 = el('figure', 'kx-qfig'); box.append(f1);
+    f1.append(el('figcaption', null, 'What the ' + FMT.int(kv('unsuccessful_b')) + ' not-approved decisions are, recent 30 days'));
+    const row = el('div', 'kx-qfig-row'); f1.append(row);
+    const d1 = el('div'); d1.style.flex = '0 0 170px'; row.append(d1);
+    const svg = qsvg(d1, 170, 170).attr('aria-label', 'Not-approved decisions by class, recent period');
+    const arc = d3.arc().innerRadius(48).outerRadius(82), pie = d3.pie().value((d) => d.v).sort(null);
+    const g = svg.append('g').attr('transform', 'translate(85,85)');
     g.selectAll('path').data(pie(classes)).join('path').attr('d', arc).style('fill', (d) => classColor(d.data.name)).append('title').text((d) => d.data.name + ': ' + FMT.pct0(d.data.v) + ' (' + FMT.int(d.data.n) + ')');
-    g.selectAll('text').data(pie(classes)).join('text').attr('transform', (d) => `translate(${arc.centroid(d)})`).attr('text-anchor', 'middle').attr('dy', '0.35em').style('fill', 'var(--color-bg)').style('font-weight', 600).text((d) => FMT.pct0(d.data.v));
-    svg.append('text').attr('x', 95).attr('y', 91).attr('text-anchor', 'middle').style('font-weight', 600).text(FMT.int(kv('unsuccessful_b')));
-    svg.append('text').attr('x', 95).attr('y', 107).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text('not approved');
-    qlegend(d1, classes.map((c) => [classColor(c.name), c.name]));
-    const d2 = el('div'); d2.style.flex = '1 1 280px'; box.append(d2);
-    const keep = ['Fraud signal', 'Execution error', 'Selfie / liveness', 'No document type, no reason code', 'Face match'];
-    const bars = keep.map((k) => br.find((r) => r.driver === k)).filter(Boolean).map((r) => ({ name: r.driver === 'No document type, no reason code' ? 'No document type (Mexico)' : r.driver, v: +r.effect_pp, driver: r.driver }));
-    const W = 400, rowH = 30, L = 150, H = bars.length * rowH + 26;
-    const s2 = qsvg(d2, W, H).attr('aria-label', 'Change in the pass rate by cause, in points');
-    const neg = d3.max(bars, (b) => Math.max(0, -b.v)), pos = d3.max(bars, (b) => Math.max(0, b.v));
-    const x = d3.scaleLinear([-neg, pos], [L, W - 70]);
-    s2.append('text').attr('x', L).attr('y', 12).attr('class', 'kx-qmuted').text('Change in the pass rate, points');
-    s2.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 18).attr('y2', H - 6).style('stroke', 'var(--cds-chart-axis)');
-    bars.forEach((b, i) => {
-      const y = 22 + i * rowH;
-      s2.append('text').attr('x', L - 8).attr('y', y + 14).attr('text-anchor', 'end').text(b.name);
-      s2.append('rect').attr('x', Math.min(x(0), x(b.v))).attr('y', y).attr('width', Math.abs(x(b.v) - x(0))).attr('height', 20).attr('rx', 3).style('fill', b.v < 0 ? driverColor(b.driver) : 'var(--color-ok)');
-      s2.append('text').attr('x', (b.v < 0 ? x(0) : x(b.v)) + 6).attr('y', y + 14).style('font-weight', 600).text(FMT.pp2(b.v));
+    svg.append('text').attr('x', 85).attr('y', 82).attr('text-anchor', 'middle').style('font-weight', 600).text(FMT.int(kv('unsuccessful_b')));
+    svg.append('text').attr('x', 85).attr('y', 98).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text('not approved');
+    const leg = el('ul', 'kx-qkey'); row.append(leg);
+    classes.forEach((c) => { const li = el('li'); const i = el('i'); i.style.background = classColor(c.name); li.append(i, el('b', null, FMT.pct0(c.v)), document.createTextNode(' ' + c.name)); leg.append(li); });
+    // 2. how the rate moved from the prior to the recent period (a bridge, no colour)
+    const f2 = el('figure', 'kx-qfig'); box.append(f2);
+    const a = 100 * kv('approval_a'), z = 100 * kv('approval_b'), total = kv('delta_pp');
+    f2.append(el('figcaption', null, 'How the pass rate went from ' + FMT.pct(kv('approval_a')) + ' to ' + FMT.pct(kv('approval_b'))));
+    const eff = (d) => +br.find((r) => r.driver === d).effect_pp;
+    const shown = [['Fraud signals', eff('Fraud signal')], ['Execution errors', eff('Execution error')], ['Selfie and liveness', eff('Selfie / liveness')],
+      ['No document type (Mexico)', eff('No document type, no reason code')], ['Face match', eff('Face match')]];
+    const other = +(total - d3.sum(shown, (x) => x[1])).toFixed(2);
+    const steps = shown.slice(0, 4).concat([['Other reasons', other], shown[4]]);
+    const W = 600, rowH = 30, L = 180, R = 76, T = 6, rows = steps.length + 2, H = T + rows * rowH + 30;
+    const s2 = qsvg(f2, W, H).attr('aria-label', 'Bridge from the prior to the recent pass rate, by reason');
+    const x = d3.scaleLinear([Math.floor(z - 0.6), Math.ceil(a + 0.6)], [L, W - R]);
+    const yRow = (i) => T + i * rowH;
+    x.ticks(5).forEach((t) => { s2.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', T).attr('y2', yRow(rows)).style('stroke', 'var(--cds-chart-grid)'); s2.append('text').attr('x', x(t)).attr('y', yRow(rows) + 14).attr('text-anchor', 'middle').attr('class', 'kx-qmuted').text(t + '%'); });
+    const label = (i, txt, bold) => s2.append('text').attr('x', L - 10).attr('y', yRow(i) + rowH / 2 + 4).attr('text-anchor', 'end').style('font-weight', bold ? 600 : 400).text(txt);
+    const value = (i, txt, bold) => s2.append('text').attr('x', W - R + 10).attr('y', yRow(i) + rowH / 2 + 4).style('font-weight', bold ? 600 : 400).style('font-variant-numeric', 'tabular-nums').text(txt);
+    const dot = (i, v) => s2.append('circle').attr('cx', x(v)).attr('cy', yRow(i) + rowH / 2).attr('r', 5).style('fill', 'var(--color-fg)');
+    label(0, 'Prior 30 days', true); value(0, FMT.pct(kv('approval_a')), true); dot(0, a);
+    let run = a;
+    steps.forEach(([name, v], k) => {
+      const i = k + 1, next = run + v;
+      s2.append('line').attr('x1', x(run)).attr('x2', x(run)).attr('y1', yRow(i) - rowH / 2 + 2).attr('y2', yRow(i) + 5).style('stroke', 'var(--color-fg-muted)').attr('stroke-dasharray', '2 2');
+      s2.append('rect').attr('x', x(Math.min(run, next))).attr('y', yRow(i) + 5).attr('width', Math.max(1.5, Math.abs(x(next) - x(run)))).attr('height', rowH - 10).attr('rx', 2)
+        .style('fill', 'var(--color-fg-muted)').attr('fill-opacity', v < 0 ? 0.55 : 0.25).style('stroke', 'var(--color-fg-muted)').attr('stroke-width', v < 0 ? 0 : 1);
+      label(i, name); value(i, FMT.pp2(v));
+      run = next;
     });
+    s2.append('line').attr('x1', x(run)).attr('x2', x(run)).attr('y1', yRow(rows - 1) - rowH / 2 + 2).attr('y2', yRow(rows - 1) + rowH / 2).style('stroke', 'var(--color-fg-muted)').attr('stroke-dasharray', '2 2');
+    label(rows - 1, 'Recent 30 days', true); value(rows - 1, FMT.pct(kv('approval_b')), true); dot(rows - 1, z);
+    f2.append(el('p', 'kx-qmuted kx-qnote', 'Each bar is the change from one reason, in percentage points. Together they make the ' + FMT.pp(total) + ' drop. A bar to the left lowers the rate; a bar to the right raises it.'));
   },
   // the daily line with incident days shaded, and both period averages
   days(box) {

@@ -1017,7 +1017,7 @@ def main():
         ("data", "", "", "caution", "CAUTION: Do not report this pass rate as the completion rate."),
         ("causes", "Why it fell", "drivers", "chart", "causes"),
         ("causes", "", "", "p", f"Of the {nB - apB:,} not-approved decisions, {cls_share('Unexplained or identity mismatch')} are unexplained or identity mismatches and {cls_share('Capture or document issue')} are capture or document problems. Fraud signals are {cls_share('Fraud signal (not adjudicated)')} and execution errors are {cls_share('Execution error')}."),
-        ("causes", "", "", "p", "Four causes give most of the decrease. The points show the change in pass rate for each cause."),
+        ("causes", "", "", "p", "Four reasons give most of the decrease. The second chart shows how much each reason moved the pass rate."),
         ("causes", "", "", "li", f"Fraud signals: {pts(BR['Fraud signal'])}. The vendor found more images that look altered or fake."),
         ("causes", "", "", "li", f"Execution errors: {pts(BR['Execution error'])}. On Sep 1–2, some checks did not run, and the system rejected these people."),
         ("causes", "", "", "li", f"Selfie and liveness failures: {pts(BR['Selfie / liveness'])}. The vendor status page shows liveness incidents on Sep 1 and Sep 6."),

@@ -11,7 +11,7 @@ order,section,heading,goto,kind,text
 10,data,,,caution,CAUTION: Do not report this pass rate as the completion rate.
 11,causes,Why it fell,drivers,chart,causes
 12,causes,,,p,"Of the 4,201 not-approved decisions, 40% are unexplained or identity mismatches and 36% are capture or document problems. Fraud signals are 14% and execution errors are 10%."
-13,causes,,,p,Four causes give most of the decrease. The points show the change in pass rate for each cause.
+13,causes,,,p,Four reasons give most of the decrease. The second chart shows how much each reason moved the pass rate.
 14,causes,,,li,Fraud signals: −2.05 points. The vendor found more images that look altered or fake.
 15,causes,,,li,"Execution errors: −1.62 points. On Sep 1–2, some checks did not run, and the system rejected these people."
 16,causes,,,li,Selfie and liveness failures: −0.95 points. The vendor status page shows liveness incidents on Sep 1 and Sep 6.
