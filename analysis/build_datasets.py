@@ -1092,6 +1092,41 @@ def main():
     n_words = sum(len(re.split(r"\s+", r["text"])) for r in quick if r["kind"] != "chart")
     print(f"quick review: {len(quick)} items, {n_words} words, longest sentence {longest} words")
 
+    # ---------------- assumptions: what the analysis assumes, and what changes if each one is wrong ----------------
+    # One list for the deck, the note, the dashboard and the chat. Every number is computed here, none is typed.
+    w_a, w_b = 100 * KP["warning_a"] / KP["n_a"], 100 * KP["warning_b"] / KP["n_b"]
+    assumptions = [
+        ("metric", "The metric",
+         "The pass rate is approval among recorded decisions: PASSED or APPROVED, divided by all recorded decisions.",
+         "If the team means start-to-finish completion, the Phase 0 events must exist first. The true completion rate can be higher or lower."),
+        ("records", "Records and dates",
+         "Each record is one person's final decision, on the date in the extract. Country is the country that issued the document.",
+         "If records are first attempts, retries can approve some people later, so eventual approval is higher. Recent cases can still change."),
+        ("warnings", "Warnings",
+         "WARNING counts as not approved. It is not a confirmed rejection, because the review outcome is not in the data.",
+         f"If reviewers approve every warning, both rates increase ({w_a:.2f} and {w_b:.2f} points) and the fall is {w_b - w_a:.2f} points smaller."),
+        ("reasons", "One primary reason",
+         "Each unsuccessful decision has one primary reason, in check order. TECHNICAL_ERROR comes first.",
+         f"A fix for the primary reason does not always give an approval: {KP['multi_fail_b']:,} recent decisions failed two or more checks."),
+        ("baseline", "The baseline",
+         "The prior period is the normal level. An incident window counts only the failures above the prior-period rate.",
+         f"If the prior period was unusually good, the windows explain less. The sensitivity checks give {KP['incident_excess_low']:,}–{KP['incident_excess_high']:,} failures above baseline."),
+        ("signals", "Fraud and vendor",
+         "Fraud labels are signals, not confirmed fraud. The vendor incidents are documented, but their effect on ARQ is not confirmed.",
+         "If the signals are real fraud, those rejections are correct and the gain is smaller. If the vendor had no effect, the failures need another cause."),
+        ("scenarios", "Recovery scenarios",
+         "The populations are observed. The recovery factors (reach, return and remediation) are assumptions.",
+         f"The gain can be anywhere from +{TOT['Conservative']['steady_pp']:.1f} to +{TOT['Optimistic']['steady_pp']:.1f} points, or outside that range. The experiments measure it."),
+        ("money", "Money",
+         "Money values come from market benchmarks, not from ARQ's contracts or finance data.",
+         "Replace them with ARQ's values before a decision. With the Cautious values, the actions do not pay back in the first year."),
+        ("org", "Owners and effort",
+         "Owners are roles, not people. Effort sizes are estimates.",
+         "Confirm the owners and the sizes with the team in Phase 0."),
+    ]
+    write("assumptions.csv", ["id", "order", "area", "assumption", "if_wrong"],
+          [dict(id=a_, order=i_ + 1, area=b_, assumption=c_, if_wrong=d_) for i_, (a_, b_, c_, d_) in enumerate(assumptions)])
+
     write_org()
     write_vendor()
 
@@ -1395,6 +1430,7 @@ MANIFEST = {
     "compliance": "Control findings in the extract, with validation steps.",
     "hypotheses": "Main hypotheses with evidence, alternatives and next steps.",
     "open_questions": "Questions to confirm with ARQ before any action, with what each answer changes.",
+    "assumptions": "The assumptions behind the analysis, and what changes if each one is wrong.",
     "quick_review": "The whole story on one page, with charts.",
     "tracks": "The four roadmap tracks (Fix, Test, Learn, Build) and what each means.",
     "research_options": "Budget ladder for the qualitative research action (assumptions).",

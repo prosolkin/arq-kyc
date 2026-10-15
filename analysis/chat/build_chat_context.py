@@ -27,7 +27,7 @@ GUIDE = [
     "Operating model (under Details): the KPI registry, ownership, who does what, the operating rhythm, alerts, access and adoption.",
     "Target design (under Details): the requirements, scale, components, session states, and build or buy.",
     "Vendor research (under Details): the vendor's capabilities today against the 2023 problems, and the changes since 2023.",
-    "Reference (under Details): the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.",
+    "Reference (under Details): the assumptions, the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.",
 ]
 
 
@@ -122,7 +122,9 @@ def main():
 
     # Reference
     s.append("## Tab: Reference (under Details)\n")
-    s.append("Open questions for ARQ:\n")
+    s.append("Assumptions, and what changes if each one is wrong (also a slide in the deck and section 10 of the note):\n")
+    s.append(table(sorted(load("assumptions"), key=lambda r: int(r["order"])), ["area", "assumption", "if_wrong"], ["Area", "We assume", "If it is wrong"]))
+    s.append("\nOpen questions for ARQ:\n")
     s.append(table(sorted(load("open_questions"), key=lambda r: int(r["order"])), ["question", "why", "changes", "who"],
                    ["Question", "Why it matters", "What the answer changes", "Who would know"]))
     s.append("\nControl findings in the extract (to reconcile, not confirmed failures):\n")

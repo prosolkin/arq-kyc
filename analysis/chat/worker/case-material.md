@@ -15,7 +15,7 @@ Where things are on the dashboard:
 - Operating model (under Details): the KPI registry, ownership, who does what, the operating rhythm, alerts, access and adoption.
 - Target design (under Details): the requirements, scale, components, session states, and build or buy.
 - Vendor research (under Details): the vendor's capabilities today against the 2023 problems, and the changes since 2023.
-- Reference (under Details): the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.
+- Reference (under Details): the assumptions, the open questions for ARQ, the control findings, the risk register, common questions, a glossary and the method in short.
 
 ## Tab: Quick review
 
@@ -349,6 +349,20 @@ Sources of the value model inputs (shown under Sources on this tab):
 
 ## Tab: Reference (under Details)
 
+Assumptions, and what changes if each one is wrong (also a slide in the deck and section 10 of the note):
+
+| Area | We assume | If it is wrong |
+|---|---|---|
+| The metric | The pass rate is approval among recorded decisions: PASSED or APPROVED, divided by all recorded decisions. | If the team means start-to-finish completion, the Phase 0 events must exist first. The true completion rate can be higher or lower. |
+| Records and dates | Each record is one person's final decision, on the date in the extract. Country is the country that issued the document. | If records are first attempts, retries can approve some people later, so eventual approval is higher. Recent cases can still change. |
+| Warnings | WARNING counts as not approved. It is not a confirmed rejection, because the review outcome is not in the data. | If reviewers approve every warning, both rates increase (0.72 and 1.12 points) and the fall is 0.40 points smaller. |
+| One primary reason | Each unsuccessful decision has one primary reason, in check order. TECHNICAL_ERROR comes first. | A fix for the primary reason does not always give an approval: 298 recent decisions failed two or more checks. |
+| The baseline | The prior period is the normal level. An incident window counts only the failures above the prior-period rate. | If the prior period was unusually good, the windows explain less. The sensitivity checks give 1,055–1,130 failures above baseline. |
+| Fraud and vendor | Fraud labels are signals, not confirmed fraud. The vendor incidents are documented, but their effect on ARQ is not confirmed. | If the signals are real fraud, those rejections are correct and the gain is smaller. If the vendor had no effect, the failures need another cause. |
+| Recovery scenarios | The populations are observed. The recovery factors (reach, return and remediation) are assumptions. | The gain can be anywhere from +0.9 to +4.3 points, or outside that range. The experiments measure it. |
+| Money | Money values come from market benchmarks, not from ARQ's contracts or finance data. | Replace them with ARQ's values before a decision. With the Cautious values, the actions do not pay back in the first year. |
+| Owners and effort | Owners are roles, not people. Effort sizes are estimates. | Confirm the owners and the sizes with the team in Phase 0. |
+
 Open questions for ARQ:
 
 | Question | Why it matters | What the answer changes | Who would know |
@@ -576,7 +590,23 @@ These are not asked in the submission. They are the answers that would change th
 | 3 | What happens today after a TECHNICAL_ERROR or a liveness failure: does the user see the vendor's outcome, get a retake, or enter a review queue? | Hold-and-retry and the guided retake assume no retry exists. In the central scenario they recover 242 approvals per comparable execution-error incident and 78 per 30 days on steady liveness failures. | If a retry already exists, those recoverable counts shrink and the question becomes why retries fail; the Phase 0 hold-and-retry becomes a configuration check. | Product and the onboarding squad; the vendor integration owner. |
 | 4 | Which vendor product tier and data centre does ARQ use, and did ARQ receive incident notices for Sep 1, 2 and 6, 2023? | The vendor's status history shows liveness incidents on Sep 1 and 6 on its US data centre and nothing for Sep 2. The liveness spike is 173 failures above baseline and the execution errors 407. | On another data centre the liveness attribution loses its vendor evidence; with notices, the execution errors have an owner and an SLA claim. | Vendor management; the vendor's account team. |
 
-### 10. Limitations and unresolved dependencies
+### 10. Assumptions and limitations
+
+The extracts came without context, so the analysis states what it assumes. Each row says what changes if the assumption is wrong.
+
+| Area | We assume | If it is wrong |
+|---|---|---|
+| The metric | The pass rate is approval among recorded decisions: PASSED or APPROVED, divided by all recorded decisions. | If the team means start-to-finish completion, the Phase 0 events must exist first. The true completion rate can be higher or lower. |
+| Records and dates | Each record is one person's final decision, on the date in the extract. Country is the country that issued the document. | If records are first attempts, retries can approve some people later, so eventual approval is higher. Recent cases can still change. |
+| Warnings | WARNING counts as not approved. It is not a confirmed rejection, because the review outcome is not in the data. | If reviewers approve every warning, both rates increase (0.72 and 1.12 points) and the fall is 0.40 points smaller. |
+| One primary reason | Each unsuccessful decision has one primary reason, in check order. TECHNICAL_ERROR comes first. | A fix for the primary reason does not always give an approval: 298 recent decisions failed two or more checks. |
+| The baseline | The prior period is the normal level. An incident window counts only the failures above the prior-period rate. | If the prior period was unusually good, the windows explain less. The sensitivity checks give 1,055–1,130 failures above baseline. |
+| Fraud and vendor | Fraud labels are signals, not confirmed fraud. The vendor incidents are documented, but their effect on ARQ is not confirmed. | If the signals are real fraud, those rejections are correct and the gain is smaller. If the vendor had no effect, the failures need another cause. |
+| Recovery scenarios | The populations are observed. The recovery factors (reach, return and remediation) are assumptions. | The gain can be anywhere from +0.9 to +4.3 points, or outside that range. The experiments measure it. |
+| Money | Money values come from market benchmarks, not from ARQ's contracts or finance data. | Replace them with ARQ's values before a decision. With the Cautious values, the actions do not pay back in the first year. |
+| Owners and effort | Owners are roles, not people. Effort sizes are estimates. | Confirm the owners and the sizes with the team in Phase 0. |
+
+**Limitations and unresolved dependencies**
 
 - Starts, abandonment, attempts, review outcomes, account state and times of day are not in the extracts. Completion and eventual approval stay unavailable until the Phase 0 events exist.
 - Whether a record is a first, latest or final attempt, and what event its date marks, is unknown; recent cohorts may be immature.

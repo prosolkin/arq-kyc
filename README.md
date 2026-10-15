@@ -5,7 +5,7 @@ Why ARQ's KYC approval rate fell in August–September 2023, what the two extrac
 **Start here**
 
 - **Interactive version:** [prosolkin.github.io/arq-kyc](https://prosolkin.github.io/arq-kyc/). The password is in the submission email.
-- **Report (PDF, 36 pages):** [`kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf). It has the executive deck, the evidence appendix and the methodology and validation note.
+- **Report (PDF, 38 pages):** [`kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf). It has the executive deck, the evidence appendix and the methodology and validation note.
 
 ## Deliverables
 
@@ -16,7 +16,7 @@ Why ARQ's KYC approval rate fell in August–September 2023, what the two extrac
 | Interactive dashboard, offline, one file | [`analysis/export/kyc-dashboard.html`](analysis/export/kyc-dashboard.html). Download it and open it in a browser; it works without a network. GitHub shows its source code, not the page. |
 | Deck as PowerPoint and PDF | [`kyc-approval-deck.pptx`](analysis/export/kyc-approval-deck.pptx), [`kyc-approval-deck.pdf`](analysis/export/kyc-approval-deck.pdf) |
 | Methodology and validation note | [`analysis/export/methodology-and-validation.md`](analysis/export/methodology-and-validation.md) |
-| Aggregated datasets behind every number (42 CSV tables) | [`analysis/out/`](analysis/out/), described in [`manifest.json`](analysis/out/manifest.json) |
+| Aggregated datasets behind every number (43 CSV tables) | [`analysis/out/`](analysis/out/), described in [`manifest.json`](analysis/out/manifest.json) |
 
 ## What the analysis says
 
@@ -51,6 +51,7 @@ Read it in this order.
 | [`actions.csv`](analysis/out/actions.csv) | The plan: each action with its track, phase, owner role and acceptance criteria |
 | [`scenario_totals.csv`](analysis/out/scenario_totals.csv) | Recovery scenarios |
 | [`value_results.csv`](analysis/out/value_results.csv) | Value-model results for each preset and scenario |
+| [`assumptions.csv`](analysis/out/assumptions.csv) | The assumptions behind the analysis, and what changes if each one is wrong |
 | [`open_questions.csv`](analysis/out/open_questions.csv) | Questions to confirm with ARQ, and what each answer changes |
 
 3. The code. [`analysis/build_datasets.py`](analysis/build_datasets.py) computes every number. Its `main()` has one section for each topic. The sections go from data validation and the daily series to incidents, the decomposition, scenarios, the value model and the Quick review. The script asserts the key figures, so a wrong number stops the build.

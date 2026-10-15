@@ -131,7 +131,11 @@ def methodology():
     s.append("These are not asked in the submission. They are the answers that would change the findings, in the order they matter; each says what changes with the answer.\n")
     s.append(table(["#", "Question", "Why it matters", "What the answer changes", "Who would know"],
                    [[r["order"], r["question"], r["why"], r["changes"], r["who"]] for r in sorted(load("open_questions"), key=lambda r: int(r["order"]))]))
-    s.append("\n## 10. Limitations and unresolved dependencies\n")
+    s.append("\n## 10. Assumptions and limitations\n")
+    s.append("The extracts came without context, so the analysis states what it assumes. Each row says what changes if the assumption is wrong.\n")
+    s.append(table(["Area", "We assume", "If it is wrong"],
+                   [[r["area"], r["assumption"], r["if_wrong"]] for r in sorted(load("assumptions"), key=lambda r: int(r["order"]))]))
+    s.append("\n**Limitations and unresolved dependencies**\n")
     s.append("- Starts, abandonment, attempts, review outcomes, account state and times of day are not in the extracts. Completion and eventual approval stay unavailable until the Phase 0 events exist.\n"
              "- Whether a record is a first, latest or final attempt, and what event its date marks, is unknown; recent cohorts may be immature.\n"
              "- Fraud signals are not adjudicated; execution errors are not attributed; vendor incident impact on ARQ is unconfirmed.\n"

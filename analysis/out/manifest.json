@@ -3,6 +3,7 @@
  "actions": "Roadmap actions with ownership, acceptance and guardrails.",
  "adoption": "Internal adoption plan.",
  "alerts": "Proposed alert rules replayed on the extract.",
+ "assumptions": "The assumptions behind the analysis, and what changes if each one is wrong.",
  "bridge": "Change in approval rate by primary reason.",
  "compliance": "Control findings in the extract, with validation steps.",
  "daily": "Decisions and approvals per day and document country.",

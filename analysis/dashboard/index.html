@@ -256,6 +256,7 @@
   .kx-table a { color: inherit; }
   .kx-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; word-break: break-word; }
   .kx-wide { min-width: 16rem; }
+  .kx-table td.kx-b { font-weight: var(--cds-font-weight-medium); white-space: nowrap; }
   .kx-h { display: inline-block; border-radius: 999px; padding: 0 var(--cds-pad-sm); border: 1px solid currentColor; white-space: nowrap; font-size: var(--cds-font-size-caption); }
   .kx-h-Available, .kx-h-Pass, .kx-h-Fetched, .kx-h-High { color: var(--color-ok); }
   .kx-h-Unavailable, .kx-h-Limitation { color: var(--color-bad); }
@@ -1136,7 +1137,17 @@
 
   <!-- Reference -->
   <section class="kx-page" id="reference" role="tabpanel" aria-labelledby="tab-reference" hidden>
-    <p class="kx-tabq">This tab answers: the control findings, risks, open questions, FAQ and glossary.</p>
+    <p class="kx-tabq">This tab answers: the assumptions, the open questions, the control findings, risks, FAQ and glossary.</p>
+    <div class="kx-card" id="assumptions-card">
+      <h3>Assumptions</h3>
+      <p class="kx-note">The extracts came without context, so the analysis states what it assumes. Each row says what changes if the assumption is wrong.</p>
+      <div class="kx-tablewrap-free">
+        <table class="kx-table" id="assumptions-table" data-source="assumptions" data-row-key="id">
+          <thead><tr><th data-field="area">Area</th><th data-field="assumption">We assume</th><th data-field="if_wrong">If it is wrong</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
     <div class="kx-card" id="open-questions-ref">
       <h3>Open questions for ARQ</h3>
       <p class="kx-note">What to confirm before we act on the findings. The analysis stands on the extract alone; these answers decide how far each conclusion carries.</p>

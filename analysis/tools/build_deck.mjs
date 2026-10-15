@@ -19,7 +19,7 @@ const load = (n) => csvParse(fs.readFileSync(path.join(DATA, n + '.csv'), 'utf8'
 const D_FILES = fs.readdirSync(DATA).filter((f) => f.endsWith('.csv')).length; // the aggregated tables, as published
 const D = Object.fromEntries(['kpis', 'bridge', 'incidents', 'incident_sensitivity', 'daily', 'declines', 'metrics', 'validation', 'events', 'hypotheses',
   'actions', 'phases', 'tracks', 'scenarios', 'scenario_totals', 'experiments', 'value_inputs', 'value_sources', 'value_results', 'open_questions', 'compliance', 'mex_no_doctype', 'docs', 'vendor_evidence',
-  'vendor_capabilities', 'departments', 'adoption', 'alerts'].map((n) => [n, load(n)]));
+  'vendor_capabilities', 'departments', 'adoption', 'alerts', 'assumptions'].map((n) => [n, load(n)]));
 const K = (m) => { const r = D.kpis.find((x) => x.metric === m); if (!r) throw new Error('kpi ' + m); return Number(r.value); };
 const row = (t, k, v) => { const r = D[t].find((x) => x[k] === v); if (!r) throw new Error(`${t} ${k}=${v}`); return r; };
 const MINUS = '−';
@@ -106,7 +106,7 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const tx = cx + cw + 0.18, tw = W - MX - tx;
   rect(s, tx, cy, tw, ch, DK.panel, { line: DK.line, radius: 0.08 });
   text(s, tx + 0.22, cy + 0.16, tw - 0.4, 0.3, [{ text: 'In this deck', bold: true }], { size: 12, color: DK.fg });
-  text(s, tx + 0.22, cy + 0.52, tw - 0.4, 1.9, ['The answer in seven points', 'What we can and cannot measure', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
+  text(s, tx + 0.22, cy + 0.52, tw - 0.4, 1.9, ['The answer in seven points', 'What we can measure, and what we assume', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
     .map((t, i) => ({ text: `${i + 1}.  ${t}`, after: 3 })), { size: 11, color: DK.fg });
   line(s, tx + 0.22, cy + 2.44, tx + tw - 0.22, cy + 2.44, DK.line, { width: 0.75 });
   text(s, tx + 0.22, cy + 2.52, tw - 0.4, 0.62, [
@@ -197,6 +197,12 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
     { text: 'with person, session and attempt ids, timestamps and app/SDK version.', size: 11.5, color: C.muted },
   ], { size: 13 });
   note(s, [{ text: 'Do not read the approval rate as completion. People who never submit, and approvals after retry or review, are not visible here. Whether true completion is lower or higher cannot be determined from these extracts.' }]);
+}
+{
+  const A = D.assumptions.slice().sort((a, b) => +a.order - +b.order);
+  const s = slide('Executive narrative', `${['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'][A.length] || A.length} assumptions, and what changes if each one is wrong`, { notes: 'The data came without context, so the analysis states what it assumes. Each row names the assumption and what changes if it is wrong. The same list is in the methodology note and on the website.' });
+  table(s, MX, 1.45, W - 2 * MX, [2.0, 4.9, 5.23], [['Area', 'We assume', 'If it is wrong']].concat(A.map((r) => [{ text: r.area, bold: true }, r.assumption, r.if_wrong])), { size: 10.5 });
+  note(s, [{ text: 'The same list is in the methodology note (section 10) and on the website, on the Reference page under Details.' }]);
 }
 {
   const s = slide('Executive narrative', `Approval fell from ${pct(K('approval_a'))} to ${pct(K('approval_b'))}: ${int(K('approved_change'))} fewer approvals`, { notes: 'The count fell for two reasons: fewer decisions in the recent period, and a lower approval rate. Only the rate effect is about KYC performance.' });
