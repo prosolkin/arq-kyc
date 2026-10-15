@@ -17,7 +17,7 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "KYC_summary.csv")
 RECORD_COLUMNS = {"user_reference", "year_birth", "document_number", "first_name", "last_name"}
-TEXT_EXT = {".py", ".js", ".mjs", ".html", ".md", ".csv", ".json", ".sh", ".txt", ".yml", ".yaml", ".toml", ".gitignore"}
+TEXT_EXT = {".py", ".js", ".mjs", ".html", ".md", ".csv", ".json", ".sh", ".txt", ".yml", ".yaml", ".toml", ".sql", ".gitignore"}
 
 
 def tracked():

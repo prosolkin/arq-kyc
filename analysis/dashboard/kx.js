@@ -890,6 +890,23 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   d.open = true; d.scrollIntoView({ block: 'center' }); d.querySelector('summary').focus({ preventScroll: true });
 });
 
+/* ---------- Who: random ids for the hosted page's log ----------
+   A visitor id kept in this browser and a session id for this page load. No names, nothing typed. */
+const kxWho = (() => {
+  let w = null;
+  const rid = () => [...crypto.getRandomValues(new Uint8Array(5))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  return () => {
+    if (w) return w;
+    let visitor = null;
+    try { visitor = localStorage.getItem('kx-visitor'); } catch (e) { /* storage blocked */ }
+    if (!visitor || !/^v-[a-z0-9]{6,20}$/.test(visitor)) {
+      visitor = 'v-' + rid();
+      try { localStorage.setItem('kx-visitor', visitor); } catch (e) { /* storage blocked: an id for this load only */ }
+    }
+    return (w = { visitor, session: 's-' + rid() });
+  };
+})();
+
 /* ---------- Ask about this case ----------
    Shown only when the hosted build adds window.KX_CHAT = { endpoint, token }. The proxy holds the API key.
    Answers are drawn with textContent only: the model's text never becomes HTML. */
@@ -954,7 +971,7 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
       // the proxy accepts at most 12 turns, starting with a question: keep the newest odd number of turns
       const turns = history.length > 11 ? history.slice(history.length - 11) : history;
       const res = await fetch(cfg.endpoint.replace(/\/$/, '') + '/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Chat-Token': cfg.token }, body: JSON.stringify({ messages: turns }),
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Chat-Token': cfg.token }, body: JSON.stringify({ messages: turns, ...kxWho() }),
       });
       if (!res.ok || !res.body) {
         let msg = 'The chat is not available now. Try again later.';
@@ -999,6 +1016,54 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   document.addEventListener('pointerdown', (ev) => { if (!panel.contains(ev.target)) close(); }, true);
   panel.addEventListener('focusout', () => setTimeout(() => { if (!pressing && !panel.contains(document.activeElement)) close(); }, 0));
   state();
+})();
+
+/* ---------- Page events (hosted page only) ----------
+   Counts views, tab switches and clicks, so the author can see how readers use the page and that it works.
+   Sends labels of what was clicked, never typed text. Batches go to the chat proxy every 15 s and when the page hides. */
+(() => {
+  const cfg = window.KX_CHAT;
+  if (!cfg || !cfg.endpoint || !cfg.token) return;
+  const url = cfg.endpoint.replace(/\/$/, '') + '/events', queue = [];
+  let active = 0, since = document.visibilityState === 'visible' ? Date.now() : 0;
+  const track = (n, g, v) => { queue.push({ n, g: g == null ? undefined : String(g).slice(0, 120), v: Number.isFinite(v) ? v : undefined, t: Date.now() }); if (queue.length >= 40) flush(false); };
+  function flush(leaving) {
+    if (!queue.length) return;
+    const now = Date.now();
+    const batch = queue.splice(0, 50).map(({ t, ...e }) => ({ ...e, ago: now - t }));
+    // text/plain keeps it a simple request: no preflight, and sendBeacon accepts it
+    const blob = new Blob([JSON.stringify({ token: cfg.token, ...kxWho(), events: batch })], { type: 'text/plain' });
+    if (leaving && navigator.sendBeacon && navigator.sendBeacon(url, blob)) return;
+    fetch(url, { method: 'POST', body: blob, keepalive: true }).catch(() => { /* the log is best effort */ });
+  }
+  const label = (t) => (t.getAttribute('aria-label') || t.textContent || t.getAttribute('title') || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  document.addEventListener('click', (ev) => {
+    const t = ev.target.closest && ev.target.closest('button, a, summary, [role="tab"], label, select, input[type="checkbox"], input[type="radio"]');
+    if (!t) return;
+    if (t.dataset.tab) return track('tab', t.dataset.tab);
+    // capture phase: aria-expanded still holds the state before this click
+    if (t.id === 'details-toggle') return track('details', t.getAttribute('aria-expanded') === 'true' ? 'close' : 'open');
+    if (t.closest('#ask-chips')) return track('chip', label(t));
+    track('click', label(t) + ' @' + (t.closest('#ask') ? 'chat' : ((t.closest('.kx-page') || {}).id || 'top')));
+  }, true);
+  const input = document.getElementById('ask-input');
+  if (input) input.addEventListener('focus', () => track('chat_open'), { once: true });
+  window.addEventListener('beforeprint', () => track('print'));
+  // seconds the page was visible: sent each time it hides, so the largest value is the time on the page
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') { since = Date.now(); return; }
+    if (since) active += Date.now() - since;
+    since = 0;
+    track('leave', null, Math.round(active / 1000));
+    flush(true);
+  });
+  window.addEventListener('pagehide', () => flush(true));
+  setInterval(() => flush(false), 15000);
+  track('view', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light', innerWidth);
+  flush(false);
+  // say so on the page: the footer of the hosted copy
+  const foot = document.querySelector('.kx-export-foot');
+  if (foot) foot.prepend(el('p', null, 'This hosted copy records page views, clicks, and chat questions with their answers. It does not record names or IP addresses. The author uses these records to see how readers use the page and to check that it works.'));
 })();
 
 /* ---------- Open questions ---------- */

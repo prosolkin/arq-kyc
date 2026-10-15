@@ -66,8 +66,18 @@ The hosted dashboard has a chat above the tabs. Claude Opus 5.5 answers question
 - `analysis/chat/worker/src/index.js` is a Cloudflare Worker. It holds the Anthropic key as a secret, and the page never sees the key.
 - The Worker accepts only the dashboard's origin and an access token. The build adds that token only to the encrypted page.
 - Limits: 6 questions a minute for each visitor, 100 a day in total, and 1,500 characters for each question.
-- The Worker does not log questions. The page keeps the conversation in memory only.
 - The offline file and the copy in this repository have no chat and make no requests.
+
+### Log and notifications
+
+The hosted page keeps a small log, so the author can see how readers use it and that the chat works. The chat hint and the page footer tell readers about the log.
+
+- The Worker writes each question, its answer, the status, the time and the token use to a D1 database. The schema is in `analysis/chat/worker/migrations/`.
+- The page sends page views, tab changes and clicks to the same database. It sends the label of the clicked control, never typed text.
+- A reader is a random id in the browser, with the city, country, network and browser that Cloudflare reports. The log keeps no names and no IP addresses.
+- A daily job deletes rows older than 90 days (`RETENTION_DAYS`).
+- A Telegram bot sends a message for each question and when a visitor opens the dashboard. To connect a bot, run `python3 -I analysis/chat/setup_telegram.py`.
+- To read the log, run `python3 -I analysis/chat/show_log.py`. Add `chats 20`, `events 50` or `visitor <id>` for detail.
 
 ## What is deliberately not here
 

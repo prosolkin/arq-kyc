@@ -1,5 +1,6 @@
 # Cloudflare Worker for the dashboard's "Ask about this case" chat.
-# Secrets (set with `npx wrangler secret put NAME`, never in this file): ANTHROPIC_API_KEY, CHAT_TOKEN.
+# Secrets (set with `npx wrangler secret put NAME`, never in this file): ANTHROPIC_API_KEY, CHAT_TOKEN,
+# and for notifications TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID (analysis/chat/setup_telegram.py sets both).
 name = "kyc-case-chat"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
@@ -15,6 +16,8 @@ fallthrough = true
 MODEL = "claude-opus-5-5"
 DAILY_LIMIT = "100"
 MAX_TOKENS = "800"
+RETENTION_DAYS = "90"   # the daily job deletes log rows older than this
+NOTIFY_VIEWS = "1"      # also notify when a visitor opens the dashboard (at most once in 30 minutes)
 ALLOWED_ORIGINS = "https://prosolkin.github.io,http://localhost:8765,http://localhost:8766,http://127.0.0.1:8765,http://127.0.0.1:8766"
 
 # per visitor: 6 questions a minute (per Cloudflare location)
@@ -30,3 +33,23 @@ namespace_id = "4101"
 [[kv_namespaces]]
 binding = "BUDGET"
 id = "9f313e18ab4a4a76954db080edb66038"
+
+# per visitor: page-event batches (analytics)
+[[ratelimits]]
+name = "EVENTS"
+namespace_id = "4102"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60
+
+# the log: chat questions and answers, and page events (schema in migrations/)
+[[d1_databases]]
+binding = "LOG"
+database_name = "kyc-case-log"
+database_id = "031eae1c-9826-4d3b-9572-bd6e6e6359c1"
+migrations_dir = "migrations"
+
+# every day at 03:00 UTC: delete log rows older than RETENTION_DAYS
+[triggers]
+crons = ["0 3 * * *"]
