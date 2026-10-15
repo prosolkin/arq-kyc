@@ -56,17 +56,20 @@ Without the 10 incident days, the pass rate still decreased by 1.45 points. Thes
 The causes of these incidents are not confirmed. The vendor status page does not show an incident on Sep 2.
 
 ### What to do
-The plan has three tracks that run at the same time. The obvious fixes go first because they are cheap to try.
+The plan has four tracks, the same as on the What to do tab. The first three tracks start now and run at the same time. The obvious fixes go first because they are cheap to try. The fourth track is the platform work for later.
 - [Fix and measure] Record each KYC start, each step and each final decision.
 - [Fix and measure] Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person.
 - [Fix and measure] Set alerts for sudden increases in failures. Compare the control findings with the source systems.
+- [Fix and measure] If the fraud is confirmed, add device checks before the vendor call.
 - [Test the fixes] Test one guided retake for unclear selfies.
 - [Test the fixes] In Mexico, show pictures of the accepted documents before the capture.
-- [Test the fixes] If the fraud is confirmed, add device checks before the vendor call.
 - [Learn why] Examine a sample of fraud signals. Find which signals are real fraud.
 - [Learn why] Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6.
 - [Learn why] Talk to people who failed the capture. Start with support tickets, then interviews, then session replays, then eye tracking if the budget permits.
-- [Decide on the vendor] Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor.
+- [Learn why] Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor.
+- [Build later] Build a KYC orchestration and decision layer.
+- [Build later] Add government registry checks (INE, RENAPER).
+- [Build later] Add a second verification vendor for failover.
 
 ### What we gain
 

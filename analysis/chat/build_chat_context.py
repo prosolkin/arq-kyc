@@ -60,8 +60,8 @@ def main():
             if head:
                 s.append(head)
             continue
-        bullet = "- " if r["kind"] in ("li", "t_fix", "t_test", "t_learn", "t_vendor") else ""
-        track = {"t_fix": "[Fix and measure] ", "t_test": "[Test the fixes] ", "t_learn": "[Learn why] ", "t_vendor": "[Decide on the vendor] "}.get(r["kind"], "")
+        bullet = "- " if r["kind"] in ("li", "t_fix", "t_test", "t_learn", "t_build") else ""
+        track = {"t_fix": "[Fix and measure] ", "t_test": "[Test the fixes] ", "t_learn": "[Learn why] ", "t_build": "[Build later] "}.get(r["kind"], "")
         s.append(f"{head}{bullet}{track}{r['text']}")
     s.append("")
 

@@ -26,27 +26,30 @@ order,section,heading,goto,kind,text
 25,incidents,,,li,"Sep 14–19, Mexico: more fraud signals, with usual traffic."
 26,incidents,,,p,"Without the 10 incident days, the pass rate still decreased by 1.45 points. These days hold 38% of the recent decisions. We keep them and show both views."
 27,incidents,,,p,The causes of these incidents are not confirmed. The vendor status page does not show an incident on Sep 2.
-28,plan,What to do,plan,p,The plan has three tracks that run at the same time. The obvious fixes go first because they are cheap to try.
+28,plan,What to do,plan,p,"The plan has four tracks, the same as on the What to do tab. The first three tracks start now and run at the same time. The obvious fixes go first because they are cheap to try. The fourth track is the platform work for later."
 29,plan,,,t_fix,"Record each KYC start, each step and each final decision."
 30,plan,,,t_fix,Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person.
 31,plan,,,t_fix,Set alerts for sudden increases in failures. Compare the control findings with the source systems.
-32,plan,,,t_test,Test one guided retake for unclear selfies.
-33,plan,,,t_test,"In Mexico, show pictures of the accepted documents before the capture."
-34,plan,,,t_test,"If the fraud is confirmed, add device checks before the vendor call."
+32,plan,,,t_fix,"If the fraud is confirmed, add device checks before the vendor call."
+33,plan,,,t_test,Test one guided retake for unclear selfies.
+34,plan,,,t_test,"In Mexico, show pictures of the accepted documents before the capture."
 35,plan,,,t_learn,Examine a sample of fraud signals. Find which signals are real fraud.
 36,plan,,,t_learn,"Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6."
 37,plan,,,t_learn,"Talk to people who failed the capture. Start with support tickets, then interviews, then session replays, then eye tracking if the budget permits."
-38,plan,,,t_vendor,"Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor."
-39,gain,What we gain,gain,chart,gain
-40,gain,,,p,"If the tests work, the pass rate increases by about 2.5 points (range 0.9 to 4.3)."
-41,gain,,,p,"That is about 634 more approved people each 30 days (range 233 to 1,093)."
-42,gain,,,p,These numbers come from scenarios. They are not forecasts.
-43,money,Money,gain,p,"The value model has no ARQ numbers. It uses benchmark values from 14 public sources: vendor price lists, Nu Holdings filings, Liftoff reports and Mexican salary data."
-44,money,,,li,Middle benchmarks: the actions pay back in the first year. Each active customer gives $21 of value for $13 of cost.
-45,money,,,li,Cautious benchmarks: the actions do not pay back in the first year. Each active customer gives $13 of value for $45 of cost.
-46,money,,,caution,CAUTION: Replace the benchmark values with ARQ values before you make a decision.
-47,questions,Questions for ARQ,reference,li,"Does each row show the first attempt, the last attempt or the final decision?"
-48,questions,,,li,Does ARQ have records of people who started KYC but did not send their documents?
-49,questions,,,li,What does the app do after a TECHNICAL_ERROR or a liveness failure?
-50,questions,,,li,Which vendor product and which data centre does ARQ use?
-51,questions,,,p,The answers can change the results of this review.
+38,plan,,,t_learn,"Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor."
+39,plan,,,t_build,Build a KYC orchestration and decision layer.
+40,plan,,,t_build,"Add government registry checks (INE, RENAPER)."
+41,plan,,,t_build,Add a second verification vendor for failover.
+42,gain,What we gain,gain,chart,gain
+43,gain,,,p,"If the tests work, the pass rate increases by about 2.5 points (range 0.9 to 4.3)."
+44,gain,,,p,"That is about 634 more approved people each 30 days (range 233 to 1,093)."
+45,gain,,,p,These numbers come from scenarios. They are not forecasts.
+46,money,Money,gain,p,"The value model has no ARQ numbers. It uses benchmark values from 14 public sources: vendor price lists, Nu Holdings filings, Liftoff reports and Mexican salary data."
+47,money,,,li,Middle benchmarks: the actions pay back in the first year. Each active customer gives $21 of value for $13 of cost.
+48,money,,,li,Cautious benchmarks: the actions do not pay back in the first year. Each active customer gives $13 of value for $45 of cost.
+49,money,,,caution,CAUTION: Replace the benchmark values with ARQ values before you make a decision.
+50,questions,Questions for ARQ,reference,li,"Does each row show the first attempt, the last attempt or the final decision?"
+51,questions,,,li,Does ARQ have records of people who started KYC but did not send their documents?
+52,questions,,,li,What does the app do after a TECHNICAL_ERROR or a liveness failure?
+53,questions,,,li,Which vendor product and which data centre does ARQ use?
+54,questions,,,p,The answers can change the results of this review.

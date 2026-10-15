@@ -998,7 +998,7 @@ def main():
     cau_be, cau_v = VR[("Cautious", "Central", "breakeven")], VI["value_per_activated"][VI["value_per_activated"]["cautious"]]
     assert mid_v >= mid_be and cau_v < cau_be, (mid_v, mid_be, cau_v, cau_be)
     # (section, heading, goto tab, kind, text). kinds: lead, p, li, step, caution, chart (text = chart id),
-    # t_fix / t_test / t_learn / t_vendor (plan tracks). Every number is computed above, none is typed.
+    # t_fix / t_test / t_learn / t_build (plan tracks, as in tracks.csv). Every number is computed above, none is typed.
     DC = {d_["name"]: d_ for d_ in declines if d_["level"] == "class"}
     cls_share = lambda name: f"{100 * float(DC[name]['of_unsuccessful_b']):.0f}%"
     face_share = f"{100 * cb['Face match'] / (nB - apB):.0f}%"
@@ -1032,17 +1032,21 @@ def main():
         ("incidents", "", "", "li", "Sep 14–19, Mexico: more fraud signals, with usual traffic."),
         ("incidents", "", "", "p", f"Without the {KP['incident_days_n']} incident days, the pass rate still decreased by {abs(KP['delta_excl_days_pp']):.2f} points. These days hold {100 * KP['share_recent_on_incident_days']:.0f}% of the recent decisions. We keep them and show both views."),
         ("incidents", "", "", "p", "The causes of these incidents are not confirmed. The vendor status page does not show an incident on Sep 2."),
-        ("plan", "What to do", "plan", "p", "The plan has three tracks that run at the same time. The obvious fixes go first because they are cheap to try."),
+        ("plan", "What to do", "plan", "p", "The plan has four tracks, the same as on the What to do tab. The first three tracks start now and run at the same time. "
+                                            "The obvious fixes go first because they are cheap to try. The fourth track is the platform work for later."),
         ("plan", "", "", "t_fix", "Record each KYC start, each step and each final decision."),
         ("plan", "", "", "t_fix", "Hold each decision that has a TECHNICAL_ERROR. Do the check again before you reject the person."),
         ("plan", "", "", "t_fix", "Set alerts for sudden increases in failures. Compare the control findings with the source systems."),
+        ("plan", "", "", "t_fix", "If the fraud is confirmed, add device checks before the vendor call."),
         ("plan", "", "", "t_test", "Test one guided retake for unclear selfies."),
         ("plan", "", "", "t_test", "In Mexico, show pictures of the accepted documents before the capture."),
-        ("plan", "", "", "t_test", "If the fraud is confirmed, add device checks before the vendor call."),
         ("plan", "", "", "t_learn", "Examine a sample of fraud signals. Find which signals are real fraud."),
         ("plan", "", "", "t_learn", "Ask the vendor for incident reports for Sep 1, Sep 2 and Sep 6."),
         ("plan", "", "", "t_learn", "Talk to people who failed the capture. Start with support tickets, then interviews, then session replays, then eye tracking if the budget permits."),
-        ("plan", "", "", "t_vendor", "Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor."),
+        ("plan", "", "", "t_learn", "Decide on the vendor: if the vendor cannot explain Sep 1, 2 and 6, test a second vendor."),
+        ("plan", "", "", "t_build", "Build a KYC orchestration and decision layer."),
+        ("plan", "", "", "t_build", "Add government registry checks (INE, RENAPER)."),
+        ("plan", "", "", "t_build", "Add a second verification vendor for failover."),
         ("gain", "What we gain", "gain", "chart", "gain"),
         ("gain", "", "", "p", f"If the tests work, the pass rate increases by about {TOT['Central']['steady_pp']:.1f} points (range {TOT['Conservative']['steady_pp']:.1f} to {TOT['Optimistic']['steady_pp']:.1f})."),
         ("gain", "", "", "p", f"That is about {TOT['Central']['steady_30d']:,} more approved people each 30 days (range {TOT['Conservative']['steady_30d']:,} to {TOT['Optimistic']['steady_30d']:,})."),
@@ -1061,10 +1065,13 @@ def main():
     # STE checks that a script can do: sentence length (20 words for steps and cautions, 25 for descriptive text),
     # no contractions, no progressive or perfect tenses, no -ing verb forms, at most 6 sentences per item.
     ING_OK = {"during", "thing", "something", "nothing", "string", "tracking"}
-    STEP_KINDS = {"step", "caution", "t_fix", "t_test", "t_learn", "t_vendor"}
+    STEP_KINDS = {"step", "caution", "t_fix", "t_test", "t_learn", "t_build"}
     def ste_sentences(t):
         return [x for x in re.split(r"(?<=[.?!:])\s+(?=[A-Z])", t.strip()) if x]
     ste_max = 0
+    # the Quick review's plan groups are the four tracks of the What to do tab, in the same order
+    q_tracks = list(dict.fromkeys(k for _s, _h, _g, k, _t in Q if k.startswith("t_")))
+    assert q_tracks == ["t_" + t.lower() for t, _n, _d in TRACK_INFO], (q_tracks, TRACK_INFO)
     for sec, _h, _g, kind, t in Q:
         if kind == "chart":
             continue

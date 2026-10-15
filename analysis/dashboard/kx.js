@@ -692,7 +692,7 @@ function drawPresetTables() {
 }
 
 /* ---------- Quick review ---------- */
-const TRACK_KINDS = { t_fix: ['1', 'Fix and measure'], t_test: ['2', 'Test the fixes'], t_learn: ['3', 'Learn why'], t_vendor: ['4', 'Decide on the vendor'] };
+const TRACK_KINDS = { t_fix: ['1', 'Fix and measure'], t_test: ['2', 'Test the fixes'], t_learn: ['3', 'Learn why'], t_build: ['4', 'Build later'] };
 function drawQuick() {
   const box = document.getElementById('quick-body');
   const rows = rowsOf('quick_review'); if (!box || !rows) return;
