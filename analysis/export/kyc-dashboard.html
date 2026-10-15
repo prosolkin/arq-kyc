@@ -149,39 +149,59 @@
   .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; flex: none; }
   .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
   .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
-  /* Ask about this case */
-  .kx-ask { max-width: 48rem; width: 100%; margin: var(--cds-gap-sm) auto var(--cds-gap-lg); display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  /* Ask about this case: a card in the page grid, with a centred column inside */
+  .kx-ask { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 28px var(--cds-pad-lg) 22px; }
   .kx-ask[hidden] { display: none !important; }
-  .kx-ask-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 30px; line-height: 1.15; margin: 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .kx-ask-icon { width: 30px; height: 30px; color: var(--kx-s2); flex: none; }
-  .kx-ask-box { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 18px; padding: 14px 16px 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: border-color .15s; }
+  .kx-ask-inner { max-width: 46rem; margin-inline: auto; display: flex; flex-direction: column; gap: 14px; }
+  .kx-ask-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 24px; line-height: 1.2; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .kx-ask-icon { width: 22px; height: 22px; color: var(--color-fg-muted); flex: none; }
+  .kx-ask-box { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 8px 8px 16px; display: flex; align-items: flex-end; gap: 8px; transition: border-color .15s; }
   .kx-ask-box:focus-within { border-color: var(--color-fg-muted); }
-  .kx-ask-box textarea { font: inherit; font-size: 16px; color: var(--color-fg); background: transparent; border: 0; outline: none; resize: none; min-height: 2.8em; max-height: 12em; line-height: 1.45; padding: 0; }
+  .kx-ask-box textarea { flex: 1 1 auto; min-width: 0; box-sizing: border-box; font: inherit; font-size: 16px; line-height: 1.45; color: var(--color-fg); background: transparent; border: 0; outline: none; resize: none; overflow-y: hidden; padding: 6px 0; height: calc(1.45em + 12px); max-height: 12em; }
   .kx-ask-box textarea::placeholder { color: var(--color-fg-muted); }
-  .kx-ask-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-  .kx-ask-count { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
-  .kx-ask-send { width: 36px; height: 36px; border-radius: 10px; border: 0; background: var(--color-fg); color: var(--color-bg); display: grid; place-items: center; cursor: pointer; }
+  .kx-ask-count { align-self: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .kx-ask-count:empty { display: none; }
+  .kx-ask-send { flex: none; width: 36px; height: 36px; border-radius: 10px; border: 0; background: var(--color-fg); color: var(--color-bg); display: grid; place-items: center; cursor: pointer; transition: opacity .15s; }
   .kx-ask-send svg { width: 18px; height: 18px; }
-  .kx-ask-send:disabled { opacity: .35; cursor: default; }
-  .kx-ask-send:focus-visible, .kx-ask-chips button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
-  .kx-ask-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  .kx-ask-chips button { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: transparent; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
-  .kx-ask-chips button:hover { border-color: var(--color-fg-muted); }
+  .kx-ask-send:disabled { opacity: .3; cursor: default; }
+  .kx-ask-send:focus-visible, .kx-ask-chips button:focus-visible, .kx-ask-clear:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+  .kx-ask-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .kx-ask-chips[hidden] { display: none; }
-  .kx-ask-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
-  .kx-ask-foot .kx-note { max-width: 62ch; }
-  .kx-ask-thread { display: flex; flex-direction: column; gap: var(--cds-gap-md); max-height: 32rem; overflow-y: auto; }
+  .kx-ask-chips button { font: inherit; font-size: 14px; line-height: 1.35; text-align: left; color: var(--color-fg-muted); background: transparent; border: 1px solid var(--color-border-line); border-radius: 10px; padding: 9px 14px; cursor: pointer; transition: color .15s, border-color .15s; }
+  .kx-ask-chips button:hover { color: var(--color-fg); border-color: var(--color-fg-muted); }
+  .kx-ask-clear { align-self: center; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: none; border: 0; padding: 2px 4px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  .kx-ask-clear:hover { color: var(--color-fg); }
+  .kx-ask-hint { text-align: center; text-wrap: balance; }
+  .kx-ask-thread { display: flex; flex-direction: column; gap: var(--cds-gap-md); max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-block: 4px; }
   .kx-ask-thread:empty { display: none; }
   .kx-ask-msg { display: flex; }
   .kx-ask-user { justify-content: flex-end; }
-  .kx-ask-user .kx-ask-body { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 12px; max-width: 80%; white-space: pre-wrap; }
+  .kx-ask-user .kx-ask-body { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 12px; max-width: 80%; white-space: pre-wrap; }
   .kx-ask-assistant .kx-ask-body { max-width: 100%; line-height: 1.6; }
   .kx-ask-body p { margin: 0 0 8px; } .kx-ask-body p:last-child { margin-bottom: 0; }
-  .kx-ask-body ul { margin: 0 0 8px; padding-left: 1.2rem; }
-  .kx-ask-wait { color: var(--color-fg-muted); }
+  .kx-ask-body ul { margin: 0 0 8px; padding-left: 1.2rem; } .kx-ask-body ul:last-child { margin-bottom: 0; }
+  .kx-ask-body li + li { margin-top: 2px; }
+  .kx-ask-wait { display: flex; align-items: center; gap: 5px; height: 1.6em; }
+  .kx-ask-wait i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-fg-muted); animation: kx-ask-dot 1.2s ease-in-out infinite; }
+  .kx-ask-wait i:nth-of-type(2) { animation-delay: .15s; } .kx-ask-wait i:nth-of-type(3) { animation-delay: .3s; }
+  @keyframes kx-ask-dot { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .kx-ask-wait i { animation: none; opacity: .6; } }
   .kx-ask-err { color: var(--color-bad); }
+  @media (max-width: 600px) {
+    .kx-ask { padding: 20px 14px 16px; }
+    .kx-ask-title { font-size: 21px; }
+    .kx-ask-icon { width: 20px; height: 20px; }
+    /* one row that scrolls sideways, so the chat stays short on a phone */
+    .kx-ask-chips { display: flex; overflow-x: auto; scrollbar-width: none; margin-inline: -14px; padding-inline: 14px; scroll-padding-inline: 14px; }
+    .kx-ask-chips::-webkit-scrollbar { display: none; }
+    .kx-ask-chips button { flex: none; white-space: nowrap; border-radius: 999px; padding: 7px 12px; font-size: 13px; }
+  }
   .kx-tabbar { display: flex; align-items: stretch; gap: var(--cds-gap-xs); }
   .kx-tabbar .kx-tabs { flex: 1 1 auto; min-width: 0; }
+  @media (max-width: 600px) {
+    /* the tab row scrolls sideways on a phone: fade its right edge so the cut is visibly a scroll */
+    .kx-tabbar .kx-tabs { padding-right: 24px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+  }
   .kx-details-toggle { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; box-shadow: inset 0 -1px 0 var(--color-border-line); }
   .kx-details-toggle[aria-expanded="true"] { color: var(--color-fg); }
   .kx-details-toggle:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
@@ -225,7 +245,7 @@
   .kx-lane-chip.kx-lane-cond { border-style: dashed; }
   .kx-lane-chip:focus-visible { outline: 2px solid var(--color-fg-muted); }
   @media (max-width: 520px) {
-    .kx-quick .kx-qchart[data-chart="funnel"] svg { font-size: 19px; }
+    .kx-quick .kx-qchart[data-chart="funnel"] svg { font-size: 17px; }
     .kx-quick .kx-qchart[data-chart="days"] svg, .kx-quick .kx-qchart[data-chart="gain"] svg, .kx-quick .kx-qchart[data-chart="causes"] svg[aria-label^="Bridge"] { font-size: 14px; }
   }
   .kx-ste { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; max-width: 90ch; }
@@ -489,30 +509,28 @@
 
   <!-- Ask about this case: shown only in the hosted page, where the build adds the proxy address and token -->
   <section class="kx-ask" id="ask" aria-labelledby="ask-title" hidden>
-    <h2 class="kx-ask-title" id="ask-title">
-      <svg class="kx-ask-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
-      Ask about this case
-    </h2>
-    <div class="kx-ask-thread" id="ask-thread" aria-live="polite"></div>
-    <form class="kx-ask-box" id="ask-form">
-      <label class="kx-sr" for="ask-input">Your question about the case</label>
-      <textarea id="ask-input" rows="2" maxlength="1500" placeholder="Ask a question about the KYC case"></textarea>
-      <div class="kx-ask-bar">
+    <div class="kx-ask-inner">
+      <h2 class="kx-ask-title" id="ask-title">
+        <svg class="kx-ask-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+        Ask about this case
+      </h2>
+      <div class="kx-ask-thread" id="ask-thread" aria-live="polite"></div>
+      <form class="kx-ask-box" id="ask-form">
+        <label class="kx-sr" for="ask-input">Your question about the case</label>
+        <textarea id="ask-input" rows="1" maxlength="1500" placeholder="Ask a question about the case"></textarea>
         <span class="kx-ask-count" id="ask-count" aria-live="off"></span>
         <button type="submit" class="kx-ask-send" id="ask-send" aria-label="Send the question">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
         </button>
+      </form>
+      <div class="kx-ask-chips" id="ask-chips">
+        <button type="button">Why did the pass rate fall?</button>
+        <button type="button">What should ARQ do first?</button>
+        <button type="button">How sure are the incident numbers?</button>
+        <button type="button">What would you ask the team?</button>
       </div>
-    </form>
-    <div class="kx-ask-chips" id="ask-chips">
-      <button type="button">Why did the pass rate fall?</button>
-      <button type="button">What should ARQ do first?</button>
-      <button type="button">How sure are the incident numbers?</button>
-      <button type="button">What would you ask the team?</button>
-    </div>
-    <div class="kx-ask-foot">
-      <p class="kx-note">This chat has only basic protection. Please do not try to break it. It answers questions about this case only. Claude Opus 5.5 writes the answers, and they can be wrong. The tabs below hold the checked figures. Do not type personal data.</p>
-      <button type="button" class="kx-link" id="ask-clear" hidden>Clear the chat</button>
+      <button type="button" class="kx-ask-clear" id="ask-clear" hidden>Clear the chat</button>
+      <p class="kx-note kx-ask-hint">This chat has only basic protection. Please do not try to break it. It answers questions about this case only. Claude Opus&nbsp;5.5 writes the answers, and they can be wrong. The tabs below hold the checked figures. Do not type personal data.</p>
     </div>
   </section>
 
@@ -2176,7 +2194,7 @@ const QUICK_CHARTS = {
   // two stacked bars: all decisions, split into approved and not approved, prior vs recent
   funnel(box) {
     const K = (m) => kv(m);
-    const W = 640, rowH = 34, H = 2 * rowH + 30, L = 118, R = 128;
+    const W = 640, rowH = 34, H = 2 * rowH + 8, L = 150, R = 176;
     const svg = qsvg(box, W, H).attr('aria-label', 'Decisions per period, approved and not approved');
     const maxN = Math.max(K('n_a'), K('n_b'));
     const x = d3.scaleLinear([0, maxN], [L, W - R]);
@@ -2188,7 +2206,8 @@ const QUICK_CHARTS = {
       svg.append('text').attr('x', x(0) + 8).attr('y', y + 17).style('fill', 'var(--color-bg)').style('font-weight', 600).text(FMT.pct(rate) + ' approved (' + FMT.int(ap) + ')');
       svg.append('text').attr('x', x(n) + 6).attr('y', y + 17).attr('class', 'kx-qmuted').text(FMT.int(n - ap) + ' not approved');
     });
-    svg.append('text').attr('x', L).attr('y', H - 4).attr('class', 'kx-qmuted').text('Bar length = recorded decisions (' + FMT.int(K('n_a')) + ' then ' + FMT.int(K('n_b')) + '). Starts are not in the data.');
+    // the caption is HTML, so it wraps on a narrow screen
+    box.append(el('p', 'kx-note', 'Bar length = recorded decisions (' + FMT.int(K('n_a')) + ' then ' + FMT.int(K('n_b')) + '). Starts are not in the data.'));
   },
   // donut of not-approved decisions by class (recent) + bars of the change in rate by cause
   causes(box) {
@@ -2350,17 +2369,20 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   const state = () => {
     send.disabled = busy || !input.value.trim() || input.value.length > MAX;
     clear.hidden = busy || !thread.children.length;
-    chips.hidden = busy || history.length > 0;
+    chips.hidden = busy || thread.children.length > 0;
     count.textContent = input.value.length > MAX * 0.8 ? input.value.length + ' / ' + MAX : '';
   };
+  // the input starts as one line and grows with the text, up to its max-height
+  const fit = () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; input.style.overflowY = input.scrollHeight > 200 ? 'auto' : 'hidden'; };
   async function ask(question) {
     const q = question.trim();
     if (busy || !q || q.length > MAX) return;
-    busy = true; input.value = ''; state();
+    busy = true; input.value = ''; fit(); state();
     history.push({ role: 'user', content: q });
     add('user', q);
-    const body = add('assistant', 'Please wait.');
+    const body = add('assistant', '');
     body.classList.add('kx-ask-wait');
+    body.append(el('span', 'kx-sr', 'Please wait.'), el('i'), el('i'), el('i'));
     let text = '';
     try {
       // the proxy accepts at most 12 turns, starting with a question: keep the newest odd number of turns
@@ -2389,13 +2411,15 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
       body.classList.remove('kx-ask-wait');
       body.classList.add('kx-ask-err');
       body.textContent = e && e.message && !/fetch|network/i.test(e.message) ? e.message : 'The chat is not available now. Check the connection and try again.';
+      // give the question back, so the reader can send it again
+      if (!input.value) { input.value = q; fit(); }
     } finally {
       busy = false; state(); input.focus({ preventScroll: true });
     }
   }
   form.addEventListener('submit', (ev) => { ev.preventDefault(); ask(input.value); });
   input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); ask(input.value); } });
-  input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; state(); });
+  input.addEventListener('input', () => { fit(); state(); });
   chips.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) ask(b.textContent); });
   clear.addEventListener('click', () => { history.length = 0; thread.replaceChildren(); state(); input.focus(); });
   state();

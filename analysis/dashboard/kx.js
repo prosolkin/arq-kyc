@@ -760,7 +760,7 @@ const QUICK_CHARTS = {
   // two stacked bars: all decisions, split into approved and not approved, prior vs recent
   funnel(box) {
     const K = (m) => kv(m);
-    const W = 640, rowH = 34, H = 2 * rowH + 30, L = 118, R = 128;
+    const W = 640, rowH = 34, H = 2 * rowH + 8, L = 150, R = 176;
     const svg = qsvg(box, W, H).attr('aria-label', 'Decisions per period, approved and not approved');
     const maxN = Math.max(K('n_a'), K('n_b'));
     const x = d3.scaleLinear([0, maxN], [L, W - R]);
@@ -772,7 +772,8 @@ const QUICK_CHARTS = {
       svg.append('text').attr('x', x(0) + 8).attr('y', y + 17).style('fill', 'var(--color-bg)').style('font-weight', 600).text(FMT.pct(rate) + ' approved (' + FMT.int(ap) + ')');
       svg.append('text').attr('x', x(n) + 6).attr('y', y + 17).attr('class', 'kx-qmuted').text(FMT.int(n - ap) + ' not approved');
     });
-    svg.append('text').attr('x', L).attr('y', H - 4).attr('class', 'kx-qmuted').text('Bar length = recorded decisions (' + FMT.int(K('n_a')) + ' then ' + FMT.int(K('n_b')) + '). Starts are not in the data.');
+    // the caption is HTML, so it wraps on a narrow screen
+    box.append(el('p', 'kx-note', 'Bar length = recorded decisions (' + FMT.int(K('n_a')) + ' then ' + FMT.int(K('n_b')) + '). Starts are not in the data.'));
   },
   // donut of not-approved decisions by class (recent) + bars of the change in rate by cause
   causes(box) {
@@ -934,17 +935,20 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   const state = () => {
     send.disabled = busy || !input.value.trim() || input.value.length > MAX;
     clear.hidden = busy || !thread.children.length;
-    chips.hidden = busy || history.length > 0;
+    chips.hidden = busy || thread.children.length > 0;
     count.textContent = input.value.length > MAX * 0.8 ? input.value.length + ' / ' + MAX : '';
   };
+  // the input starts as one line and grows with the text, up to its max-height
+  const fit = () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; input.style.overflowY = input.scrollHeight > 200 ? 'auto' : 'hidden'; };
   async function ask(question) {
     const q = question.trim();
     if (busy || !q || q.length > MAX) return;
-    busy = true; input.value = ''; state();
+    busy = true; input.value = ''; fit(); state();
     history.push({ role: 'user', content: q });
     add('user', q);
-    const body = add('assistant', 'Please wait.');
+    const body = add('assistant', '');
     body.classList.add('kx-ask-wait');
+    body.append(el('span', 'kx-sr', 'Please wait.'), el('i'), el('i'), el('i'));
     let text = '';
     try {
       // the proxy accepts at most 12 turns, starting with a question: keep the newest odd number of turns
@@ -973,13 +977,15 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
       body.classList.remove('kx-ask-wait');
       body.classList.add('kx-ask-err');
       body.textContent = e && e.message && !/fetch|network/i.test(e.message) ? e.message : 'The chat is not available now. Check the connection and try again.';
+      // give the question back, so the reader can send it again
+      if (!input.value) { input.value = q; fit(); }
     } finally {
       busy = false; state(); input.focus({ preventScroll: true });
     }
   }
   form.addEventListener('submit', (ev) => { ev.preventDefault(); ask(input.value); });
   input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); ask(input.value); } });
-  input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; state(); });
+  input.addEventListener('input', () => { fit(); state(); });
   chips.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) ask(b.textContent); });
   clear.addEventListener('click', () => { history.length = 0; thread.replaceChildren(); state(); input.focus(); });
   state();
