@@ -143,20 +143,19 @@
   .kx-scope { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.5; max-width: 90ch; }
   .kx-caveat { border: 1px solid color-mix(in srgb, var(--color-warn) 55%, var(--color-border-line)); background: color-mix(in srgb, var(--color-warn) 8%, var(--color-panel)); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-body); line-height: 1.55; max-width: 90ch; }
   .kx-caveat b { font-weight: 600; }
+  .kx-head .kx-caveat { max-width: none; } /* the header box spans the content width, like the cards below */
   .kx-caveat-sm { font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); }
 
   .kx-tabs { display: flex; gap: var(--cds-gap-xs); overflow-x: auto; overflow-y: hidden; box-shadow: inset 0 -1px 0 var(--color-border-line); scrollbar-width: thin; }
   .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; flex: none; }
   .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
   .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
-  /* Ask about this case: a card in the page grid, with a centred column inside */
-  .kx-ask { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 28px var(--cds-pad-lg) 22px; }
+  /* Ask about this case: a card on the page grid; its content starts at the same padding as the other cards */
+  .kx-ask { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: 12px; }
   .kx-ask[hidden] { display: none !important; }
-  .kx-ask-inner { max-width: 46rem; margin-inline: auto; display: flex; flex-direction: column; gap: 14px; }
-  .kx-ask-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 24px; line-height: 1.2; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .kx-ask-icon { width: 22px; height: 22px; color: var(--color-fg-muted); flex: none; }
-  .kx-ask-box { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 8px 8px 16px; display: flex; align-items: flex-end; gap: 8px; transition: border-color .15s; }
+  .kx-ask-box { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 8px 8px 14px; display: flex; align-items: flex-end; gap: 10px; transition: border-color .15s; }
   .kx-ask-box:focus-within { border-color: var(--color-fg-muted); }
+  .kx-ask-icon { width: 20px; height: 20px; color: var(--color-fg-muted); flex: none; align-self: flex-start; margin-top: 8px; }
   .kx-ask-box textarea { flex: 1 1 auto; min-width: 0; box-sizing: border-box; font: inherit; font-size: 16px; line-height: 1.45; color: var(--color-fg); background: transparent; border: 0; outline: none; resize: none; overflow-y: hidden; padding: 6px 0; height: calc(1.45em + 12px); max-height: 12em; }
   .kx-ask-box textarea::placeholder { color: var(--color-fg-muted); }
   .kx-ask-count { align-self: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
@@ -165,19 +164,21 @@
   .kx-ask-send svg { width: 18px; height: 18px; }
   .kx-ask-send:disabled { opacity: .3; cursor: default; }
   .kx-ask-send:focus-visible, .kx-ask-chips button:focus-visible, .kx-ask-clear:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
-  .kx-ask-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .kx-ask-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .kx-ask-chips[hidden] { display: none; }
-  .kx-ask-chips button { font: inherit; font-size: 14px; line-height: 1.35; text-align: left; color: var(--color-fg-muted); background: transparent; border: 1px solid var(--color-border-line); border-radius: 10px; padding: 9px 14px; cursor: pointer; transition: color .15s, border-color .15s; }
+  .kx-ask-chips button { font: inherit; font-size: 14px; line-height: 1.35; color: var(--color-fg-muted); background: transparent; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: color .15s, border-color .15s; }
   .kx-ask-chips button:hover { color: var(--color-fg); border-color: var(--color-fg-muted); }
-  .kx-ask-clear { align-self: center; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: none; border: 0; padding: 2px 4px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  /* closed: two suggestions and no hint; the rest opens when the reader clicks to type */
+  .kx-ask:not(.kx-ask-open) .kx-ask-more, .kx-ask:not(.kx-ask-open) .kx-ask-hint { display: none; }
+  .kx-ask-clear { align-self: flex-start; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: none; border: 0; padding: 2px 0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
   .kx-ask-clear:hover { color: var(--color-fg); }
-  .kx-ask-hint { text-align: center; text-wrap: balance; }
+  .kx-ask-hint { text-wrap: pretty; }
   .kx-ask-thread { display: flex; flex-direction: column; gap: var(--cds-gap-md); max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-block: 4px; }
   .kx-ask-thread:empty { display: none; }
   .kx-ask-msg { display: flex; }
   .kx-ask-user { justify-content: flex-end; }
   .kx-ask-user .kx-ask-body { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 12px; max-width: 80%; white-space: pre-wrap; }
-  .kx-ask-assistant .kx-ask-body { max-width: 100%; line-height: 1.6; }
+  .kx-ask-assistant .kx-ask-body { max-width: 72ch; line-height: 1.6; }
   .kx-ask-body p { margin: 0 0 8px; } .kx-ask-body p:last-child { margin-bottom: 0; }
   .kx-ask-body ul { margin: 0 0 8px; padding-left: 1.2rem; } .kx-ask-body ul:last-child { margin-bottom: 0; }
   .kx-ask-body li + li { margin-top: 2px; }
@@ -188,15 +189,14 @@
   @media (prefers-reduced-motion: reduce) { .kx-ask-wait i { animation: none; opacity: .6; } }
   .kx-ask-err { color: var(--color-bad); }
   @media (max-width: 600px) {
-    .kx-ask { padding: 20px 14px 16px; }
-    .kx-ask-title { font-size: 21px; }
-    .kx-ask-icon { width: 20px; height: 20px; }
+    .kx-ask { padding: 14px; }
     /* one row that scrolls sideways, so the chat stays short on a phone */
-    .kx-ask-chips { display: flex; overflow-x: auto; scrollbar-width: none; margin-inline: -14px; padding-inline: 14px; scroll-padding-inline: 14px; }
+    .kx-ask-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -14px; padding-inline: 14px; scroll-padding-inline: 14px; }
     .kx-ask-chips::-webkit-scrollbar { display: none; }
-    .kx-ask-chips button { flex: none; white-space: nowrap; border-radius: 999px; padding: 7px 12px; font-size: 13px; }
+    .kx-ask-chips button { flex: none; white-space: nowrap; padding: 6px 12px; font-size: 13px; }
   }
-  .kx-tabbar { display: flex; align-items: stretch; gap: var(--cds-gap-xs); }
+  .kx-tabbar { display: flex; align-items: stretch; gap: var(--cds-gap-xs); box-shadow: inset 0 -1px 0 var(--color-border-line); }
+  .kx-tabbar .kx-tabs, .kx-tabbar .kx-details-toggle { box-shadow: none; } /* one unbroken line under the whole bar */
   .kx-tabbar .kx-tabs { flex: 1 1 auto; min-width: 0; }
   @media (max-width: 600px) {
     /* the tab row scrolls sideways on a phone: fade its right edge so the cut is visibly a scroll */
@@ -509,29 +509,25 @@
 
   <!-- Ask about this case: shown only in the hosted page, where the build adds the proxy address and token -->
   <section class="kx-ask" id="ask" aria-labelledby="ask-title" hidden>
-    <div class="kx-ask-inner">
-      <h2 class="kx-ask-title" id="ask-title">
-        <svg class="kx-ask-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
-        Ask about this case
-      </h2>
-      <div class="kx-ask-thread" id="ask-thread" aria-live="polite"></div>
-      <form class="kx-ask-box" id="ask-form">
-        <label class="kx-sr" for="ask-input">Your question about the case</label>
-        <textarea id="ask-input" rows="1" maxlength="1500" placeholder="Ask a question about the case"></textarea>
-        <span class="kx-ask-count" id="ask-count" aria-live="off"></span>
-        <button type="submit" class="kx-ask-send" id="ask-send" aria-label="Send the question">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-        </button>
-      </form>
-      <div class="kx-ask-chips" id="ask-chips">
-        <button type="button">Why did the pass rate fall?</button>
-        <button type="button">What should ARQ do first?</button>
-        <button type="button">How sure are the incident numbers?</button>
-        <button type="button">What would you ask the team?</button>
-      </div>
-      <button type="button" class="kx-ask-clear" id="ask-clear" hidden>Clear the chat</button>
-      <p class="kx-note kx-ask-hint">This chat has only basic protection. Please do not try to break it. It answers questions about this case only. Claude Opus&nbsp;5.5 writes the answers, and they can be wrong. The tabs below hold the checked figures. Do not type personal data.</p>
+    <h2 class="kx-sr" id="ask-title">Ask about this case</h2>
+    <div class="kx-ask-thread" id="ask-thread" aria-live="polite"></div>
+    <form class="kx-ask-box" id="ask-form">
+      <svg class="kx-ask-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+      <label class="kx-sr" for="ask-input">Your question about the case</label>
+      <textarea id="ask-input" rows="1" maxlength="1500" placeholder="Ask about this case" aria-describedby="ask-hint"></textarea>
+      <span class="kx-ask-count" id="ask-count" aria-live="off"></span>
+      <button type="submit" class="kx-ask-send" id="ask-send" aria-label="Send the question">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </button>
+    </form>
+    <div class="kx-ask-chips" id="ask-chips">
+      <button type="button">Why did the pass rate fall?</button>
+      <button type="button">What should ARQ do first?</button>
+      <button type="button" class="kx-ask-more">How sure are the incident numbers?</button>
+      <button type="button" class="kx-ask-more">What would you ask the team?</button>
     </div>
+    <button type="button" class="kx-ask-clear" id="ask-clear" hidden>Clear the chat</button>
+    <p class="kx-note kx-ask-hint" id="ask-hint">This chat has only basic protection. Please do not try to break it. It answers questions about this case only. Claude Opus&nbsp;5.5 writes the answers, and they can be wrong. The tabs below hold the checked figures. Do not type personal data.</p>
   </section>
 
   <div class="kx-tabbar">
@@ -2377,7 +2373,7 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   async function ask(question) {
     const q = question.trim();
     if (busy || !q || q.length > MAX) return;
-    busy = true; input.value = ''; fit(); state();
+    busy = true; input.value = ''; fit(); open(); state();
     history.push({ role: 'user', content: q });
     add('user', q);
     const body = add('assistant', '');
@@ -2422,6 +2418,16 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   input.addEventListener('input', () => { fit(); state(); });
   chips.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) ask(b.textContent); });
   clear.addEventListener('click', () => { history.length = 0; thread.replaceChildren(); state(); input.focus(); });
+  // closed: two suggestions, no hint. Clicking into the input opens the rest; leaving an empty chat closes it again.
+  // A press inside the panel never closes it first, so a click on a suggestion always lands.
+  let pressing = false;
+  const open = () => panel.classList.add('kx-ask-open');
+  const close = () => { if (!busy && !input.value.trim() && !thread.children.length) panel.classList.remove('kx-ask-open'); };
+  ['focus', 'pointerdown', 'keydown'].forEach((t) => input.addEventListener(t, open));
+  panel.addEventListener('pointerdown', () => { pressing = true; });
+  document.addEventListener('pointerup', () => setTimeout(() => { pressing = false; }, 0), true);
+  document.addEventListener('pointerdown', (ev) => { if (!panel.contains(ev.target)) close(); }, true);
+  panel.addEventListener('focusout', () => setTimeout(() => { if (!pressing && !panel.contains(document.activeElement)) close(); }, 0));
   state();
 })();
 

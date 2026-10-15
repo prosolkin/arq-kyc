@@ -943,7 +943,7 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   async function ask(question) {
     const q = question.trim();
     if (busy || !q || q.length > MAX) return;
-    busy = true; input.value = ''; fit(); state();
+    busy = true; input.value = ''; fit(); open(); state();
     history.push({ role: 'user', content: q });
     add('user', q);
     const body = add('assistant', '');
@@ -988,6 +988,16 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   input.addEventListener('input', () => { fit(); state(); });
   chips.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) ask(b.textContent); });
   clear.addEventListener('click', () => { history.length = 0; thread.replaceChildren(); state(); input.focus(); });
+  // closed: two suggestions, no hint. Clicking into the input opens the rest; leaving an empty chat closes it again.
+  // A press inside the panel never closes it first, so a click on a suggestion always lands.
+  let pressing = false;
+  const open = () => panel.classList.add('kx-ask-open');
+  const close = () => { if (!busy && !input.value.trim() && !thread.children.length) panel.classList.remove('kx-ask-open'); };
+  ['focus', 'pointerdown', 'keydown'].forEach((t) => input.addEventListener(t, open));
+  panel.addEventListener('pointerdown', () => { pressing = true; });
+  document.addEventListener('pointerup', () => setTimeout(() => { pressing = false; }, 0), true);
+  document.addEventListener('pointerdown', (ev) => { if (!panel.contains(ev.target)) close(); }, true);
+  panel.addEventListener('focusout', () => setTimeout(() => { if (!pressing && !panel.contains(document.activeElement)) close(); }, 0));
   state();
 })();
 
