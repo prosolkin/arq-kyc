@@ -1,11 +1,10 @@
-"""ASD-STE100 checks that a script can do, for every text a reader sees.
+"""Plain-language checks that a script can do, for every text a reader sees.
 
-Used by build_datasets.py (generated text), and as a CLI on rendered text:
-    python3 -I analysis/ste.py <file.txt|file.md> [...]
+Used by check_writing.py, and as a CLI on rendered text:
+    python3 -I analysis/plain_language.py <file.txt|file.md> [...]
 Checks, per sentence: length (25 words for descriptive text, 20 for instructions),
 no contractions, no progressive or perfect tenses, no -ing verb forms outside
-technical names. Per paragraph: at most 6 sentences. Vocabulary is not checked
-against the official STE dictionary.
+technical names. Per paragraph: at most 6 sentences. Vocabulary is not checked.
 """
 
 import re
@@ -140,9 +139,9 @@ def check_blocks(blocks):
     return found
 
 
-def assert_ste(text, where="", instruction=None):
+def assert_plain(text, where="", instruction=None):
     bad = check_text(text, instruction)
-    assert not bad, f"STE: {where}: " + " | ".join(f"{p}: {s}" for s, p in bad[:5])
+    assert not bad, f"plain language: {where}: " + " | ".join(f"{p}: {s}" for s, p in bad[:5])
 
 
 if __name__ == "__main__":
@@ -164,5 +163,5 @@ if __name__ == "__main__":
         total += len(bad)
         for s, p in bad:
             print(f"{path}: {'; '.join(p)} :: {s[:160]}")
-    print(f"STE problems: {total}")
+    print(f"plain-language problems: {total}")
     sys.exit(1 if total else 0)

@@ -980,7 +980,7 @@ def main():
     n_capture_class = sum(cb[g] for g in DRIVERS if DRIVER_CLASS[g] == "Capture or document issue")
     write_actions(nB, cb, len(mex_doc), len(capture), len(face_warn), len(face_nomatch), exec_inc, live_inc, comp, caught,
                   sum(a["days_prior"] for a in alerts), n_capture_class=n_capture_class)
-    # ---------------- quick review: the whole story in ASD-STE100 Simplified Technical English ----------------
+    # ---------------- quick review: the whole story in plain language ----------------
     KP = {m: v for m, v, _l, _u in kpis}
     BR = {b_["driver"]: b_["effect_pp"] for b_ in bridge}
     TOT = {t["scenario"]: t for t in totals}
@@ -1062,26 +1062,26 @@ def main():
         ("questions", "", "", "p", "The answers can change the results of this review."),
     ]
 
-    # STE checks that a script can do: sentence length (20 words for steps and cautions, 25 for descriptive text),
+    # plain-language checks that a script can do: sentence length (20 words for steps and cautions, 25 for descriptive text),
     # no contractions, no progressive or perfect tenses, no -ing verb forms, at most 6 sentences per item.
     ING_OK = {"during", "thing", "something", "nothing", "string", "tracking"}
     STEP_KINDS = {"step", "caution", "t_fix", "t_test", "t_learn", "t_build"}
-    def ste_sentences(t):
+    def plain_sentences(t):
         return [x for x in re.split(r"(?<=[.?!:])\s+(?=[A-Z])", t.strip()) if x]
-    ste_max = 0
+    longest = 0
     # the Quick review's plan groups are the four tracks of the What to do tab, in the same order
     q_tracks = list(dict.fromkeys(k for _s, _h, _g, k, _t in Q if k.startswith("t_")))
     assert q_tracks == ["t_" + t.lower() for t, _n, _d in TRACK_INFO], (q_tracks, TRACK_INFO)
     for sec, _h, _g, kind, t in Q:
         if kind == "chart":
             continue
-        sents = ste_sentences(t)
+        sents = plain_sentences(t)
         assert len(sents) <= 6, t
         for s_ in sents:
             words = [w_ for w_ in re.split(r"\s+", s_) if re.search(r"[A-Za-z0-9]", w_)]
             limit = 20 if kind in STEP_KINDS else 25
             assert len(words) <= limit, (len(words), s_)
-            ste_max = max(ste_max, len(words))
+            longest = max(longest, len(words))
             assert not re.search(r"\b\w+'(t|re|ve|ll|d|s)\b|n't\b", s_), ("contraction", s_)
             assert not re.search(r"\b(is|are|was|were|be|been)\s+\w+ing\b", s_), ("progressive", s_)
             assert not re.search(r"\b(has|have|had)\s+(\w+ed|been|done|made|found|shown)\b", s_), ("perfect tense", s_)
@@ -1090,7 +1090,7 @@ def main():
     quick = [dict(order=i_ + 1, section=sec, heading=h, goto=g, kind=kind, text=t) for i_, (sec, h, g, kind, t) in enumerate(Q)]
     write("quick_review.csv", list(quick[0].keys()), quick)
     n_words = sum(len(re.split(r"\s+", r["text"])) for r in quick if r["kind"] != "chart")
-    print(f"quick review: {len(quick)} items, {n_words} words, longest sentence {ste_max} words")
+    print(f"quick review: {len(quick)} items, {n_words} words, longest sentence {longest} words")
 
     write_org()
     write_vendor()

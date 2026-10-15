@@ -2,26 +2,58 @@
 
 Why ARQ's KYC approval rate fell in August–September 2023, what the two extracts can and cannot measure, and what to do about it. Prepared as a case study for a Product Owner (ARQ Operating System) application, October 2026.
 
+**Start here**
+
+- **Interactive version:** [prosolkin.github.io/arq-kyc](https://prosolkin.github.io/arq-kyc/). The password is in the submission email.
+- **Report (PDF, 35 pages):** [`kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf). It has the executive deck, the evidence appendix and the methodology and validation note.
+
 ## Deliverables
 
 | What | Where |
 |---|---|
 | Report (PDF): executive deck, evidence appendix, methodology and validation note | [`analysis/export/kyc-approval-report.pdf`](analysis/export/kyc-approval-report.pdf) |
-| Quick review: the whole story on one page, with charts | first tab of the dashboard (`analysis/out/quick_review.csv`). Four main tabs (Quick review, Why it fell, What to do, What we gain); the rest sit under Details |
-| Interactive dashboard, offline, one file | [`analysis/export/kyc-dashboard.html`](analysis/export/kyc-dashboard.html); also served password-protected on GitHub Pages (password in the submission email) |
+| Interactive dashboard, hosted | [prosolkin.github.io/arq-kyc](https://prosolkin.github.io/arq-kyc/), with the password from the submission email. The first of the four main tabs is a Quick review: the whole story on one page, with charts. |
+| Interactive dashboard, offline, one file | [`analysis/export/kyc-dashboard.html`](analysis/export/kyc-dashboard.html). Download it and open it in a browser; it works without a network. GitHub shows its source code, not the page. |
 | Deck as PowerPoint and PDF | [`kyc-approval-deck.pptx`](analysis/export/kyc-approval-deck.pptx), [`kyc-approval-deck.pdf`](analysis/export/kyc-approval-deck.pdf) |
 | Methodology and validation note | [`analysis/export/methodology-and-validation.md`](analysis/export/methodology-and-validation.md) |
-| Aggregated datasets behind every number (38 CSVs) | [`analysis/out/`](analysis/out/), described in [`manifest.json`](analysis/out/manifest.json) |
+| Aggregated datasets behind every number (42 CSV tables) | [`analysis/out/`](analysis/out/), described in [`manifest.json`](analysis/out/manifest.json) |
 
 ## What the analysis says
 
 - Approval among recorded decisions fell from 88.7% to 83.3% between the two 30-day halves of the extract (−5.4 points).
-- That is 2,945 fewer approvals: about 1,587 from lower volume and 1,358 from the lower rate.
-- Starts, completion and abandonment are not in the data, so the brief's "start and finish" rate cannot be measured yet.
-- Four reasons explain most of the change. They are more fraud signals (not adjudicated), execution errors on Sep 1–2, and selfie and liveness failures.
-- The selfie and liveness failures match vendor incidents on Sep 1 and 6. The fourth reason is Mexican documents returned without a type.
-- The plan starts with two weeks of measurement and stabilisation, then experiments. Recovery is given as scenarios, not forecasts.
-- The value model runs on market-based presets; ARQ's own figures should replace them.
+- That is 2,945 fewer approvals: about 1,587 from fewer decisions and 1,358 from the lower rate.
+- The brief describes a start-to-finish rate. The extracts have no starts, attempts or abandonment, so that rate needs new events first.
+- Four reasons explain most of the change:
+  - fraud signals: −2.05 points (signals, not confirmed fraud);
+  - execution errors on Sep 1–2: −1.62 points;
+  - selfie and liveness failures: −0.95 points, at the same time as vendor incidents on Sep 1 and 6;
+  - Mexican documents with no document type: −0.60 points.
+- Face match failures decreased (+0.36 points), so they did not cause the drop.
+- About 1,057 failures sit above baseline in four short date windows (range 1,055–1,130). Their causes are not confirmed. Without the 10 incident days, the rate still fell by 1.45 points.
+- The plan has four tracks: fix and measure, test the fixes, learn why, and build later. It starts with two weeks of measurement and stabilisation.
+- If the tests work, the rate recovers about 2.5 points (range 0.9 to 4.3). These are scenarios, not forecasts. The value model uses market benchmarks until ARQ's own figures replace them.
+
+## Where the analysis is
+
+Read it in this order.
+
+1. The [methodology and validation note](analysis/export/methodology-and-validation.md). It gives the definitions, the data checks, the attribution method, the incident windows, the scenarios, the experiment sizes, the value model and the limits.
+2. The tables in [`analysis/out/`](analysis/out/). GitHub shows each CSV file as a table. Start with these:
+
+| Table | What it holds |
+|---|---|
+| [`kpis.csv`](analysis/out/kpis.csv) | Headline figures and reconciliation checkpoints |
+| [`bridge.csv`](analysis/out/bridge.csv) | Change in the approval rate by primary reason |
+| [`declines.csv`](analysis/out/declines.csv) | Not-approved decisions by group and class |
+| [`incidents.csv`](analysis/out/incidents.csv) | Four incident windows: observed, expected and above-baseline counts |
+| [`daily.csv`](analysis/out/daily.csv) | Decisions and approvals per day and document country |
+| [`hypotheses.csv`](analysis/out/hypotheses.csv) | Hypotheses with evidence, alternatives and next steps |
+| [`actions.csv`](analysis/out/actions.csv) | The plan: each action with its track, phase, owner role and acceptance criteria |
+| [`scenario_totals.csv`](analysis/out/scenario_totals.csv) | Recovery scenarios |
+| [`value_results.csv`](analysis/out/value_results.csv) | Value-model results for each preset and scenario |
+| [`open_questions.csv`](analysis/out/open_questions.csv) | Questions to confirm with ARQ, and what each answer changes |
+
+3. The code. [`analysis/build_datasets.py`](analysis/build_datasets.py) computes every number. Its `main()` has one section for each topic. The sections go from data validation and the daily series to incidents, the decomposition, scenarios, the value model and the Quick review. The script asserts the key figures, so a wrong number stops the build.
 
 ## How it was built
 
@@ -38,7 +70,8 @@ analysis/build_report.py     deck PDF + note -> report PDF
 analysis/build_site.sh       encrypted copy of the dashboard for GitHub Pages (docs/)
 analysis/site/password_template.html  the password page: the deck's title slide, animated
 analysis/build_site_template.py       fills that page's headline, chart and figures from analysis/out
-analysis/chat/                        the chat proxy (Cloudflare Worker), its rules and the case material
+analysis/chat/                        the chat about the case (a Cloudflare Worker), its rules and the case material
+analysis/check_writing.py   plain-language checks on every text a reader sees
 analysis/build_all.sh        runs all of the above
 ```
 
@@ -68,16 +101,9 @@ The hosted dashboard has a chat above the tabs. Claude Opus 5.5 answers question
 - Limits: 6 questions a minute for each visitor, 100 a day in total, and 1,500 characters for each question.
 - The offline file and the copy in this repository have no chat and make no requests.
 
-### Log and notifications
+### Product analytics
 
-The hosted page keeps a small log, so the author can see how readers use it and that the chat works. The footer of the hosted page tells readers about the log.
-
-- The Worker writes each question, its answer, the status, the time and the token use to a D1 database. The schema is in `analysis/chat/worker/migrations/`.
-- The page sends page views, tab changes and clicks to the same database. It sends the label of the clicked control, never typed text.
-- A reader is a random id in the browser, with the city, country, network and browser that Cloudflare reports. The log keeps no names and no IP addresses.
-- A daily job deletes rows older than 90 days (`RETENTION_DAYS`).
-- A Telegram bot sends a message for each question and when a visitor opens the dashboard. To connect a bot, run `python3 -I analysis/chat/setup_telegram.py`.
-- To read the log, run `python3 -I analysis/chat/show_log.py`. Add `chats 20`, `events 50` or `visitor <id>` for detail.
+The hosted page records anonymous product analytics: page views, tab changes, clicks, and the chat questions with their answers. The footer of the page says so. A reader is a random id in the browser. The log keeps no names and no IP addresses, and it deletes rows older than 90 days.
 
 ## What is deliberately not here
 
@@ -88,6 +114,6 @@ The hosted page keeps a small log, so the author can see how readers use it and 
 
 ## Notes on the files
 
-- Chrome rendered the deck PDF and the visual checks from the slide specification. The `.pptx` passes a structural validator, but nobody opened it in PowerPoint, so table row heights can be slightly different there.
+- Chrome renders the deck PDF from the same slide specification as the `.pptx`. The `.pptx` passes a structural validator. Table row heights in PowerPoint can differ slightly from the PDF.
 - Vendor research is dated 13 October 2026 and kept separate from the 2023 diagnosis; each row carries how it was verified.
 - The organisation in the operating-model tab is role-based and assumed. It does not show people, headcount or who reports to whom.

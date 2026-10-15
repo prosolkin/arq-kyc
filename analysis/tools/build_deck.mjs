@@ -547,7 +547,7 @@ html, body { margin: 0; padding: 0; background: #888; }
   fs.writeFileSync(file, doc);
 }
 
-// every reader-facing string (titles, text boxes, table cells, speaker notes), for the STE check
+// every reader-facing string (titles, text boxes, table cells, speaker notes), for the writing check
 function deckTexts() {
   const out = [];
   const cellText = (c) => (typeof c === 'string' ? c : c && c.text ? c.text : '');
