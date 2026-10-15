@@ -15,6 +15,7 @@ __pycache__/
 analysis/public/
 analysis/export/change-summary.md
 analysis/export/submission-email.md
+analysis/export/hr-preview-email.md
 analysis/export/video-script.md
 
 # Chat proxy: the access token and Wrangler's local state stay on this machine

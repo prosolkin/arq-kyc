@@ -40,6 +40,7 @@ const SOFT_LINE = { [C.panel]: C.line, [C.tealSoft]: 'D3E0F2', [C.amberSoft]: 'E
 const W = 13.333, H = 7.5, MX = 0.6;
 const FONT = { head: 'Georgia', body: 'Arial' };
 const FOOT = 'KYC approval-rate diagnosis · 2023 extracts (Jul 25 – Sep 22) · Case-study submission';
+const SITE = 'https://prosolkin.github.io/arq-kyc/'; // the hosted dashboard; its password is only in the email
 
 const slides = [];
 function slide(section, title, opts = {}) {
@@ -72,11 +73,12 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
 // ======================= EXECUTIVE NARRATIVE =======================
 {
   const s = slide('Executive narrative', null, { dark: true, noTitle: true,
-    notes: 'Purpose: answer the brief in one pass. The headline metric is approval among recorded decisions. These extracts cannot measure the start-to-finish funnel that the brief describes, and the deck says so first.' });
+    notes: 'Purpose: answer the brief in one pass. The headline metric is approval among recorded decisions. These extracts cannot measure the start-to-finish funnel that the brief describes, and the deck says so first. The interactive version of the same analysis is at prosolkin.github.io/arq-kyc. Its password is in the email.' });
   const sgn = (v, d) => (v < 0 ? MINUS : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
   text(s, MX, 0.5, W - 2 * MX, 0.7, [{ text: 'KYC pass rate: why it fell and what to do' }], { font: 'head', size: 32, color: DK.fg });
   text(s, MX, 1.28, 9.6, 0.6, [{ text: `The KYC pass rate (approval among recorded decisions) fell from ${pct(K('approval_a'))} to ${pct(K('approval_b'))} between the two periods (${sgn(K('delta_pp'), 1)} pp), or ${sgn(K('approved_change'), 0)} approvals.` }], { size: 15, color: DK.fg });
-  text(s, MX, 1.98, W - 2 * MX, 0.3, [{ text: `${int(K('total_users'))} recorded decisions, one per user. Prior period: Jul 25 – Aug 23, 2023; recent period: Aug 24 – Sep 22, 2023. Aggregated data, no personal data. Vendor research dated Oct 13, 2026.` }], { size: 10.5, color: DK.muted });
+  text(s, MX, 1.98, W - 2 * MX, 0.42, [{ text: `${int(K('total_users'))} recorded decisions, one per user. Prior period: Jul 25 – Aug 23, 2023; recent period: Aug 24 – Sep 22, 2023. Aggregated data, no personal data.` },
+    { text: 'Vendor research dated Oct 13, 2026.' }], { size: 10.5, color: DK.muted });
   // the daily chart, in a dark card
   const cx = MX, cy = 2.5, cw = 8.05, ch = 3.2;
   rect(s, cx, cy, cw, ch, DK.panel, { line: DK.line, radius: 0.08 });
@@ -102,8 +104,14 @@ const expMex = row('experiments', 'id', 'exp_mex_docs');
   const tx = cx + cw + 0.18, tw = W - MX - tx;
   rect(s, tx, cy, tw, ch, DK.panel, { line: DK.line, radius: 0.08 });
   text(s, tx + 0.22, cy + 0.16, tw - 0.4, 0.3, [{ text: 'In this deck', bold: true }], { size: 12, color: DK.fg });
-  text(s, tx + 0.22, cy + 0.58, tw - 0.4, ch - 0.7, ['The answer in seven points', 'What we can and cannot measure', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
-    .map((t, i) => ({ text: `${i + 1}.  ${t}`, after: 5 })), { size: 11, color: DK.fg });
+  text(s, tx + 0.22, cy + 0.52, tw - 0.4, 1.9, ['The answer in seven points', 'What we can and cannot measure', 'Why the rate fell', 'Short incidents', 'Hypotheses and tests', 'The plan in four tracks', 'What we gain', 'Evidence appendix (A1–A11)']
+    .map((t, i) => ({ text: `${i + 1}.  ${t}`, after: 3 })), { size: 11, color: DK.fg });
+  line(s, tx + 0.22, cy + 2.44, tx + tw - 0.22, cy + 2.44, DK.line, { width: 0.75 });
+  text(s, tx + 0.22, cy + 2.54, tw - 0.4, 0.56, [
+    { text: 'Interactive version, with a chat', bold: true, size: 10.5, after: 2 },
+    { text: SITE.replace('https://', ''), link: SITE, size: 11, color: DK.blue, after: 2 },
+    { text: 'The password is in the email.', size: 9.5, color: DK.muted },
+  ], { size: 11, color: DK.fg });
   // three tiles, like the web page
   const tiles = [
     ['Pass rate change', `${MINUS}${Math.abs(K('delta_pp')).toFixed(1)} pts`, `${pct(K('approval_a'))} → ${pct(K('approval_b'))}, prior to recent 30 days`],
@@ -478,7 +486,7 @@ function renderPptx(file) {
         const runs = [];
         e.paras.forEach((p, pi) => {
           runs.push({ text: p.text, options: { bold: !!p.bold, color: p.color || e.color, fontSize: p.size || e.size, bullet: p.bullet ? (p.bullet === 'number' ? { type: 'number' } : { indent: 12 }) : false,
-            paraSpaceAfter: p.after || 0, breakLine: pi < e.paras.length - 1, align: e.align || 'left' } });
+            paraSpaceAfter: p.after || 0, breakLine: pi < e.paras.length - 1, align: e.align || 'left', ...(p.link ? { hyperlink: { url: p.link } } : {}) } });
         });
         sl.addText(runs, { x: e.x, y: e.y, w: e.w, h: e.h, fontFace: e.font === 'head' ? FONT.head : FONT.body, margin: 0, valign: e.valign || 'top', fit: 'none', isTextBox: true, objectName: name });
       } else if (e.t === 'table') {
@@ -507,7 +515,8 @@ function renderHtml(file) {
       if (e.t === 'text') {
         const ps = e.paras.map((p) => {
           const st = `margin:0 0 ${p.after || 0}pt 0;font-size:${p.size || e.size}pt;color:#${p.color || e.color};font-weight:${p.bold ? 700 : 400};text-align:${e.align || 'left'}`;
-          return p.bullet ? `<p style="${st};padding-left:14pt;text-indent:-10pt">•&nbsp;&nbsp;${esc(p.text)}</p>` : `<p style="${st}">${esc(p.text)}</p>`;
+          const body = p.link ? `<a href="${esc(p.link)}" style="color:inherit;text-decoration:underline">${esc(p.text)}</a>` : esc(p.text);
+          return p.bullet ? `<p style="${st};padding-left:14pt;text-indent:-10pt">•&nbsp;&nbsp;${body}</p>` : `<p style="${st}">${body}</p>`;
         }).join('');
         return `<div class="tx" style="position:absolute;left:${e.x}in;top:${e.y}in;width:${e.w}in;height:${e.h}in;font-family:${e.font === 'head' ? 'Georgia, serif' : 'Arial, sans-serif'}">${ps}</div>`;
       }
