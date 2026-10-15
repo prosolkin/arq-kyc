@@ -101,14 +101,15 @@ const cut = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + '…' : s || '');
 
 /* ---------- Telegram: plain text, so the model's text needs no escaping ---------- */
 async function notify(env, text) {
-  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return;
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) { console.log('telegram not set'); return; }
   try {
     const r = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: cut(text, 4000), disable_web_page_preview: true }),
     });
-    if (!r.ok) console.log('telegram status', r.status);
-  } catch (e) { console.log('telegram failed'); }
+    // status and Telegram's short error text only: never the message
+    console.log('telegram', r.status, r.ok ? '' : ((await r.json().catch(() => ({}))).description || ''));
+  } catch (e) { console.log('telegram failed', e && e.message); }
 }
 
 /* ---------- the log ---------- */

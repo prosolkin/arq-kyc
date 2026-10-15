@@ -70,7 +70,7 @@ The hosted dashboard has a chat above the tabs. Claude Opus 5.5 answers question
 
 ### Log and notifications
 
-The hosted page keeps a small log, so the author can see how readers use it and that the chat works. The chat hint and the page footer tell readers about the log.
+The hosted page keeps a small log, so the author can see how readers use it and that the chat works. The footer of the hosted page tells readers about the log.
 
 - The Worker writes each question, its answer, the status, the time and the token use to a D1 database. The schema is in `analysis/chat/worker/migrations/`.
 - The page sends page views, tab changes and clicks to the same database. It sends the label of the clicked control, never typed text.
