@@ -889,6 +889,102 @@ document.getElementById('tracks').addEventListener('click', (ev) => {
   d.open = true; d.scrollIntoView({ block: 'center' }); d.querySelector('summary').focus({ preventScroll: true });
 });
 
+/* ---------- Ask about this case ----------
+   Shown only when the hosted build adds window.KX_CHAT = { endpoint, token }. The proxy holds the API key.
+   Answers are drawn with textContent only: the model's text never becomes HTML. */
+(() => {
+  const cfg = window.KX_CHAT, panel = document.getElementById('ask');
+  if (!panel || !cfg || !cfg.endpoint || !cfg.token) return;
+  panel.hidden = false;
+  const thread = document.getElementById('ask-thread'), form = document.getElementById('ask-form'), input = document.getElementById('ask-input');
+  const send = document.getElementById('ask-send'), clear = document.getElementById('ask-clear'), chips = document.getElementById('ask-chips'), count = document.getElementById('ask-count');
+  const MAX = 1500, history = [];
+  let busy = false;
+  const inline = (parent, text) => {
+    text.split(/(\*\*[^*]+\*\*)/g).forEach((part) => {
+      if (/^\*\*[^*]+\*\*$/.test(part)) parent.append(el('b', null, part.slice(2, -2)));
+      else if (part) parent.append(document.createTextNode(part));
+    });
+  };
+  // paragraphs, "- " bullets and **bold** only; bullet lines are grouped wherever they appear
+  const render = (body, text) => {
+    body.replaceChildren();
+    const isBullet = (l) => /^\s*[-*•]\s+/.test(l);
+    text.replace(/\r/g, '').split(/\n{2,}/).forEach((block) => {
+      let p = null, ul = null;
+      block.split('\n').filter((l) => l.trim()).forEach((l) => {
+        if (isBullet(l)) {
+          p = null;
+          if (!ul) { ul = el('ul'); body.append(ul); }
+          const li = el('li'); inline(li, l.replace(/^\s*[-*•]\s+/, '')); ul.append(li);
+        } else {
+          ul = null;
+          if (p) p.append(el('br')); else { p = el('p'); body.append(p); }
+          inline(p, l.replace(/^#+\s*/, ''));
+        }
+      });
+    });
+  };
+  const add = (role, text) => {
+    const msg = el('div', 'kx-ask-msg kx-ask-' + role), body = el('div', 'kx-ask-body');
+    if (role === 'user') body.textContent = text; else render(body, text);
+    msg.append(body); thread.append(msg); thread.scrollTop = thread.scrollHeight;
+    return body;
+  };
+  const state = () => {
+    send.disabled = busy || !input.value.trim() || input.value.length > MAX;
+    clear.hidden = busy || !thread.children.length;
+    chips.hidden = history.length > 0;
+    count.textContent = input.value.length > MAX * 0.8 ? input.value.length + ' / ' + MAX : '';
+  };
+  async function ask(question) {
+    const q = question.trim();
+    if (busy || !q || q.length > MAX) return;
+    busy = true; input.value = ''; state();
+    history.push({ role: 'user', content: q });
+    add('user', q);
+    const body = add('assistant', 'Please wait.');
+    body.classList.add('kx-ask-wait');
+    let text = '';
+    try {
+      // the proxy accepts at most 12 turns, starting with a question: keep the newest odd number of turns
+      const turns = history.length > 11 ? history.slice(history.length - 11) : history;
+      const res = await fetch(cfg.endpoint.replace(/\/$/, '') + '/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Chat-Token': cfg.token }, body: JSON.stringify({ messages: turns }),
+      });
+      if (!res.ok || !res.body) {
+        let msg = 'The chat is not available now. Try again later.';
+        try { msg = (await res.json()).error || msg; } catch (e) { /* not JSON */ }
+        throw new Error(msg);
+      }
+      const reader = res.body.getReader(), dec = new TextDecoder();
+      body.classList.remove('kx-ask-wait');
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += dec.decode(value, { stream: true });
+        render(body, text);
+        thread.scrollTop = thread.scrollHeight;
+      }
+      if (!text.trim()) throw new Error('The chat sent an empty answer. Try again.');
+      history.push({ role: 'assistant', content: text.slice(0, 6000) });
+    } catch (e) {
+      history.pop();
+      body.classList.remove('kx-ask-wait');
+      body.classList.add('kx-ask-err');
+      body.textContent = e && e.message && !/fetch|network/i.test(e.message) ? e.message : 'The chat is not available now. Check the connection and try again.';
+    } finally {
+      busy = false; state(); input.focus({ preventScroll: true });
+    }
+  }
+  form.addEventListener('submit', (ev) => { ev.preventDefault(); ask(input.value); });
+  input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); ask(input.value); } });
+  input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; state(); });
+  chips.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) ask(b.textContent); });
+  clear.addEventListener('click', () => { history.length = 0; thread.replaceChildren(); state(); input.focus(); });
+  state();
+})();
+
 /* ---------- Open questions ---------- */
 function drawOpenQuestions() {
   const q = rowsOf('open_questions'); if (!q) return;

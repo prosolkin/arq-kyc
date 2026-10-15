@@ -15,6 +15,37 @@
   .kx-tabs button { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; flex: none; }
   .kx-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
   .kx-tabs button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: -2px; }
+  /* Ask about this case */
+  .kx-ask { max-width: 48rem; width: 100%; margin: var(--cds-gap-sm) auto var(--cds-gap-lg); display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .kx-ask[hidden] { display: none !important; }
+  .kx-ask-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 30px; line-height: 1.15; margin: 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .kx-ask-icon { width: 30px; height: 30px; color: var(--kx-s2); flex: none; }
+  .kx-ask-box { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 18px; padding: 14px 16px 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: border-color .15s; }
+  .kx-ask-box:focus-within { border-color: var(--color-fg-muted); }
+  .kx-ask-box textarea { font: inherit; font-size: 16px; color: var(--color-fg); background: transparent; border: 0; outline: none; resize: none; min-height: 2.8em; max-height: 12em; line-height: 1.45; padding: 0; }
+  .kx-ask-box textarea::placeholder { color: var(--color-fg-muted); }
+  .kx-ask-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+  .kx-ask-count { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .kx-ask-send { width: 36px; height: 36px; border-radius: 10px; border: 0; background: var(--color-fg); color: var(--color-bg); display: grid; place-items: center; cursor: pointer; }
+  .kx-ask-send svg { width: 18px; height: 18px; }
+  .kx-ask-send:disabled { opacity: .35; cursor: default; }
+  .kx-ask-send:focus-visible, .kx-ask-chips button:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+  .kx-ask-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .kx-ask-chips button { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: transparent; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .kx-ask-chips button:hover { border-color: var(--color-fg-muted); }
+  .kx-ask-chips[hidden] { display: none; }
+  .kx-ask-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+  .kx-ask-foot .kx-note { max-width: 62ch; }
+  .kx-ask-thread { display: flex; flex-direction: column; gap: var(--cds-gap-md); max-height: 32rem; overflow-y: auto; }
+  .kx-ask-thread:empty { display: none; }
+  .kx-ask-msg { display: flex; }
+  .kx-ask-user { justify-content: flex-end; }
+  .kx-ask-user .kx-ask-body { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 14px; padding: 8px 12px; max-width: 80%; white-space: pre-wrap; }
+  .kx-ask-assistant .kx-ask-body { max-width: 100%; line-height: 1.6; }
+  .kx-ask-body p { margin: 0 0 8px; } .kx-ask-body p:last-child { margin-bottom: 0; }
+  .kx-ask-body ul { margin: 0 0 8px; padding-left: 1.2rem; }
+  .kx-ask-wait { color: var(--color-fg-muted); }
+  .kx-ask-err { color: var(--color-bad); }
   .kx-tabbar { display: flex; align-items: stretch; gap: var(--cds-gap-xs); }
   .kx-tabbar .kx-tabs { flex: 1 1 auto; min-width: 0; }
   .kx-details-toggle { font: inherit; font-size: var(--cds-font-size-body); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm); white-space: nowrap; cursor: pointer; box-shadow: inset 0 -1px 0 var(--color-border-line); }
@@ -288,10 +319,10 @@
     .kx-bar-row { grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) auto; }
   }
   .kx.kx-print-all .kx-page[hidden], .kx.kx-print-all .kx-lens[hidden] { display: flex !important; }
-  .kx.kx-print-all .kx-tabs, .kx.kx-print-all .kx-tabbar, .kx.kx-print-all .kx-check { display: none; }
+  .kx.kx-print-all .kx-tabs, .kx.kx-print-all .kx-tabbar, .kx.kx-print-all .kx-check, .kx.kx-print-all .kx-ask { display: none !important; }
   .kx.kx-print-all .kx-tablewrap { max-height: none; overflow: visible; }
   @media print {
-    .kx-tabs, .kx-tabbar, .kx-check, .kx-seg, .kx-search, .kx-btn, .kx-tip, .kx-scope-note { display: none !important; }
+    .kx-tabs, .kx-tabbar, .kx-check, .kx-ask, .kx-seg, .kx-search, .kx-btn, .kx-tip, .kx-scope-note { display: none !important; }
     .kx .kx-page[hidden], .kx .kx-lens[hidden] { display: flex !important; }
     .kx-page + .kx-page { break-before: page; }
     .kx-card, .kx-action, .kx-step, tr { break-inside: avoid; }
@@ -321,6 +352,35 @@
       Vendor research dated <span data-fill data-source="kpis" data-field="value" data-where="metric=research_date" data-fmt="dateyear">—</span>. Case-study submission: aggregated 2023 extract, no personal data.
     </p>
   </header>
+
+  <!-- Ask about this case: shown only in the hosted page, where the build adds the proxy address and token -->
+  <section class="kx-ask" id="ask" aria-labelledby="ask-title" hidden>
+    <h2 class="kx-ask-title" id="ask-title">
+      <svg class="kx-ask-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+      Ask about this case
+    </h2>
+    <div class="kx-ask-thread" id="ask-thread" aria-live="polite"></div>
+    <form class="kx-ask-box" id="ask-form">
+      <label class="kx-sr" for="ask-input">Your question about the case</label>
+      <textarea id="ask-input" rows="2" maxlength="1500" placeholder="Ask a question about the KYC case"></textarea>
+      <div class="kx-ask-bar">
+        <span class="kx-ask-count" id="ask-count" aria-live="off"></span>
+        <button type="submit" class="kx-ask-send" id="ask-send" aria-label="Send the question">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+        </button>
+      </div>
+    </form>
+    <div class="kx-ask-chips" id="ask-chips">
+      <button type="button">Why did the pass rate fall?</button>
+      <button type="button">What should ARQ do first?</button>
+      <button type="button">How sure are the incident numbers?</button>
+      <button type="button">What would you ask the team?</button>
+    </div>
+    <div class="kx-ask-foot">
+      <p class="kx-note">This chat has only basic protection. Please do not try to break it. It answers questions about this case only. Claude Opus 5.5 writes the answers, and they can be wrong. The tabs below hold the checked figures. Do not type personal data.</p>
+      <button type="button" class="kx-link" id="ask-clear" hidden>Clear the chat</button>
+    </div>
+  </section>
 
   <div class="kx-tabbar">
     <nav class="kx-tabs" role="tablist" aria-label="Pages">

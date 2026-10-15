@@ -13,6 +13,25 @@ cd "$(dirname "$0")/.."
 SCRATCH="analysis/tools/.site-build"
 rm -rf "$SCRATCH" && mkdir -p "$SCRATCH" docs
 cp analysis/export/kyc-dashboard.html "$SCRATCH/index.html"
+
+# The chat panel needs the proxy address and its access token. Both go only into this copy,
+# which is encrypted next: the public export in the repo never holds the token.
+CHAT_ENDPOINT="${CHAT_ENDPOINT:-$(cat analysis/chat/chat-endpoint.txt 2>/dev/null || true)}"
+CHAT_TOKEN="${CHAT_TOKEN:-$(cat analysis/chat/.chat-token 2>/dev/null || true)}"
+if [ -n "$CHAT_ENDPOINT" ] && [ -n "$CHAT_TOKEN" ]; then
+  CHAT_ENDPOINT="$CHAT_ENDPOINT" CHAT_TOKEN="$CHAT_TOKEN" python3 -I - "$SCRATCH/index.html" <<'PY'
+import json, os, sys
+p = sys.argv[1]
+s = open(p, encoding="utf-8").read()
+cfg = json.dumps({"endpoint": os.environ["CHAT_ENDPOINT"].strip(), "token": os.environ["CHAT_TOKEN"].strip()})
+assert s.count("</head>") == 1
+s = s.replace("</head>", f"<script>window.KX_CHAT = {cfg};</script>\n</head>")
+open(p, "w", encoding="utf-8").write(s)
+PY
+  echo "chat: on (${CHAT_ENDPOINT})"
+else
+  echo "chat: off (no CHAT_ENDPOINT or CHAT_TOKEN)"
+fi
 python3 -I analysis/build_site_template.py "$PWD/$SCRATCH/password_template.html"
 
 # A fixed salt (analysis/tools/staticrypt.json, public, not secret) keeps "remember me" valid across rebuilds.
@@ -33,5 +52,8 @@ python3 -I analysis/build_site_template.py "$PWD/$SCRATCH/password_template.html
 touch docs/.nojekyll
 rm -rf "$SCRATCH"
 ! grep -q "$STATICRYPT_PASSWORD" docs/index.html analysis/tools/staticrypt.json || { echo "password leaked into an output file" >&2; exit 1; }
+if [ -n "${CHAT_TOKEN:-}" ]; then
+  ! grep -rq "$CHAT_TOKEN" docs analysis/export analysis/dashboard || { echo "chat token leaked into an unencrypted file" >&2; exit 1; }
+fi
 ! grep -q "{{ \|/\*\[|" docs/index.html || { echo "unfilled template placeholder in docs/index.html" >&2; exit 1; }
 ls -la docs

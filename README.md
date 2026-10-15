@@ -38,6 +38,7 @@ analysis/build_report.py     deck PDF + note -> report PDF
 analysis/build_site.sh       encrypted copy of the dashboard for GitHub Pages (docs/)
 analysis/site/password_template.html  the password page: the deck's title slide, animated
 analysis/build_site_template.py       fills that page's headline, chart and figures from analysis/out
+analysis/chat/                        the chat proxy (Cloudflare Worker), its rules and the case material
 analysis/build_all.sh        runs all of the above
 ```
 
@@ -55,6 +56,18 @@ bash analysis/build_all.sh
 ```
 
 The build asserts the reconciliation checkpoints: approved counts, the −5.4 points, and the volume and rate effects. It records the SHA-256 hashes of both extracts. It stops the export if any record-level field or user reference is present.
+
+## Ask about this case (chat)
+
+The hosted dashboard has a chat above the tabs. Claude Opus 5.5 answers questions about the case from the case material only.
+
+- `analysis/chat/build_chat_context.py` builds `analysis/chat/worker/case-material.md` from the same outputs as the dashboard. The whole file goes into the prompt, so no search index is necessary.
+- `analysis/chat/worker/rules.md` holds the rules: questions about this case only, figures as given, facts apart from hypotheses, and short answers.
+- `analysis/chat/worker/src/index.js` is a Cloudflare Worker. It holds the Anthropic key as a secret, and the page never sees the key.
+- The Worker accepts only the dashboard's origin and an access token. The build adds that token only to the encrypted page.
+- Limits: 6 questions a minute for each visitor, 100 a day in total, and 1,500 characters for each question.
+- The Worker does not log questions. The page keeps the conversation in memory only.
+- The offline file and the copy in this repository have no chat and make no requests.
 
 ## What is deliberately not here
 

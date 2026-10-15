@@ -16,3 +16,8 @@ analysis/public/
 analysis/export/change-summary.md
 analysis/export/submission-email.md
 analysis/export/video-script.md
+
+# Chat proxy: the access token and Wrangler's local state stay on this machine
+analysis/chat/.chat-token
+analysis/chat/worker/.dev.vars
+analysis/chat/worker/.wrangler/

@@ -8,6 +8,7 @@ cd "$(dirname "$0")/.."
 python3 -I analysis/build_datasets.py
 python3 -I analysis/export_html.py
 python3 -I analysis/build_notes.py
+python3 -I analysis/chat/build_chat_context.py
 
 SCRATCH="${DECK_SCRATCH:-analysis/tools/.deck-build}"
 mkdir -p "$SCRATCH"

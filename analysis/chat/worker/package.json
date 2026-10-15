@@ -1,0 +1,13 @@
+{
+  "name": "kyc-case-chat",
+  "private": true,
+  "description": "Proxy for the dashboard's 'Ask about this case' chat: holds the Anthropic key, checks the access token and the limits, and streams Claude's answer.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.137.0"
+  }
+}

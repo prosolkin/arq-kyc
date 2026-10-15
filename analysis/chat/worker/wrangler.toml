@@ -1,0 +1,32 @@
+# Cloudflare Worker for the dashboard's "Ask about this case" chat.
+# Secrets (set with `npx wrangler secret put NAME`, never in this file): ANTHROPIC_API_KEY, CHAT_TOKEN.
+name = "kyc-case-chat"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+# the prompt rules and the case material are bundled as text
+[[rules]]
+type = "Text"
+globs = ["**/*.md"]
+fallthrough = true
+
+[vars]
+MODEL = "claude-opus-5-5"
+DAILY_LIMIT = "100"
+MAX_TOKENS = "800"
+ALLOWED_ORIGINS = "https://prosolkin.github.io,http://localhost:8765,http://localhost:8766,http://127.0.0.1:8765,http://127.0.0.1:8766"
+
+# per visitor: 6 questions a minute (per Cloudflare location)
+[[ratelimits]]
+name = "PER_VISITOR"
+namespace_id = "4101"
+
+  [ratelimits.simple]
+  limit = 6
+  period = 60
+
+# overall daily cap: one counter per UTC date
+[[kv_namespaces]]
+binding = "BUDGET"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"

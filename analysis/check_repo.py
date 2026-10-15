@@ -17,7 +17,7 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "KYC_summary.csv")
 RECORD_COLUMNS = {"user_reference", "year_birth", "document_number", "first_name", "last_name"}
-TEXT_EXT = {".py", ".js", ".mjs", ".html", ".md", ".csv", ".json", ".sh", ".txt", ".yml", ".yaml", ".gitignore"}
+TEXT_EXT = {".py", ".js", ".mjs", ".html", ".md", ".csv", ".json", ".sh", ".txt", ".yml", ".yaml", ".toml", ".gitignore"}
 
 
 def tracked():
@@ -45,7 +45,7 @@ def main():
     problems = []
     for p in files:
         base = os.path.basename(p)
-        if re.match(r"KYC_.*\.csv$", base, re.I) or base == ".env":
+        if re.match(r"KYC_.*\.csv$", base, re.I) or base in (".env", ".dev.vars", ".chat-token"):
             problems.append(f"raw or secret file tracked: {p}")
     ids = set()
     if os.path.exists(RAW):
@@ -53,6 +53,11 @@ def main():
             ids = {r["user_reference"] for r in csv.DictReader(f) if r.get("user_reference")}
     else:
         print("note: KYC_summary.csv not present, user_reference check skipped")
+    secrets = []
+    tok_file = os.path.join(ROOT, "analysis", "chat", ".chat-token")
+    for t in (os.environ.get("CHAT_TOKEN"), open(tok_file).read().strip() if os.path.exists(tok_file) else None):
+        if t:
+            secrets.append(t)
     pw = os.environ.get("STATICRYPT_PASSWORD")
     if not pw:
         print("note: STATICRYPT_PASSWORD not set, password check skipped")
@@ -64,6 +69,8 @@ def main():
             continue
         if pw and pw in t:
             problems.append(f"password string in {p}")
+        if any(x in t for x in secrets):
+            problems.append(f"chat token in {p}")
         if ids:
             tokens = set(re.findall(r"[A-Za-z0-9_-]{6,}", t))
             hit = tokens & ids
